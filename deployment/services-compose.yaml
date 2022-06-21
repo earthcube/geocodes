@@ -14,7 +14,8 @@ version: '3'
 
 services:
   traefik:
-    image: traefik:v2.0.2
+    image: traefik:v2.2.11
+
     container_name: traefik
     restart: unless-stopped
     security_opt:
@@ -27,14 +28,17 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - "${GLEANER_TRAEFIK}/logs:/logs"
-      -  "${GLEANER_TRAEFIK}/traefik.yml:/traefik.yml:ro"
-      - "${GLEANER_TRAEFIK}/acme/acme.json:/acme.json"
+#      - ./config/logs:/logs
+#      -  ./config/traefik.yml:/traefik.yml:ro
+#      - ./config/acme/acme.json:/acme.json
+      - ${GLEANER_TRAEFIK}/logs:/logs
+      -  ${GLEANER_TRAEFIK_YML}/traefik.yml:/traefik.yml:ro
+      - ${GLEANER_TRAEFIK}/acme/acme.json:/acme.json
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.entrypoints=http"
       - "traefik.http.routers.traefik.rule=Host(`${GLEANER_ADMIN_DOMAIN}`)"
-      - "traefik.http.middlewares.traefik-auth.basicauth.users=`${TRAEFIK_AUTH}`"
+#      - "traefik.http.middlewares.traefik-auth.basicauth.users=`${TRAEFIK_AUTH}`"
       - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
       - "traefik.http.routers.traefik-secure.entrypoints=https"
