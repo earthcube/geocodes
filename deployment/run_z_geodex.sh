@@ -23,12 +23,12 @@ done
 
 if [ ! $envfile ]
   then
-     envfile=".env"
+     envfile=".env.geodex"
 fi
 
 if [ $detached ]
   then
-    docker compose -p geocodes --env-file $envfile  -f geocodes-compose.yaml -f services-compose.yaml --profile=geocodes up -d
+    docker compose -p geodex --env-file $envfile  -f services-compose.yaml -f geodex-compose.yaml --profile=geodex  up -d
   else
-    docker compose -p geocodes --env-file $envfile  -f geocodes-compose.yaml -f services-compose.yaml  --profile=geocodes up
+    docker compose -p geodex  --env-file $envfile  -f services-compose.yaml -f geocodes-compose.yaml  --profile=geodex  up
 fi

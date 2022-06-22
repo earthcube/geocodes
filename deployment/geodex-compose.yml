@@ -1,0 +1,104 @@
+version: '3'
+
+services:
+
+  geodexclient:
+    image: fils/grow-general:latest
+    profiles: ["geodex"]
+    restart: unless-stopped
+    environment:
+      - S3ADDRESS=s3system:9000
+      - S3BUCKET=sites
+      - S3PREFIX=geodex
+      - DOMAIN=https://www.${GEODEX_BASE_DOMAIN}/
+      - S3KEY=${MINIO_ROOT_ACCESS_KEY}
+      - S3SECRET=${MINIO_ROOT_SECRET_KEY}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.features.entrypoints=http"
+      - "traefik.http.routers.features.rule=Host(`${GEODEX_BASE_DOMAIN}`,`www.${GEODEX_BASE_DOMAIN}`)"
+      - "traefik.http.middlewares.features-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.features.middlewares=features-https-redirect"
+      - "traefik.http.routers.features-secure.entrypoints=https"
+      - "traefik.http.routers.features-secure.rule=Host(`${GEODEX_BASE_DOMAIN}`,`www.${GEODEX_BASE_DOMAIN}`)"
+      - "traefik.http.routers.features-secure.tls=true"
+      - "traefik.http.routers.features-secure.tls.certresolver=http"
+      - "traefik.http.routers.features-secure.service=features"
+      - "traefik.http.services.features.loadbalancer.server.port=8080"
+      - "traefik.docker.network=traefik_default"
+      - "traefik.http.middlewares.features.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,POST"
+      - "traefik.http.middlewares.features.headers.accesscontrolalloworigin=*"
+      - "traefik.http.middlewares.features.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.features.headers.addvaryheader=true"
+      - "traefik.http.middlewares.features-secure.headers.accesscontrolallowheaders=*"
+      #- "traefik.http.middlewares.features-secure.headers.accesscontrolallowheaders=Authorization,Origin,Content-Type,Accept"
+      - "traefik.http.middlewares.features-secure.headers.customresponseheaders.Access-Control-Allow-Headers=*"
+    networks:
+      - traefik_default
+
+  geodexapi:
+    image: fils/grow-general:latest
+    profiles: ["geodex"]
+    restart: unless-stopped
+    environment:
+      - S3ADDRESS=s3system:9000
+      - S3BUCKET=gleaner
+      #- S3PREFIX=
+      - DOMAIN=https://dx.${GEODEX_BASE_DOMAIN}/
+      - S3KEY=${MINIO_ROOT_ACCESS_KEY}
+      - S3SECRET=${MINIO_ROOT_SECRET_KEY}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dx.entrypoints=http"
+      - "traefik.http.routers.dx.rule=Host(`dx.${GEODEX_BASE_DOMAIN}`)"
+      - "traefik.http.middlewares.dx-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.dx.middlewares=dx-https-redirect"
+      - "traefik.http.routers.dx-secure.entrypoints=https"
+      - "traefik.http.routers.dx-secure.rule=Host(`dx.${GEODEX_BASE_DOMAIN}`)"
+      - "traefik.http.routers.dx-secure.tls=true"
+      - "traefik.http.routers.dx-secure.tls.certresolver=http"
+      - "traefik.http.routers.dx-secure.service=dx"
+      - "traefik.http.services.dx.loadbalancer.server.port=8080"
+      - "traefik.docker.network=traefik_default"
+      - "traefik.http.middlewares.dx.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,POST"
+      - "traefik.http.middlewares.dx.headers.accesscontrolalloworigin=*"
+      - "traefik.http.middlewares.dx.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.dx.headers.addvaryheader=true"
+      - "traefik.http.middlewares.dx-secure.headers.accesscontrolallowheaders=*"
+      - "traefik.http.middlewares.dx-secure.headers.accesscontrolallowheaders=Authorization,Origin,Content-Type,Accept"
+      - "traefik.http.middlewares.dx-secure.headers.customresponseheaders.Access-Control-Allow-Headers=Authorization,Origin,Content-Type,Accept"
+    networks:
+      - traefik_default
+  mercantile:
+    image: fils/mercantile:latest
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mercantile.entrypoints=http"
+      - "traefik.http.routers.mercantile.rule=Host(`api.${GEODEX_BASE_DOMAIN}`)"
+      #- "traefik.http.routers.mercantile.rule=(Host(`${GEODEX_BASE_DOMAIN}`) && Path(`/query`)"
+      - "traefik.http.middlewares.mercantile-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.mercantile.middlewares=mercantile-https-redirect"
+      - "traefik.http.routers.mercantile-secure.entrypoints=https"
+      - "traefik.http.routers.mercantile-secure.rule=Host(`api.${GEODEX_BASE_DOMAIN}`)"
+      #- "traefik.http.routers.mercantile-secure.rule=(Host(`${GEODEX_BASE_DOMAIN}`) && Path(`/query`)"
+      - "traefik.http.routers.mercantile-secure.tls=true"
+      - "traefik.http.routers.mercantile-secure.tls.certresolver=http"
+      - "traefik.http.routers.mercantile-secure.service=mercantile"
+      - "traefik.http.middlewares.mercantile-secure.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,POST"
+      - "traefik.http.middlewares.mercantile-secure.headers.accesscontrolalloworigin=*"
+      - "traefik.http.middlewares.mercantile-secure.headers.accesscontrolmaxage=200"
+      - "traefik.http.middlewares.mercantile-secure.headers.addvaryheader=true"
+      - "traefik.http.middlewares.mercantile-secure.headers.accesscontrolallowcredentials=true"
+      - "traefik.http.middlewares.mercantile-secure.headers.accesscontrolallowheaders=*"
+      #- "traefik.http.middlewares.mercantile-secure.headers.accesscontrolallowheaders=Authorization,Origin,Content-Type,Accept"
+      - "traefik.http.middlewares.mercantile-secure.headers.customresponseheaders.Access-Control-Allow-Headers=*"
+      #- "traefik.http.middlewares.mercantile-secure.headers.customresponseheaders.Access-Control-Allow-Headers=hx-target,hx-request,Authorization,Origin,Content-Type,Accept"
+      - "traefik.http.routers.mercantile-secure.middlewares=mercantile-secure@docker"
+      - "traefik.http.services.mercantile.loadbalancer.server.port=8080"
+      - "traefik.docker.network=traefik_default"
+    networks:
+      - traefik_default
+
+networks:
+  traefik_default:
