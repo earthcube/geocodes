@@ -6,16 +6,16 @@ entryPoints:
     address: ":80"
   https:
     address: ":443"
-        
+
 providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
 
 certificatesResolvers:
-  http:
+  ecresolver:
     acme:
       email: dwvalentine@ucsd.edu
       storage: acme.json
       httpChallenge:
-        entryPoint: http
+        entryPoint: web

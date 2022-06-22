@@ -14,7 +14,7 @@ version: '3'
 
 services:
   traefik:
-    image: traefik:v2.2.11
+    image: traefik:v2.0.2
     container_name: traefik
     restart: unless-stopped
     security_opt:
@@ -32,7 +32,7 @@ services:
 #      - ./config/acme/acme.json:/acme.json
       - ${GLEANER_TRAEFIK}/logs:/logs
       -  ${GLEANER_TRAEFIK_YML}/traefik.yml:/traefik.yml:ro
-      - ${GLEANER_TRAEFIK}/acme/acme.json:/acme.json
+#      - ${GLEANER_TRAEFIK}/acme/acme.json:/acme.json
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.entrypoints=http"
@@ -44,8 +44,12 @@ services:
       - "traefik.http.routers.traefik-secure.rule=Host(`${GLEANER_ADMIN_DOMAIN}`)"
       - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
       - "traefik.http.routers.traefik-secure.tls=true"
-      - "traefik.http.routers.traefik-secure.tls.certresolver=http"
+      - "traefik.http.routers.traefik-secure.tls.certresolver=ecresolver"
       - "traefik.http.routers.traefik-secure.service=api@internal"
+      - "--certificatesresolvers.ecresolver.acme.tlschallenge=true"
+      #- "--certificatesresolvers.ecresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.ecresolver.acme.email=dwvalentine@ucsd.edu"
+      - "--certificatesresolvers.ecresolver.acme.storage=`${GLEANER_TRAEFIK}`/acme/acme.json"
 
   graph:
     image: nawer/blazegraph
@@ -62,7 +66,7 @@ services:
       - "traefik.http.routers.triplestore-secure.entrypoints=https"
       - "traefik.http.routers.triplestore-secure.rule=Host(`${GLEANER_GRAPH_DOMAIN}`)"
       - "traefik.http.routers.triplestore-secure.tls=true"
-      - "traefik.http.routers.triplestore-secure.tls.certresolver=http"
+      - "traefik.http.routers.triplestore-secure.tls.certresolver=ecresolver"
       - "traefik.http.routers.triplestore-secure.service=triplestore"
       - "traefik.http.middlewares.triplestore-secure.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,POST"
       - "traefik.http.middlewares.triplestore-secure.headers.accesscontrolalloworigin=*"
@@ -93,7 +97,7 @@ services:
       - "traefik.http.routers.s3system-secure.entrypoints=https"
       - "traefik.http.routers.s3system-secure.rule=Host(`${GLEANER_OSS_DOMAIN}`)"
       - "traefik.http.routers.s3system-secure.tls=true"
-      - "traefik.http.routers.s3system-secure.tls.certresolver=http"
+      - "traefik.http.routers.s3system-secure.tls.certresolver=ecresolver"
       - "traefik.http.routers.s3system-secure.service=s3system"
       - "traefik.http.services.s3system.loadbalancer.server.port=9000"
       - "traefik.http.routers.s3admin.entrypoints=http"
@@ -103,7 +107,7 @@ services:
       - "traefik.http.routers.s3admin-secure.entrypoints=https"
       - "traefik.http.routers.s3admin-secure.rule=Host(`${GLEANER_OSS_CONSOLE_DOMAIN}`)"
       - "traefik.http.routers.s3admin-secure.tls=true"
-      - "traefik.http.routers.s3admin-secure.tls.certresolver=http"
+      - "traefik.http.routers.s3admin-secure.tls.certresolver=ecresolver"
       - "traefik.http.routers.s3admin-secure.service=s3admin"
       - "traefik.http.services.s3admin.loadbalancer.server.port=9001"
       - "traefik.http.middlewares.s3system-secure.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,POST"
@@ -144,7 +148,7 @@ services:
       - "traefik.http.routers.sparqlgui-secure.entrypoints=https"
       - "traefik.http.routers.sparqlgui-secure.rule=Host(`${GLEANER_SPARQLGUI_DOMAIN}`) "
       - "traefik.http.routers.sparqlgui-secure.tls=true"
-      - "traefik.http.routers.sparqlgui-secure.tls.certresolver=http"
+      - "traefik.http.routers.sparqlgui-secure.tls.certresolver=ecresolver"
       - "traefik.http.routers.sparqlgui-secure.service=sparqlgui"
       - "traefik.http.services.sparqlgui.loadbalancer.server.port=80"
       - "traefik.docker.network=traefik_default"
