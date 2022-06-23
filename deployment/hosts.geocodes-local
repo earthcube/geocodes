@@ -1,0 +1,9 @@
+# geocodes localhost mapping
+127.0.0.1	admin.local.dev
+127.0.0.1	minioadmin.local.dev
+127.0.0.1	oss.local.dev
+127.0.0.1	graph.local.dev
+127.0.0.1	geocodes.local.dev
+127.0.0.1	admin.local.dev
+127.0.0.1	sparqlui.local.dev
+

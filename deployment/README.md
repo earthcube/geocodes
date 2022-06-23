@@ -8,18 +8,23 @@ The stack consists of several stacks, each with their own container.
   * s3system - minio an s3 clone
   * graph - a triplestore, presently blazegraph
   * sparqlgui - a gui for sparql queries
-* gecodes-compose.yam
+* gecodes-compose.yaml
   * vue-services - a nodejs express applicaiton that provides an api
   * vue-client - a vue application for the facet searching
   * notebook-proxy - a python flask application to create gists and run them as notebooks.
-* geodex-compose.yml
+* geodex-compose.yaml
   * dx - api
   * features - serve out of site
 
 ### requirements:
 * docker
 * docker-compose
-
+Local Developement:
+* add lines for hosts.geocodes to /etc/hosts
+* mac
+  * sudo dscacheutil -flushcache
+* linux:
+  * 
 Basic Steps to run locally:
 * clone,
 * change to deployment directory
