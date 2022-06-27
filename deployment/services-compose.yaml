@@ -11,6 +11,15 @@ version: '3'
 # ${GLEANER_TRAEFIK}
 # ${GLEANER_OBJECTS}
 # ${GLEANER_GRAPH}
+volumes:
+  minio:
+    external: true
+  graph:
+    external: true
+  config:
+    external: true
+  treafik_config:
+    external: true
 
 services:
   traefik:
