@@ -42,7 +42,7 @@ services:
 #      -  ./config/traefik.yml:/traefik.yml:ro
 #      - ./config/acme/acme.json:/acme.json
       -  logs:/logs
-      -  ./traefik.yml:/traefik.yml:ro
+      -  traefik.yml:/traefik.yml:ro
 #      - ${GLEANER_TRAEFIK}/acme/acme.json:/acme.json
     labels:
       - "traefik.enable=true"
