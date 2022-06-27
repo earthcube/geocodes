@@ -39,8 +39,8 @@ services:
 #      - ./config/logs:/logs
 #      -  ./config/traefik.yml:/traefik.yml:ro
 #      - ./config/acme/acme.json:/acme.json
-      - ${GLEANER_TRAEFIK}/logs:/logs
-      -  ${GLEANER_TRAEFIK_YML}/traefik.yml:/traefik.yml:ro
+      -  logs:/logs
+      -  ./config/traefik.yml:/traefik.yml:ro
 #      - ${GLEANER_TRAEFIK}/acme/acme.json:/acme.json
     labels:
       - "traefik.enable=true"
@@ -88,7 +88,7 @@ services:
       - "traefik.http.services.triplestore.loadbalancer.server.port=9999"
       - "traefik.docker.network=traefik_default"
     volumes:
-      - ${GLEANER_GRAPH}:/var/lib/blazegraph
+      - graph:/var/lib/blazegraph
     networks:
       - traefik_default
 
@@ -131,7 +131,7 @@ services:
       - "traefik.http.routers.s3system-secure.middlewares=s3system-secure@docker"
       - "traefik.docker.network=traefik_default"
     volumes:
-      - ${GLEANER_OBJECTS:?GLEANER_OBJECTS environment variable is required}:/data
+      - minio:/data
     environment:
       -  MINIO_ROOT_USER=${MINIO_ROOT_ACCESS_KEY}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_SECRET_KEY}
