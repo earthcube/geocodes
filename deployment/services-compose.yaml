@@ -20,6 +20,8 @@ volumes:
     external: true
   treafik_config:
     external: true
+  logs:
+    external: true
 
 services:
   traefik:
