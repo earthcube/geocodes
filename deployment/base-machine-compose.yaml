@@ -8,7 +8,7 @@ services:
     security_opt:
       - no-new-privileges:true
     networks:
-      - traefik-proxy
+      - traefik_proxy
     ports:
       - 80:80
       - 443:443
@@ -16,7 +16,8 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik-data/traefik.yml:/traefik.yml:ro
-      - ./traefik-data/acme.json:/acme.json
+# issues with acme.json being created as  directory
+#      - ./traefik-data/acme/acme.json:/acme.json
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.entrypoints=http"
@@ -28,9 +29,11 @@ services:
       - "traefik.http.routers.traefik-secure.rule=Host(`${GLEANER_ADMIN_DOMAIN}`)"
       - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
       - "traefik.http.routers.traefik-secure.tls=true"
-      - "traefik.http.routers.traefik-secure.tls.certresolver=http"
+      - "traefik.http.routers.traefik-secure.tls.certresolver=ecresolver"
       - "traefik.http.routers.traefik-secure.service=api@internal"
-
+      - "--certificatesresolvers.ecresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.ecresolver.acme.email=dwvalentine@ucsd.edu"
+      - "--certificatesresolvers.ecresolver.acme.storage=./traefik-data/acme/acme.json"
   portainer:
     image: portainer/portainer:latest
     container_name: portainer
@@ -38,7 +41,7 @@ services:
     security_opt:
       - no-new-privileges:true
     networks:
-      - traefik-proxy
+      - traefik_proxy
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -52,11 +55,11 @@ services:
       - "traefik.http.routers.portainer-secure.entrypoints=https"
       - "traefik.http.routers.portainer-secure.rule=Host(`${GLEANER_PORTAINER_DOMAIN}`)"
       - "traefik.http.routers.portainer-secure.tls=true"
-      - "traefik.http.routers.portainer-secure.tls.certresolver=http"
+      - "traefik.http.routers.portainer-secure.tls.certresolver=ecresolver"
       - "traefik.http.routers.portainer-secure.service=portainer"
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
       - "traefik.docker.network=traefik-proxy"
 
 networks:
-  traefik-proxy:
+  traefik_proxy:
     external: true

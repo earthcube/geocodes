@@ -11,7 +11,7 @@ helpFunction()
 }
 detached=true
 
-while getopts "e:rd" opt
+while getopts "e:u" opt
 do
    case "$opt" in
       e ) envfile="$OPTARG" ;;
@@ -29,6 +29,7 @@ fi
 ## or an error will be thrown
 docker network create traefik_proxy
 docker volume create traefik_proxy
+echo $detached
 
 if [ $detached ]
   then
