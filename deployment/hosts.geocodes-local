@@ -1,4 +1,5 @@
 # geocodes localhost mapping
+127.0.0.1   portainer.local.dev
 127.0.0.1	admin.local.dev
 127.0.0.1	minioadmin.local.dev
 127.0.0.1	oss.local.dev

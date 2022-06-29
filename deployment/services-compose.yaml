@@ -24,43 +24,45 @@ volumes:
     external: true
 
 services:
-  traefik:
-    image: traefik:v2.0.2
-    container_name: traefik
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    networks:
-      - traefik_default
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-#      - ./config/logs:/logs
-#      -  ./config/traefik.yml:/traefik.yml:ro
-#      - ./config/acme/acme.json:/acme.json
-      -  logs:/logs
-      -  traefik.yml:/traefik.yml:ro
-#      - ${GLEANER_TRAEFIK}/acme/acme.json:/acme.json
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.traefik.entrypoints=http"
-      - "traefik.http.routers.traefik.rule=Host(`${GLEANER_ADMIN_DOMAIN}`)"
-#      - "traefik.http.middlewares.traefik-auth.basicauth.users=`${TRAEFIK_AUTH}`"
-      - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
-      - "traefik.http.routers.traefik-secure.entrypoints=https"
-      - "traefik.http.routers.traefik-secure.rule=Host(`${GLEANER_ADMIN_DOMAIN}`)"
-      - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
-      - "traefik.http.routers.traefik-secure.tls=true"
-      - "traefik.http.routers.traefik-secure.tls.certresolver=ecresolver"
-      - "traefik.http.routers.traefik-secure.service=api@internal"
-      - "--certificatesresolvers.ecresolver.acme.tlschallenge=true"
-      #- "--certificatesresolvers.ecresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
-      - "--certificatesresolvers.ecresolver.acme.email=dwvalentine@ucsd.edu"
-      - "--certificatesresolvers.ecresolver.acme.storage=`${GLEANER_TRAEFIK}`/acme/acme.json"
+  ## traefik is now in the base-machine-compose.yaml
+  ## this allows portainer to be proxied, and have an SSL certificate.
+#  traefik:
+#    image: traefik:v2.0.2
+#    container_name: traefik
+#    restart: unless-stopped
+#    security_opt:
+#      - no-new-privileges:true
+#    networks:
+#      - traefik-proxy
+#    ports:
+#      - 80:80
+#      - 443:443
+#    volumes:
+#      - /etc/localtime:/etc/localtime:ro
+#      - /var/run/docker.sock:/var/run/docker.sock:ro
+##      - ./traefik-data/logs:/logs
+##      -  ./traefik-data/traefik.yml:/traefik.yml:ro
+##      - ./traefik-data/acme/acme.json:/acme.json
+#      -  logs:/logs
+#      -  traefik.yml:/traefik.yml:ro
+##      - ${GLEANER_TRAEFIK}/acme/acme.json:/acme.json
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.traefik.entrypoints=http"
+#      - "traefik.http.routers.traefik.rule=Host(`${GLEANER_ADMIN_DOMAIN}`)"
+##      - "traefik.http.middlewares.traefik-auth.basicauth.users=`${TRAEFIK_AUTH}`"
+#      - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
+#      - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
+#      - "traefik.http.routers.traefik-secure.entrypoints=https"
+#      - "traefik.http.routers.traefik-secure.rule=Host(`${GLEANER_ADMIN_DOMAIN}`)"
+#      - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
+#      - "traefik.http.routers.traefik-secure.tls=true"
+#      - "traefik.http.routers.traefik-secure.tls.certresolver=ecresolver"
+#      - "traefik.http.routers.traefik-secure.service=api@internal"
+#      - "--certificatesresolvers.ecresolver.acme.tlschallenge=true"
+#      #- "--certificatesresolvers.ecresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+#      - "--certificatesresolvers.ecresolver.acme.email=dwvalentine@ucsd.edu"
+#      - "--certificatesresolvers.ecresolver.acme.storage=`${GLEANER_TRAEFIK}`/acme/acme.json"
 
   graph:
     image: nawer/blazegraph
@@ -92,7 +94,7 @@ services:
     volumes:
       - graph:/var/lib/blazegraph
     networks:
-      - traefik_default
+      - traefik-proxy
 
   s3system:
     image: quay.io/minio/minio
@@ -138,7 +140,7 @@ services:
       -  MINIO_ROOT_USER=${MINIO_ROOT_ACCESS_KEY}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_SECRET_KEY}
     networks:
-      - traefik_default
+      - traefik-proxy
 #    command: ["server", "/data"]
     command: server /data --console-address ":9001"
 
@@ -169,6 +171,6 @@ services:
       - "traefik.http.middlewares.sparqlgui.headers.addvaryheader=true"
 
     networks:
-      - traefik_default
+      - traefik-proxy
 networks:
   traefik_default:

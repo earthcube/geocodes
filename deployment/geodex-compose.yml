@@ -34,7 +34,7 @@ services:
       #- "traefik.http.middlewares.features-secure.headers.accesscontrolallowheaders=Authorization,Origin,Content-Type,Accept"
       - "traefik.http.middlewares.features-secure.headers.customresponseheaders.Access-Control-Allow-Headers=*"
     networks:
-      - traefik_default
+      - traefik-proxy
 
   geodexapi:
     image: fils/grow-general:latest
@@ -68,7 +68,7 @@ services:
       - "traefik.http.middlewares.dx-secure.headers.accesscontrolallowheaders=Authorization,Origin,Content-Type,Accept"
       - "traefik.http.middlewares.dx-secure.headers.customresponseheaders.Access-Control-Allow-Headers=Authorization,Origin,Content-Type,Accept"
     networks:
-      - traefik_default
+      - traefik-proxy
   mercantile:
     image: fils/mercantile:latest
     restart: unless-stopped
@@ -98,7 +98,7 @@ services:
       - "traefik.http.services.mercantile.loadbalancer.server.port=8080"
       - "traefik.docker.network=traefik_default"
     networks:
-      - traefik_default
+      - traefik-proxy
 
 networks:
   traefik_default:

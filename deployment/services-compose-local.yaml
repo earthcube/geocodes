@@ -24,16 +24,16 @@ services:
     security_opt:
       - no-new-privileges:true
     networks:
-      - traefik_default
+      - traefik-proxy
     ports:
       - 8888:80   # can use the
       - 8443:443
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-#      - ./config/logs:/logs
-#      -  ./config/traefik.yml:/traefik.yml:ro
-#      - ./config/acme/acme.json:/acme.json
+#      - ./traefik-data/logs:/logs
+#      -  ./traefik-data/traefik.yml:/traefik.yml:ro
+#      - ./traefik-data/acme/acme.json:/acme.json
       - ${GLEANER_TRAEFIK}/logs:/logs
       -  ${GLEANER_TRAEFIK_YML}/traefik.yml:/traefik.yml:ro
 #      - ${GLEANER_TRAEFIK}/acme/acme.json:/acme.json
@@ -81,11 +81,11 @@ services:
 #      - "traefik.http.middlewares.triplestore-secure.headers.customresponseheaders.Access-Control-Allow-Headers=Authorization,Origin,Content-Type,Accept"
 #      - "traefik.http.routers.triplestore-secure.middlewares=triplestore-secure@docker"
       - "traefik.http.services.triplestore.loadbalancer.server.port=9999"
-      - "traefik.docker.network=traefik_default"
+      - "traefik.docker.network=traefik-proxy"
     volumes:
       - ${GLEANER_GRAPH}:/var/lib/blazegraph
     networks:
-      - traefik_default
+      - traefik-proxy
 
   s3system:
     image: quay.io/minio/minio
@@ -124,14 +124,14 @@ services:
 #      - "traefik.http.middlewares.s3system-secure.headers.customresponseheaders.Access-Control-Allow-Headers=*"
       #      - "traefik.http.middlewares.s3system-secure.headers.customresponseheaders.Access-Control-Allow-Headers=Authorization,Origin,Content-Type,Accept"
 #      - "traefik.http.routers.s3system-secure.middlewares=s3system-secure@docker"
-      - "traefik.docker.network=traefik_default"
+      - "traefik.docker.network=traefik-proxy"
     volumes:
       - ${GLEANER_OBJECTS:?GLEANER_OBJECTS environment variable is required}:/data
     environment:
       -  MINIO_ROOT_USER=${MINIO_ROOT_ACCESS_KEY}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_SECRET_KEY}
     networks:
-      - traefik_default
+      - traefik-proxy
 #    command: ["server", "/data"]
     command: server /data --console-address ":9001"
 
@@ -155,13 +155,13 @@ services:
 #      - "traefik.http.routers.sparqlgui-secure.tls.certresolver=ecresolver"
 #      - "traefik.http.routers.sparqlgui-secure.service=sparqlgui"
       - "traefik.http.services.sparqlgui.loadbalancer.server.port=80"
-      - "traefik.docker.network=traefik_default"
+      - "traefik.docker.network=traefik-proxy"
       - "traefik.http.middlewares.sparqlgui.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
       - "traefik.http.middlewares.sparqlgui.headers.accesscontrolalloworigin=*"
       - "traefik.http.middlewares.sparqlgui.headers.accesscontrolmaxage=100"
       - "traefik.http.middlewares.sparqlgui.headers.addvaryheader=true"
 
     networks:
-      - traefik_default
+      - traefik-proxy
 networks:
-  traefik_default:
+  traefik-proxy:

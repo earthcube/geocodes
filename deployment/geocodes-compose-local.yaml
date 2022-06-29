@@ -52,7 +52,7 @@ services:
 #      - "traefik.http.routers.beta-server-secure.middlewares=ecapi_prefix_b"
       - "traefik.http.routers.beta-server.middlewares=ecapi_prefix_b"
     networks:
-      - traefik_default
+      - traefik-proxy
 
   vue-client:
     image: nsfearthcube/ec_facets_client:latest
@@ -82,7 +82,7 @@ services:
       - "traefik.http.middlewares.beta.headers.accesscontrolmaxage=100"
       - "traefik.http.middlewares.beta.headers.addvaryheader=true"
     networks:
-      - traefik_default
+      - traefik-proxy
   notebook-proxy:
     image: nsfearthcube/mknb:latest
     profiles: ["geocodes"]
@@ -119,6 +119,6 @@ services:
 #      - "traefik.http.routers.nb-secure.middlewares=nb_prefix"
       - "traefik.http.routers.nb.middlewares=nb_prefix"
     networks:
-      - traefik_default
+      - traefik-proxy
 networks:
   traefik_default:
