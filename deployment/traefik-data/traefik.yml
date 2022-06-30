@@ -13,9 +13,11 @@ providers:
     exposedByDefault: false
 
 certificatesResolvers:
-  ecresolver:
+  httpresolver:
     acme:
+      # using staging for testing/development
+      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
       email: dwvalentine@ucsd.edu
       storage: acme.json
       httpChallenge:
-        entryPoint: web
+        entryPoint: http
