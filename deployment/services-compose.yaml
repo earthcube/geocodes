@@ -94,7 +94,7 @@ services:
     volumes:
       - graph:/var/lib/blazegraph
     networks:
-      - traefik-proxy
+      - traefik_proxy
 
   s3system:
     image: quay.io/minio/minio
@@ -140,7 +140,7 @@ services:
       -  MINIO_ROOT_USER=${MINIO_ROOT_ACCESS_KEY}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_SECRET_KEY}
     networks:
-      - traefik-proxy
+      - traefik_proxy
 #    command: ["server", "/data"]
     command: server /data --console-address ":9001"
 
@@ -171,6 +171,6 @@ services:
       - "traefik.http.middlewares.sparqlgui.headers.addvaryheader=true"
 
     networks:
-      - traefik-proxy
+      - traefik_proxy
 networks:
-  traefik_default:
+  traefik_proxy:

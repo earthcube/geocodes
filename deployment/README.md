@@ -30,6 +30,8 @@ Basic Steps to run locally:
 * change to deployment directory
 * create a .env file from the env.example
   * modify the variables, as needed.
+  * create a password for traefik admin
+    * `echo $(htpasswd -nb admin 1forget) | sed -e s/\\$/\\$\\$/g`
 * run a stack
   * ./run_geocodes.sh
   * ./run_geodex.sh (when doing a production)
