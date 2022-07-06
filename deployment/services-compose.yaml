@@ -22,6 +22,9 @@ volumes:
     external: true
   logs:
     external: true
+networks:
+  traefik_proxy:
+#    external: true
 
 services:
   ## traefik is now in the base-machine-compose.yaml
@@ -172,6 +175,4 @@ services:
 
     networks:
       - traefik_proxy
-networks:
-  traefik_proxy:
-    external: true
+

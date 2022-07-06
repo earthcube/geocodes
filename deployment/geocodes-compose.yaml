@@ -1,4 +1,7 @@
 version: '3'
+networks:
+  traefik_proxy:
+#    external: true
 services:
   # the base routes:
   # geocodes /
@@ -118,6 +121,4 @@ services:
       - "traefik.http.routers.nb-secure.middlewares=nb_prefix"
     networks:
       - traefik_proxy
-networks:
-  traefik_proxy:
-    external: true
+
