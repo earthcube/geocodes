@@ -174,3 +174,4 @@ services:
       - traefik_proxy
 networks:
   traefik_proxy:
+    external: true
