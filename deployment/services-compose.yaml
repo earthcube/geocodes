@@ -93,7 +93,7 @@ services:
       - "traefik.http.middlewares.triplestore-secure.headers.customresponseheaders.Access-Control-Allow-Headers=Authorization,Origin,Content-Type,Accept"
       - "traefik.http.routers.triplestore-secure.middlewares=triplestore-secure@docker"
       - "traefik.http.services.triplestore.loadbalancer.server.port=9999"
-      - "traefik.docker.network=traefik_default"
+      - "traefik.docker.network=traefik_proxy"
     volumes:
       - graph:/var/lib/blazegraph
     networks:
@@ -138,7 +138,7 @@ services:
       - "traefik.http.middlewares.s3system-secure.headers.customresponseheaders.Access-Control-Allow-Headers=*"
       #      - "traefik.http.middlewares.s3system-secure.headers.customresponseheaders.Access-Control-Allow-Headers=Authorization,Origin,Content-Type,Accept"
       - "traefik.http.routers.s3system-secure.middlewares=s3system-secure@docker"
-      - "traefik.docker.network=traefik_default"
+      - "traefik.docker.network=traefik_proxy"
     volumes:
       - minio:/data
     environment:
@@ -169,7 +169,7 @@ services:
       - "traefik.http.routers.sparqlgui-secure.tls.certresolver=httpresolver"
       - "traefik.http.routers.sparqlgui-secure.service=sparqlgui"
       - "traefik.http.services.sparqlgui.loadbalancer.server.port=80"
-      - "traefik.docker.network=traefik_default"
+      - "traefik.docker.network=traefik_proxy"
       - "traefik.http.middlewares.sparqlgui.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
       - "traefik.http.middlewares.sparqlgui.headers.accesscontrolalloworigin=*"
       - "traefik.http.middlewares.sparqlgui.headers.accesscontrolmaxage=100"
