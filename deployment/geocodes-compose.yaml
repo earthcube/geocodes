@@ -1,7 +1,8 @@
 version: '3'
 networks:
   traefik_proxy:
-#    external: true
+    external: true
+
 services:
   # the base routes:
   # geocodes /
