@@ -22,7 +22,7 @@ services:
 
   vue-services:
     image: nsfearthcube/ec_facets_api_nodejs:latest
-    profiles: ["geocodes"]
+#    profiles: ["geocodes"]
     #build: ./server
     restart: unless-stopped
     environment:
@@ -58,7 +58,7 @@ services:
 
   vue-client:
     image: nsfearthcube/ec_facets_client:latest
-    profiles: ["geocodes"]
+#    profiles: ["geocodes"]
     restart: unless-stopped
     #build: ./client
     environment:

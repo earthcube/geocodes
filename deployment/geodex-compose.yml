@@ -8,7 +8,7 @@ services:
 
   geodexclient:
     image: fils/grow-general:latest
-    profiles: ["geodex"]
+#    profiles: ["geodex"]
     restart: unless-stopped
     environment:
       - S3ADDRESS=s3system:9000
@@ -42,7 +42,7 @@ services:
 
   geodexapi:
     image: fils/grow-general:latest
-    profiles: ["geodex"]
+#    profiles: ["geodex"]
     restart: unless-stopped
     environment:
       - S3ADDRESS=s3system:9000
