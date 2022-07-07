@@ -188,4 +188,4 @@ services:
     environment:
       - SERVICE_PORTS=9222
     networks:
-      - traefik_default
+      - traefik_proxy
