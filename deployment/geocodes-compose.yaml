@@ -87,7 +87,7 @@ services:
       - traefik_proxy
   notebook-proxy:
     image: nsfearthcube/mknb:latest
-    profiles: ["geocodes"]
+#    profiles: ["geocodes"]
     restart: unless-stopped
     #build: ./client
     environment:
