@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# https://dockerswarm.rocks/traefik/
 helpFunction()
 {
    echo "setup a base portainer and traefik command line"
@@ -31,6 +31,7 @@ docker network create traefik_proxy
 docker volume create traefik_proxy
 echo $detached
 
+# uses swarm :
 if [ $detached ]
   then
     docker compose -p base --env-file $envfile  -f base-machine-compose.yaml  up -d

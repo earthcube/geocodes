@@ -25,43 +25,7 @@ networks:
 services:
   ## traefik is now in the base-machine-compose.yaml
   ## this allows portainer to be proxied, and have an SSL certificate.
-#  traefik:
-#    image: traefik:v2.0.2
-#    container_name: traefik
-#    restart: unless-stopped
-#    security_opt:
-#      - no-new-privileges:true
-#    networks:
-#      - traefik-proxy
-#    ports:
-#      - 80:80
-#      - 443:443
-#    volumes:
-#      - /etc/localtime:/etc/localtime:ro
-#      - /var/run/docker.sock:/var/run/docker.sock:ro
-##      - ./traefik-data/logs:/logs
-##      -  ./traefik-data/traefik.yml:/traefik.yml:ro
-##      - ./traefik-data/acme/acme.json:/acme.json
-#      -  logs:/logs
-#      -  traefik.yml:/traefik.yml:ro
-##      - ${GLEANER_TRAEFIK}/acme/acme.json:/acme.json
-#    labels:
-#      - "traefik.enable=true"
-#      - "traefik.http.routers.traefik.entrypoints=http"
-#      - "traefik.http.routers.traefik.rule=Host(`${GLEANER_ADMIN_DOMAIN}`)"
-##      - "traefik.http.middlewares.traefik-auth.basicauth.users=`${TRAEFIK_AUTH}`"
-#      - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
-#      - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
-#      - "traefik.http.routers.traefik-secure.entrypoints=https"
-#      - "traefik.http.routers.traefik-secure.rule=Host(`${GLEANER_ADMIN_DOMAIN}`)"
-#      - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
-#      - "traefik.http.routers.traefik-secure.tls=true"
-#      - "traefik.http.routers.traefik-secure.tls.certresolver=httpresolver"
-#      - "traefik.http.routers.traefik-secure.service=api@internal"
-#      - "--certificatesresolvers.httpresolver.acme.tlschallenge=true"
-#      #- "--certificatesresolvers.httpresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
-#      - "--certificatesresolvers.httpresolver.acme.email=dwvalentine@ucsd.edu"
-#      - "--certificatesresolvers.httpresolver.acme.storage=`${GLEANER_TRAEFIK}`/acme/acme.json"
+
 
   graph:
     image: nawer/blazegraph
@@ -97,9 +61,9 @@ services:
 
   s3system:
     image: quay.io/minio/minio
-    ports:
-      - 9000:9000
-      - 9001:9001
+#    ports:
+#      - 9000:9000
+#      - 9001:9001
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.s3system.entrypoints=http"
@@ -110,8 +74,8 @@ services:
       - "traefik.http.routers.s3system-secure.rule=Host(`${GLEANER_OSS_DOMAIN}`)"
       - "traefik.http.routers.s3system-secure.tls=true"
       - "traefik.http.routers.s3system-secure.tls.certresolver=httpresolver"
-#      - "traefik.http.routers.s3system-secure.service=s3system"
-#      - "traefik.http.routers.s3system.service=s3system"
+      - "traefik.http.routers.s3system-secure.service=s3system-secure"
+      - "traefik.http.routers.s3system.service=s3system"
       - "traefik.http.services.s3system.loadbalancer.server.port=9000"
       - "traefik.http.routers.s3admin.entrypoints=http"
       - "traefik.http.routers.s3admin.rule=Host(`${GLEANER_OSS_CONSOLE_DOMAIN}`)"
@@ -121,8 +85,8 @@ services:
       - "traefik.http.routers.s3admin-secure.rule=Host(`${GLEANER_OSS_CONSOLE_DOMAIN}`)"
       - "traefik.http.routers.s3admin-secure.tls=true"
       - "traefik.http.routers.s3admin-secure.tls.certresolver=httpresolver"
-#      - "traefik.http.routers.s3admin-secure.service=s3admin"
-#      - "traefik.http.routers.s3admin.service=s3admin"
+      - "traefik.http.routers.s3admin-secure.service=s3admin-secure"
+      - "traefik.http.routers.s3admin.service=s3admin"
       - "traefik.http.services.s3admin.loadbalancer.server.port=9001"
       - "traefik.http.middlewares.s3system-secure.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,POST"
       - "traefik.http.middlewares.s3system-secure.headers.accesscontrolalloworigin=*"
