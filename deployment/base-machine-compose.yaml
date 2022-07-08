@@ -2,6 +2,13 @@ version: '3'
 networks:
   traefik_proxy:
     external: true
+volumes:
+  traefik-data:
+    external: true
+  portainer-data:
+    external: true
+  logs:
+    external: true
 services:
   traefik:
     image: traefik:v2.4
@@ -20,7 +27,8 @@ services:
         published: 443
 #        mode: host
     volumes:
-      - ./traefik-data:/etc/traefik
+#      - ./traefik-data:/etc/traefik
+      - traefik-data:/etc/traefik
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
 #      - ./traefik-data/traefik.yml:/traefik.yml:ro
@@ -56,7 +64,8 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./portainer-data:/data
+#      - ./portainer-data:/data
+      - portainer-data:/data
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.portainer.entrypoints=http"

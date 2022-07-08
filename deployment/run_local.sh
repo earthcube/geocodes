@@ -26,6 +26,9 @@ if [ ! $envfile ]
      envfile=".env"
 fi
 
+docker volume create graph
+docker volume create minio
+
 if [ $detached ]
   then
     docker compose -p geocodes --env-file $envfile  -f geocodes-compose-local.yaml -f services-compose-local.yaml --profile=geocodes up -d

@@ -25,6 +25,8 @@ if [ ! $envfile ]
   then
      envfile=".env"
 fi
+docker volume create graph
+docker volume create minio
 
 if [ $detached ]
   then

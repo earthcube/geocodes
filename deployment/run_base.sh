@@ -27,8 +27,14 @@ fi
 
 ## need to docker (network|volume) ls | grep (traefik_proxy|traefik_proxy) before these calll
 ## or an error will be thrown
-docker network create traefik_proxy
-docker volume create traefik_proxy
+docker network create -d overlay --attachable traefik_proxy
+docker network ls
+
+echo Verify that the traefik_proxy network  SCOPE is swarm
+
+docker volume create traefik_data
+docker volume create portainer_data
+
 echo $detached
 
 # uses swarm :
