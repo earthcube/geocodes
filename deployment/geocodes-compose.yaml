@@ -27,7 +27,7 @@ services:
     #build: ./server
     restart: unless-stopped
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=geocodestest
       - S3ADDRESS=s3system:9000
       - S3BUCKET=sites
       - DOMAIN=https://${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}/
@@ -63,7 +63,7 @@ services:
     restart: unless-stopped
     #build: ./client
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=geocodestest
       - DOMAIN=https://${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}/
     labels:
       - "traefik.enable=true"
