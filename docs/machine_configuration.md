@@ -43,6 +43,5 @@ or other host
 ## How tos needed:
 * LOCAL DNS SETUP
   * editing hosts does not work with letsencrypt. If user has a local name server they control, that might work
-  * 
 * setup a new password for traefik
 * lets encrypt
