@@ -22,7 +22,8 @@ done
 
 if [ ! $envfile ]
   then
-     envfile=".env"
+#     envfile=".env"
+      envfile="portainer.env"
 fi
 
 ## need to docker (network|volume) ls | grep (traefik_proxy|traefik_proxy) before these calll
