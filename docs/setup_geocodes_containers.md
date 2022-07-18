@@ -14,6 +14,7 @@
             * load {myhost}.env
           * Actions: 
             * Click: Deploy This Stack 
+  ![Create Services Stack](./images/create_services.png)
     * Create Geocodes Stack
       * add stack button
         * Name: geocodes
@@ -25,5 +26,6 @@
           * load {myhost}.env
         * Actions:
           * Click: Deploy This Stack
+    ![Create Geocodes Stack](./images/create_geocodes_stack.png)
 
     
