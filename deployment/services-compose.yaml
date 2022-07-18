@@ -29,6 +29,9 @@ services:
 
   graph:
     image: nawer/blazegraph
+# ports needed for setup. Do not expose to world
+    ports:
+      9999:9999
     environment:
       JAVA_XMS: 2g
       JAVA_XMX: 8g
