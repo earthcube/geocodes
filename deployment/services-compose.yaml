@@ -64,8 +64,8 @@ services:
 
   s3system:
     image: quay.io/minio/minio
-#    ports:
-#      - 9000:9000
+    ports:
+      - 9000:9000
 #      - 9001:9001
     labels:
       - "traefik.enable=true"
