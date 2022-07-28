@@ -8,6 +8,7 @@ let's use:
 * ci2 
 
 Testing Matrix
+
 | Tests        | config | s3 Bucket | graph namespace | notes  |
 | -----        | ------ | ----------| -------------------- | --------|
 | GeocodesMeta | ci     | citesting | citesting |   just datasets |
@@ -19,10 +20,12 @@ Testing Matrix
 It also has features to create and manage configurations for gleaner and nabu.
 
 ## Install glcon
+
 * create a directory
   * `cd ~ ; mkdir indexing`
 * download and install:
   * `wget https://github.com/gleanerio/gleaner/releases/download/v3.0.4-dev/glcon-v3.0.4-dev-linux-amd64.tar.gz`
+  * 
 ```    3.0.4-dev/glcon-v3.0.4-dev-linux-amd64.tar.gz
     --2022-07-21 23:04:55--  https://github.com/gleanerio/gleaner/releases/download/v3.0.4-dev/glcon-v3.0.4-dev-linux-amd64.tar.gz
     Resolving github.com (github.com)... 140.82.113.4
@@ -45,6 +48,7 @@ ubuntu@geocodes-dev:~/indexing$ ls
 README.md  docs   glcon-v3.0.4-dev-linux-amd64.tar.gz  scripts
 configs    glcon  schemaorg-current-https.jsonld
 ```
+
 * test
 ```
 ubuntu@geocodes-dev:~/indexing$ ./glcon --help
@@ -86,6 +90,7 @@ Flags:
 
 Use "glcon [command] --help" for more information about a command.
 ```
+
 * Create a configuration for Continuous Integration 
   * `./glcon config init --cfgName ci`
 ```shell
@@ -128,6 +133,7 @@ sourcesSource:
 #  type: yaml
 #  location: gleaner.yaml
 ```
+
   * Generate configs `./glcon config generate --cfgName ci`
 ```shell
 ./glcon config generate --cfgName ci
@@ -138,6 +144,7 @@ make copy of servers.yaml
 Regnerate gleaner
 Regnerate nabu
 ```
+
 * flightest
   * ``` ubuntu@geocodes-dev:~/indexing$ ./glcon gleaner setup --cfgName ci
     2022/07/21 23:42:54 EarthCube Gleaner
@@ -148,6 +155,7 @@ Regnerate nabu
     2022/07/21 23:42:54 Connection issue, make sure the minio server is running and accessible. The specified bucket does not exist.
     ubuntu@geocodes-dev:~/indexing$ 
     ```
+    
 * run batch
   * `./glcon gleaner batch --cfgName ci`
 ```ubuntu@geocodes-dev:~/indexing$ ./glcon gleaner batch --cfgName ci
@@ -194,8 +202,10 @@ Regnerate nabu
     {"file":"/github/workspace/internal/millers/millers.go:84","func":"github.com/gleanerio/gleaner/internal/millers.Millers","level":"info","msg":"Miller end time:2022-07-22 19:16:56.387639969 +0000 UTC m=+3.117994225","time":"2022-07-22T19:16:56Z"}
     {"file":"/github/workspace/internal/millers/millers.go:85","func":"github.com/gleanerio/gleaner/internal/millers.Millers","level":"info","msg":"Miller run time:0.0121029112","time":"2022-07-22T19:16:56Z"}
 ```
+
 * push to graph
   * `./glcon nabu prefix --cfgName ci`
+ 
 ```json lines
 ./glcon nabu prefix --cfgName ci
 INFO[0000] EarthCube Gleaner                            
@@ -211,9 +221,11 @@ check called
 {"file":"/go/pkg/mod/github.com/gleanerio/nabu@v0.0.0-20220223141452-a01fa9352430/internal/sparqlapi/pipeload.go:198","func":"github.com/gleanerio/nabu/internal/sparqlapi.Insert","level":"info","msg":"response Headers: map[Access-Control-Allow-Credentials:[true] Access-Control-Allow-Headers:[Authorization,Origin,Content-Type,Accept] Access-Control-Allow-Origin:[*] Content-Length:[449] Content-Type:[text/html;charset=utf-8] Date:[Fri, 22 Jul 2022 19:23:21 GMT] Server:[Jetty(9.4.z-SNAPSHOT)] Vary:[Origin] X-Frame-Options:[SAMEORIGIN]]","time":"2022-07-22T19:23:21Z"}
 100% |███████████████████████████████████████████████████████| (1/1, 15 it/s)
 ```
+
 * Test in Graph
 `https://graph.geocodes-dev.earthcube.org/blazegraph/#query`
 returns all triples
+
 ```sparql
 select * 
 where {
