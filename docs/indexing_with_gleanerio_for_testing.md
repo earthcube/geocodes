@@ -1,5 +1,19 @@
 
-# What are Gleaner, Nabu and Glcon
+# Loading Data for Testing and Validation
+Goal: Load data from GeocodesMetadata Repository for testing
+
+This will load data into  buckets that is for testing. Aka not in gleaner
+let's use:
+* ci
+* ci2 
+
+Testing Matrix
+| Tests        | config | s3 Bucket | graph namespace | notes  |
+| -----        | ------ | ----------| -------------------- | --------|
+| GeocodesMeta | ci     | citesting | citesting |   just datasets |
+| multiple     | ci2    | citesting2 | citesting2 | two repositories |
+| DoubleLoad   | ci     | citesting | citesting |   Run Nabu a second time to try to load duplicates |
+
 
 `glcon` is a console application that combines the functionality of Gleaner and Nabu into a single application. 
 It also has features to create and manage configurations for gleaner and nabu.
@@ -95,11 +109,11 @@ minio:
   accessKey: worldsbestaccesskey
   secretKey: worldsbestaccesskey
   ssl: true
-  bucket: gleaner # can be overridden with MINIO_BUCKET
+  bucket: citesting # can be overridden with MINIO_BUCKET
 sparql:
-  endpoint: http://localhost/blazegraph/namespace/earthcube/sparql
+  endpoint: https://graph.geocodes-dev.earthcube.org/blazegraph/namespace/earthcube/sparql
 s3:
-  bucket: gleaner # sync with above... can be overridden with MINIO_BUCKET... get's zapped if it's not here.
+  bucket: citesting # sync with above... can be overridden with MINIO_BUCKET... get's zapped if it's not here.
   domain: us-east-1
 
 #headless field in gleaner.summoner
