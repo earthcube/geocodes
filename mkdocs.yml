@@ -1,0 +1,9 @@
+nav:
+  - Home: index.md
+  - Setup:
+      - List of services: stack_machines.md
+      - Base Machine: machine_configuration.md
+      - Services and Geocodes UI: setup_geocodes_containers.md
+  - Testing and Validation: indexing_with_gleanerio_for_testing.md
+  - Production Configuration: creatingProductionConfigs.md
+  - Troubleshooting: troubleshooting.md
