@@ -1,3 +1,4 @@
+site_name: Geocodes Documentation
 nav:
   - Home: index.md
   - Setup:
