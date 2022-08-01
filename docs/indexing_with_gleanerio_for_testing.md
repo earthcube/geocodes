@@ -2,6 +2,9 @@
 # Loading Data for Testing and Validation
 Goal: Load data from GeocodesMetadata Repository for testing
 
+The stories should be on the Geocodes Documentation Wiki.
+https://github.com/earthcube/geocodes_documentation/wiki/DataLoadingValidationStory
+
 This will load data into  buckets that is for testing. Aka not in gleaner
 let's use:
 * ci
@@ -9,11 +12,12 @@ let's use:
 
 Testing Matrix
 
-| Tests        | config | s3 Bucket | graph namespace | notes  |
-| -----        | ------ | ----------| -------------------- | --------|
-| GeocodesMeta | ci     | citesting | citesting |   just datasets |
-| multiple     | ci2    | citesting2 | citesting2 | two repositories |
-| DoubleLoad   | ci     | citesting | citesting |   Run Nabu a second time to try to load duplicates |
+| Tests          | config | s3 Bucket  | graph namespace | notes                                            |
+|----------------| ------ |------------| -------------------- |--------------------------------------------------|
+| ReporitoryMeta | ci     | repotest   | repotest | samples of actual datasets                       |
+| TestingMeta    | ci     | citesting  | citesting | Good Dataset                                     |
+| multiple       | ci2    | citesting2 | citesting2 | two repositories                                 |
+| DoubleLoad     | ci     | citesting  | citesting | Run Nabu a second time to try to load duplicates |
 
 
 `glcon` is a console application that combines the functionality of Gleaner and Nabu into a single application. 
@@ -220,10 +224,13 @@ check called
 {"file":"/go/pkg/mod/github.com/gleanerio/nabu@v0.0.0-20220223141452-a01fa9352430/internal/sparqlapi/pipeload.go:197","func":"github.com/gleanerio/nabu/internal/sparqlapi.Insert","level":"info","msg":"response Status: 200 OK","time":"2022-07-22T19:23:21Z"}
 {"file":"/go/pkg/mod/github.com/gleanerio/nabu@v0.0.0-20220223141452-a01fa9352430/internal/sparqlapi/pipeload.go:198","func":"github.com/gleanerio/nabu/internal/sparqlapi.Insert","level":"info","msg":"response Headers: map[Access-Control-Allow-Credentials:[true] Access-Control-Allow-Headers:[Authorization,Origin,Content-Type,Accept] Access-Control-Allow-Origin:[*] Content-Length:[449] Content-Type:[text/html;charset=utf-8] Date:[Fri, 22 Jul 2022 19:23:21 GMT] Server:[Jetty(9.4.z-SNAPSHOT)] Vary:[Origin] X-Frame-Options:[SAMEORIGIN]]","time":"2022-07-22T19:23:21Z"}
 100% |███████████████████████████████████████████████████████| (1/1, 15 it/s)
+
 ```
 
 * Test in Graph
 `https://graph.geocodes-dev.earthcube.org/blazegraph/#query`
+
+
 returns all triples
 
 ```sparql
@@ -298,3 +305,5 @@ OFFSET 0
     * amgeo
     * bcodmo
     
+## Detailed Testing
+* Need to ses the datavalidaton story: https://github.com/earthcube/geocodes_documentation/wiki/DataLoadingValidationStory
