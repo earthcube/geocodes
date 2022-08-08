@@ -142,6 +142,9 @@ services:
   headless:
     image: chromedp/headless-shell:latest
     restart: unless-stopped
+    deploy:
+      mode: replicated
+      replicas: 3
     labels:
       - "traefik.backend=headlesschrome"
       - "traefik.port=9222"
