@@ -144,7 +144,7 @@ services:
     restart: unless-stopped
     deploy:
       mode: replicated
-      replicas: 3
+      replicas: 1
     labels:
       - "traefik.backend=headlesschrome"
       - "traefik.port=9222"
