@@ -32,3 +32,9 @@ and changed Dockerfile to
 This points out that the production container will need to just access a config.json 
 file from a remote url.. or have it published into the containers
 /public directory.
+
+Headless:
+
+Improving performance: 
+I tried to replicated the headless container, but that make headless queries fail.
+
