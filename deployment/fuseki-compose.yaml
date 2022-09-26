@@ -11,7 +11,9 @@ version: '3'
 # ${GLEANER_TRAEFIK}
 # ${GLEANER_OBJECTS}
 # ${GLEANER_GRAPH}
-
+volumes:
+  graph:
+    external: true
 networks:
   traefik_proxy:
     external: true
