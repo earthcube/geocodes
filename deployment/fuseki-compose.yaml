@@ -1,0 +1,59 @@
+version: '3'
+# initial starting point was gleaner: https://github.com/gleanerio/gleaner/blob/master/deployment/gleaner-DS-traefik.yml
+
+# ${GLEANER_ADMIN_DOMAIN}
+# ${GLEANER_OSS_DOMAIN}
+# ${GLEANER_GRAPH_DOMAIN}
+
+# ${MINIO_ACCESS_KEY}
+# ${MINIO_SECRET_KEY}
+#
+# ${GLEANER_TRAEFIK}
+# ${GLEANER_OBJECTS}
+# ${GLEANER_GRAPH}
+
+networks:
+  traefik_proxy:
+    external: true
+
+services:
+  ## traefik is now in the base-machine-compose.yaml
+  ## this allows portainer to be proxied, and have an SSL certificate.
+
+
+  graph2:
+    image: fils/jena
+# ports needed for setup. Do not expose to world
+    ports:
+      - 3030:3030
+    environment:
+      JAVA_XMS: 2g
+      JAVA_XMX: 8g
+      JAVA_OPTS: -Xmx6g -Xms2g --XX:+UseG1GC
+      ADMIN_PASSWORD: ${FUSEKI_ADMIN_PASSWORD}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.triplestore.entrypoints=http"
+      - "traefik.http.routers.triplestore.rule=Host(`${GLEANER_GRAPH2_DOMAIN}`)"
+      - "traefik.http.middlewares.triplestore-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.triplestore.middlewares=triplestore-https-redirect"
+      - "traefik.http.routers.triplestore-secure.entrypoints=https"
+      - "traefik.http.routers.triplestore-secure.rule=Host(`${GLEANER_GRAPH2_DOMAIN}`)"
+      - "traefik.http.routers.triplestore-secure.tls=true"
+      - "traefik.http.routers.triplestore-secure.tls.certresolver=httpresolver"
+      - "traefik.http.routers.triplestore-secure.service=triplestore"
+      - "traefik.http.middlewares.triplestore-secure.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,POST"
+      - "traefik.http.middlewares.triplestore-secure.headers.accesscontrolalloworigin=*"
+      - "traefik.http.middlewares.triplestore-secure.headers.accesscontrolmaxage=200"
+      - "traefik.http.middlewares.triplestore-secure.headers.addvaryheader=true"
+      - "traefik.http.middlewares.triplestore-secure.headers.accesscontrolallowcredentials=true"
+      - "traefik.http.middlewares.triplestore-secure.headers.accesscontrolallowheaders=Authorization,Origin,Content-Type,Accept"
+      - "traefik.http.middlewares.triplestore-secure.headers.customresponseheaders.Access-Control-Allow-Headers=Authorization,Origin,Content-Type,Accept"
+      - "traefik.http.routers.triplestore-secure.middlewares=triplestore-secure@docker"
+      - "traefik.http.services.triplestore.loadbalancer.server.port=3030"
+      - "traefik.docker.network=traefik_proxy"
+    volumes:
+      - graph:/fuseki/databases/
+    networks:
+      - traefik_proxy
+
