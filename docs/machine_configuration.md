@@ -3,6 +3,7 @@ Container services
 * docker
 * DNS hosting of machine names
 * creating a set of base containers so that we have an http proxy and container user interface
+  * add a headless with a large shared memory ./run_gleaner.sh
 * Adding "Stacks" for services, and geocodes
 
 # setup domain names
@@ -22,8 +23,8 @@ or other host
   * copy env.example, to {myhost}.env
      * modify the file
   * modify the treafik-data/traefik.yml
-     *  lets encrypt, 
-        * set to use dev server while testing
+     *  [lets encrypt](https://doc.traefik.io/traefik/https/acme/), 
+        * (developers) set to use [staging environment](https://letsencrypt.org/docs/staging-environment/) server while testing
 ```    
    acme:
       # using staging for testing/development
@@ -63,7 +64,7 @@ or other host
       09a5d8683cce   traefik:v2.4                    "/entrypoint.sh trae…"   2 minutes ago   Up 2 minutes   0.0.0.0:80->80/tcp, :::80->80/tcp, 0.0.0.0:443->443/tcp, :::443->443/tcp   traefik
       d3e2333ade6f   portainer/portainer-ce:latest   "/portainer"             2 minutes ago   Up 2 minutes   8000/tcp, 9000/tcp, 9443/tcp                                               portainer
 ```
-  * Is network setup correctly
+  * Is network setup correctly?
     * `docker network ls`
 ```      docker network ls
       NETWORK ID     NAME              DRIVER    SCOPE
@@ -74,6 +75,8 @@ or other host
       12c01a2186b0   none              null      local
       u4d4oxfy7olc   traefik_proxy     overlay   swarm
 ```
+NAME:traefik_proxy needs to exist, and be DRIVER:overlay, SCOPE:swarm
+
   * Are volumes available
     * `docker volumes`
 ```     ubuntu@geocodes-dev:~$ docker volume ls
@@ -84,11 +87,12 @@ or other host
       local     traefik_data
 ```
 
-  * available via the web
-    * https://admin.{host}
+### is the base running?
+  * are Traefik and Portainer available via the web?
+    * **Treafik** https://admin.{host}
       * login is admin:iforget
   ![Traefik_admin](./images/traefik_admin.png)
-    * https://portainer.{host}/
+    * **Portainer** https://portainer.{host}/
       * this will ask you to setup and admin password
 ![Portainer](./images/portainer_home.png)
 

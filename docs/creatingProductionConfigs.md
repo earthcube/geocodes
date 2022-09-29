@@ -3,12 +3,38 @@
 This example is using geocodes-dev.earthcube.org
 Should this be an actual production configuration, the names need to be changed to protect the innocent
 
+# Overview
+1. install glcon
+1. create a new configuration directory
+1. edit the local config for the configuration
+1. Generate the configuration files for gleaner and nabu
+1. setup minio
+2. start a screen (adds ability to run long running processes)
+1. run gleaner
+1. run nabu
+
+ 
+## Install glcon
+`ls indexing`
+
+If glcon does not exist
+[Install glcon](install_glcon.md)
 
 ## create a new configuration directory
+`cd indexing`
 `./glcon config init --cfgName geocodes-dev`
 
-# edit the local config for the configuraiton
+See that it is created.
+
+`ls configs/`
+
+`ls configs/geocodes-dev`
+
+note there a only a few files.
+
+# edit the local config for the configuration
 `nano configs/geocodes-dev/localConfig.yaml`
+values need to match your {myhost}env file
 
 ```yaml
 ---
@@ -40,6 +66,8 @@ location: https://docs.google.com/spreadsheets/d/1G7Wylo9dLlq3tmXe8E8lZDFNKFDuoI
 ```
 
 # Generate the configuration files for gleaner and nabu 
+`./glcon config generate --cfgName geocodes-dev`
+
 ```shell
 
 
@@ -57,8 +85,15 @@ Regnerate gleaner
 Regnerate nabu
 ```
 
-# setup minio 
+Check:
+`ls configs/geocodes-dev`
+
+Now there will be at least a 'gleaner', a 'nabu' and a 'nabu_prov' files.
+
+# setup minio
+`./glcon gleaner setup --cfgName geocodes-dev`
 This only needs to be done once
+
 ```shell
 ubuntu@geocodes-dev:~/indexing$ ./glcon gleaner setup --cfgName geocodes-dev
 INFO[0000] EarthCube Gleaner                            
@@ -70,9 +105,10 @@ setup called
 {"file":"/github/workspace/pkg/gleaner.go:78","func":"github.com/gleanerio/gleaner/pkg.Setup","level":"info","msg":"Buckets generated.  Object store should be ready for runs","time":"2022-07-28T17:32:51Z"}
 ```
 
-# run gleaner
+# start a screen
 Since this is a long running process, it is suggested that this be done in `screen`
-Notes: 
+
+## Notes: 
 To create a 'named' screen named gleaner 
 
 `screen -S gleaner`
@@ -102,6 +138,13 @@ ubuntu@geocodes-dev:~/indexing$ screen -ls
 There is a screen on:
 	7187.gleaner	(07/28/22 17:43:48)   (Attached)
 1 Socket in /run/screen/S-ubuntu.
+```
+
+# run gleaner
+`./glcon gleaner batch --cfgName geocodes-dev`
+
+
+```
 ubuntu@geocodes-dev:~/indexing$ ./glcon gleaner batch --cfgName geocodes-dev
 INFO[0000] EarthCube Gleaner                            
 Using gleaner config file: /home/ubuntu/indexing/configs/geocodes-dev/gleaner
@@ -116,7 +159,22 @@ batch called
 [SNIP]
 ```
 
+You can now detach,
+
+`ctl-a-d`
+
+watch the logs
+`tail -f  logs/gleaner{somedate pattern}log`
+
+to attach to a screen  in this case you use the name
+`screen -r gleaner`
+
+# run nabu
 when gleaner is complete
+
+IF detached,  attach to a screen  in this case you use the name
+`screen -r gleaner`
+
 ` ./glcon nabu prefix --cfgName geocodes-dev`
 
 

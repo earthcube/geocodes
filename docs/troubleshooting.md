@@ -1,5 +1,17 @@
 ## Troubleshooting 
 
+## can't seem to connect;
+are containers running
+docker ps
+
+can you connect to portainer and traefik
+
+traefik: https://admin.{HOST}
+
+portainer: https://portainer.{host}
+
+In traefik, are there errors.
+
 ### Complaints about bad certificate
 Initially, we are using letsencypt dev services. THis message will show until you
 rebuild the base containers with the dev line commented out
