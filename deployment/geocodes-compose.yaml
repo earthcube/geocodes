@@ -22,7 +22,7 @@ services:
 
 
   vue-services:
-    image: nsfearthcube/ec_facets_api_nodejs:deploy-gecodestest
+    image: nsfearthcube/ec_facets_api_nodejs:feature_config_s3path
 #    profiles: ["geocodes"]
     #build: ./server
     restart: unless-stopped
@@ -59,7 +59,7 @@ services:
       - traefik_proxy
 
   vue-client:
-    image: nsfearthcube/ec_facets_client:deploy-gecodestest
+    image: nsfearthcube/ec_facets_client:feature_config_s3path
 #    profiles: ["geocodes"]
     restart: unless-stopped
     #build: ./client
