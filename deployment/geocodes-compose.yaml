@@ -22,13 +22,13 @@ services:
 
 
   vue-services:
-    image: nsfearthcube/ec_facets_api_nodejs:feature_config_s3path
+    image: nsfearthcube/ec_facets_api_nodejs:master
 #    profiles: ["geocodes"]
     #build: ./server
     restart: unless-stopped
     environment:
       - NODE_ENV=geocodestest
-      # -  this overrides the config... we don't want that
+      #  this overrides the config... we don't want that
 #      - S3ADDRESS=s3system:9000
 #      - S3BUCKET=sites
 #      - DOMAIN=https://${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}/
@@ -59,7 +59,7 @@ services:
       - traefik_proxy
 
   vue-client:
-    image: nsfearthcube/ec_facets_client:feature_config_s3path
+    image: nsfearthcube/ec_facets_client:master
 #    profiles: ["geocodes"]
     restart: unless-stopped
     #build: ./client
