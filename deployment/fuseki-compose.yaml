@@ -24,7 +24,7 @@ services:
 
 
   graph2:
-     image: fils/jena:0.0.1
+    image: fils/jena:0.0.1
    # image: secoresearch/fuseki
 # ports needed for setup. Do not expose to world
     ports:
