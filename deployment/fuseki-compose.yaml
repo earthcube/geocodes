@@ -56,7 +56,8 @@ services:
       - "traefik.http.services.triplestore2.loadbalancer.server.port=3030"
       - "traefik.docker.network=traefik_proxy"
     volumes:
-      - graph_2:/fuseki/databases/
+      - graph_2:/fuseki-base/databases
+ #     - graph_2:/fuseki/databases/
     networks:
       - traefik_proxy
 
