@@ -43,3 +43,16 @@ ubuntu@geocodes-dev:~/indexing$ unset MINIO_SECRET_KEY
 ubuntu@geocodes-dev:~/indexing$ unset MINIO_ACCESS_KEY
 ```
 
+
+# Blazegraph jounral truncation:
+
+
+## for a container
+in nawer container, the command is available, but the service needs to be stopped.
+guess running an container with an exec command in a different container might work.
+
+```
+cd /var/lib/blazegraph ;java -jar /usr/bin/blazegraph.jar com.bigdata.journal.CompactJournalUtility blazegraph.jnl blazegraph.jnl.compact
+
+
+```
