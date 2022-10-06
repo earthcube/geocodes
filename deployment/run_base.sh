@@ -36,6 +36,7 @@ echo Verify that the traefik_proxy network  SCOPE is swarm
 docker volume create traefik_data
 docker volume create portainer_data
 docker volume create graph
+docker volume create graph_2
 docker volume create minio
 
 echo $detached

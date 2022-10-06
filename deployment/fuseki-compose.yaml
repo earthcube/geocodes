@@ -12,7 +12,7 @@ version: '3'
 # ${GLEANER_OBJECTS}
 # ${GLEANER_GRAPH}
 volumes:
-  graph:
+  graph_2:
     external: true
 networks:
   traefik_proxy:
