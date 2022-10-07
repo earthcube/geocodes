@@ -56,3 +56,7 @@ cd /var/lib/blazegraph ;java -jar /usr/bin/blazegraph.jar com.bigdata.journal.Co
 
 
 ```
+
+
+## count quads 
+SELECT (COUNT(*) as ?Triples) WHERE {graph ?g {?s ?p ?o}}

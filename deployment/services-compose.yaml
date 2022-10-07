@@ -26,7 +26,9 @@ services:
   ## traefik is now in the base-machine-compose.yaml
   ## this allows portainer to be proxied, and have an SSL certificate.
 
-
+###############
+# graphstore: blasegraph
+###############
   graph:
     image: nawer/blazegraph
 # ports needed for setup. Do not expose to world
@@ -61,7 +63,9 @@ services:
       - graph:/var/lib/blazegraph
     networks:
       - traefik_proxy
-
+#########
+# s3 system, minio
+#########
   s3system:
     image: quay.io/minio/minio
     ports:
@@ -111,7 +115,25 @@ services:
       - traefik_proxy
 #    command: ["server", "/data"]
     command: server /data --console-address ":9001"
+#####
+# minio console container
+#  https://hub.docker.com/r/minio/mc
+# need to figure out where minio config is stored, so we can add a volume, or we add a config to portainer
 
+#  Note:
+#    Above examples run mc against MinIO play environment by default. To run mc against other S3 compatible servers, start the container this way:
+#
+#  docker run -it --entrypoint=/bin/sh minio/mc
+#  then use the mc config command.
+####
+  minioconsole:
+    image: minio/mc
+    networks:
+      - traefik_proxy
+
+### #####
+# UI for graphstore
+#######
   sparqlgui:
     image: erikap/yasgui
     restart: unless-stopped

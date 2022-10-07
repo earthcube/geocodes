@@ -37,6 +37,8 @@ docker volume create traefik_data
 docker volume create portainer_data
 docker volume create graph
 docker volume create graph_2
+docker volume create fuseki_configuration
+docker volume create fuseki_logs
 docker volume create minio
 
 echo $detached

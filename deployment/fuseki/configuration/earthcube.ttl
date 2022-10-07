@@ -63,6 +63,6 @@ ja:MemoryDataset  rdfs:subClassOf  ja:RDFDataset .
 
 :tdb_dataset_readwrite
         rdf:type       tdb2:DatasetTDB2 ;
-        tdb2:location  "/fuseki/databases/earthcube" .
+        tdb2:location  "/fuseki-base/databases/earthcube" .
 
 ja:DatasetRDFS  rdfs:subClassOf  ja:RDFDataset .
