@@ -14,6 +14,8 @@ version: '3'
 volumes:
   graph_2:
     external: true
+  fuseki_configuration:
+    external: true
 networks:
   traefik_proxy:
     external: true
