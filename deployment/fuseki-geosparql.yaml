@@ -12,8 +12,13 @@ version: '3'
 # ${GLEANER_OBJECTS}
 # ${GLEANER_GRAPH}
 volumes:
-  graph_2:
+  graph_3:
     external: true
+  fuseki_configuration2:
+    external: true
+  fuseki_logs:
+    external: true
+
 networks:
   traefik_proxy:
     external: true
@@ -23,16 +28,15 @@ services:
   ## this allows portainer to be proxied, and have an SSL certificate.
 
 
-  graph3:
+  graph2:
     # image: fils/jena:0.0.1
-    image: secoresearch/fuseki
+    image: nsfearthcube/fuseki-geosparql
+    #secoresearch/fuseki
 # ports needed for setup. Do not expose to world
-#    ports:
-#      - 3030:3030
+    ports:
+      - 3030:3030
     environment:
-      JAVA_XMS: 2g
-      JAVA_XMX: 8g
-      JAVA_OPTS: -Xmx8g -Xms2g --XX:+UseG1GC
+      JAVA_OPTS: -Xmx8g -Xms2g
       ADMIN_PASSWORD: ${FUSEKI_ADMIN_PASSWORD}
     labels:
       - "traefik.enable=true"
@@ -56,10 +60,11 @@ services:
       - "traefik.http.services.triplestore2.loadbalancer.server.port=3030"
       - "traefik.docker.network=traefik_proxy"
     volumes:
-      - graph_2:/fuseki-base/databases
+      # fuseki_base: fuseki
+      - graph_3:/fuseki/databases
     # - graph_2:/fuseki/databases
-      - fuseki_configuration:/fuseki-base/configuration
-      - fuseki_logs:/fuseki-base/logs
+      - fuseki_configuration2:/fuseki/configuration
+      - fuseki_logs:/fuseki/logs
  #  config file not available in portainer. might be able to do a config https://docs.portainer.io/v/ce-2.9/user/docker/services/configure#configs
  #     - ./fuseki/configuration/earthcube.tll:/fuseki-base/configuration/earthcube.tll
     networks:
