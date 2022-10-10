@@ -36,7 +36,10 @@ or other host
 ```
      
   * start the base containers 
-    * ./run_base.sh
+    * developer
+      * ./run_base.sh -e {your environment file}
+    * production: this uses the default portainer.env
+      * ./run_base.sh 
 ```      
       ubuntu@geocodes-dev:~/geocodes/deployment$ ./run_base.sh
       Error response from daemon: network with name traefik_proxy already exists

@@ -20,6 +20,7 @@ The stack consists of several stacks, each with their own container.
 * docker
 * docker-compose
 Local Developement:
+DNS at present is important. We route on using Treafik using DNS names.
 * add lines for hosts.geocodes to /etc/hosts
 * mac
   * sudo dscacheutil -flushcache
