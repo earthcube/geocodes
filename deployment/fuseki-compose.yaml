@@ -16,6 +16,8 @@ volumes:
     external: true
   fuseki_configuration:
     external: true
+  fuseki_logs:
+    external: true
 networks:
   traefik_proxy:
     external: true
