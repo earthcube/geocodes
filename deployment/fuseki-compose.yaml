@@ -31,10 +31,11 @@ services:
     # image: fils/jena:0.0.1
     image: secoresearch/fuseki
 # ports needed for setup. Do not expose to world
- #   ports:
- #     - 3030:3030
-    expose:
+    ports:
       - 3030
+ #     - 3030:3030
+#    expose:
+#      - 3030
     environment:
       JAVA_XMS: 2g
       JAVA_XMX: 8g
