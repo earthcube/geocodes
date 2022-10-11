@@ -13,11 +13,11 @@ version: '3'
 # ${GLEANER_GRAPH}
 volumes:
   graph_2:
-    driver: local
-#    external: true
+#    driver: local
+    external: true
   fuseki_configuration:
-    driver: local
-#    external: true
+#    driver: local
+    external: true
   fuseki_logs:
     driver: local
 #    external: true
