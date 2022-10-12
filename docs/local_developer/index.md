@@ -1,18 +1,14 @@
-# Production
+# Local or Developer Stacks
 
-Graph of production
+TODO GRAPH OF STACK... or say see index ;)
 
 
-Machines:
-* [geodex.org](./geodex.org.md)
-* [geocodes.earthcube.org](./geocodes.earthcube.org.md)
+Container Stacks:
+* services
+* geocodes
 
-Builds:
-* Containers
-  * [dockerhub nsfearthcube](https://hub.docker.com/orgs/nsfearthcube/repositories)
-  * actions
-* gitbub
-* pu
+# starting.
+
 
 ## Troubleshooting
 Why is dev different from production
@@ -29,5 +25,5 @@ To see what was last pushed,
 
 I refeched and i get a 404:
 
-https://admin.geodex.org/dashboard/#/
+http://localhost:8080/admin/dashboard/#/
 (admin:password)

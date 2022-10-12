@@ -31,7 +31,7 @@ docker volume create minio
 
 if [ $detached ]
   then
-    docker compose -p geocodes --env-file $envfile  -f geocodes-compose-local.yaml -f services-compose-local.yaml --profile=geocodes up -d
+    docker compose -p geocodes --env-file $envfile  -f geocodes-compose-local.yaml -f services-compose-local.yaml  up -d
   else
-    docker compose -p geocodes --env-file $envfile  -f geocodes-compose-local.yaml -f services-compose-local.yaml  --profile=geocodes up
+    docker compose -p geocodes --env-file $envfile  -f geocodes-compose-local.yaml -f services-compose-local.yaml   up
 fi

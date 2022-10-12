@@ -18,7 +18,7 @@ The docker container uses
 
 this calls
 
-`ue-cli-service build`
+`vue-cli-service build`
 
 Which run NODE_ENV production
 

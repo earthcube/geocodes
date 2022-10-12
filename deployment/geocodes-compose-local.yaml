@@ -19,7 +19,6 @@ services:
 
   vue-services:
     image: nsfearthcube/ec_facets_api_nodejs:latest
-    profiles: ["geocodes"]
     #build: ./server
     restart: unless-stopped
     environment:
@@ -56,7 +55,6 @@ services:
 
   vue-client:
     image: nsfearthcube/ec_facets_client:latest
-#    profiles: ["geocodes"]
     restart: unless-stopped
     #build: ./client
     environment:
@@ -85,7 +83,6 @@ services:
       - traefik_proxy
   notebook-proxy:
     image: nsfearthcube/mknb:latest
-#    profiles: ["geocodes"]
     restart: unless-stopped
     #build: ./client
     environment:

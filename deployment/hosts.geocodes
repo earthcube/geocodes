@@ -1,4 +1,5 @@
-# list of CNAMES for geocodes-dev.earthcube.org
+# list of CNAMES for {HOST} eg geocodes-dev.earthcube.org
+## UPDATE docs/stack_machines.md if you update this
 portainer
 admin
 minioadmin

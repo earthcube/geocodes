@@ -4,21 +4,32 @@ Table of Contents here
 
 
 ### Overview:
-* [configure a base server](./machine_configuration.md)
-    * docker
-    * git clone https://github.com/earthcube/geocodes.git
-    * cd geocodes/deployment
-    * setup domain names
-    * create .env file
-    * add  (traefik and portainer ) build-machine-compose.yaml
-    * (add headless with larger shared memory) ./run_gleaner.sh   
-* [Use portainer to setup geocodes ](./setup_geocodes_containers.md)
-    * add services-compose.yaml
-    * add gecodes-compose.yaml
+* Needs prior to starting
+  * ALL
+    * Docker, v2+ `docker compose --help` needs to show the -p --project flag 
+  * Production
+    * YOU NEED SETUP DNS.  setup [DNS names for the aliases](../deployment/hosts.geocodes) 
+      * so the treafik routing will work
+  * Local(Tutorial)/Development
+    * TODO: there are compose-local.yaml configurations 
+* CONTAINERS
+  * [configure a base server](./machine_configuration.md)
+      * docker
+      * git clone https://github.com/earthcube/geocodes.git
+      * cd geocodes/deployment
+      * setup domain names
+      * create .env file
+      * add  (traefik and portainer ) build-machine-compose.yaml
+      * (add headless with larger shared memory) ./run_gleaner.sh   
+  * [Use portainer to setup geocodes ](./setup_geocodes_containers.md)
+      * add services-compose.yaml
+      * add gecodes-compose.yaml
 
-* [Create a 'Production' config](./creatingProductionConfigs.md)
-
-* [Testing](indexing_with_gleanerio_for_testing.md(./))
+* Data Loading
+  * [Create a  'Production' config](./creatingProductionConfigs.md)
+  * [Testing](indexing_with_gleanerio_for_testing.md(./))
+  * [Ingest]()
+* [Troubleshooting](troubleshooting.md)
 
 ~~~mermaid
 flowchart TB

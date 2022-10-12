@@ -31,6 +31,11 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik-data:/etc/traefik
+      #      - ./traefik-data/traefik.yml:/traefik.yml:ro
+      # issues with acme.json being created as  directory
+      #      - ./traefik-data/acme/acme.json:/acme.json
+      #      - ./traefik-data/acme:/etc/traefik/acme/
 #      - ./traefik-data/logs:/logs
 #      -  ./traefik-data/traefik.yml:/traefik.yml:ro
 #      - ./traefik-data/acme/acme.json:/acme.json
@@ -40,12 +45,19 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.entrypoints=http"
-      - "traefik.http.routers.traefik.rule=Host(`${GLEANER_ADMIN_DOMAIN}`)"
+#      - "traefik.http.routers.traefik.rule=Host(`${GLEANER_ADMIN_DOMAIN}`)"
+      - "traefik.http.routers.traefik.rule=Host(`${HOST}`) && PathPrefix(`/admin`)"
       - "traefik.http.middlewares.traefik-auth.basicauth.users=`${TRAEFIK_AUTH}`"
+# uses http, since it is local
+      - "traefik.http.middlewares.traefik_prefix.StripPrefix.prefixes=/admin"
+      - "traefik.http.routers.traefik.middlewares=traefik_prefix"
 #      - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
 #      - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
 #      - "traefik.http.routers.traefik-secure.entrypoints=https"
-#      - "traefik.http.routers.traefik-secure.rule=Host(`${GLEANER_ADMIN_DOMAIN}`)"
+###      - "traefik.http.routers.traefik-secure.rule=Host(`${GLEANER_ADMIN_DOMAIN}`)"
+#      - "traefik.http.routers.traefik-secure.rule=Host(`${HOST}`) && PathPrefix(`/admin`)"
+####  https, if it gets setup with https
+#      - "traefik.http.routers.traefik-secure.middlewares=traefik_prefix"
 #      - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
 #      - "traefik.http.routers.traefik-secure.tls=true"
 #      - "traefik.http.routers.traefik-secure.tls.certresolver=httpresolver"
@@ -64,11 +76,20 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.triplestore.entrypoints=http"
-      - "traefik.http.routers.triplestore.rule=Host(`${GLEANER_GRAPH_DOMAIN}`)"
+#      - "traefik.http.routers.triplestore.rule=Host(`${GLEANER_GRAPH_DOMAIN}`)"
+      - "traefik.http.routers.triplestore.rule=Host(`${HOST}`) && PathPrefix(`/blazegraph`)"
+# uses http, since it is local
+      - "traefik.http.middlewares.triplestore_prefix.StripPrefix.prefixes=/blazegraph"
+      - "traefik.http.routers.triplestore.middlewares=triplestore_prefix"
+
 #      - "traefik.http.middlewares.triplestore-https-redirect.redirectscheme.scheme=https"
 #      - "traefik.http.routers.triplestore.middlewares=triplestore-https-redirect"
 #      - "traefik.http.routers.triplestore-secure.entrypoints=https"
-#      - "traefik.http.routers.triplestore-secure.rule=Host(`${GLEANER_GRAPH_DOMAIN}`)"
+###      - "traefik.http.routers.triplestore-secure.rule=Host(`${GLEANER_GRAPH_DOMAIN}`)"
+#      - "traefik.http.routers.triplestore-secure.rule=Host(`${HOST}`) && PathPrefix(`/blazegraph`)"
+## # uses https,
+#      - "traefik.http.routers.triplestore-secure.middlewares=triplestore_prefix"
+
 #      - "traefik.http.routers.triplestore-secure.tls=true"
 #      - "traefik.http.routers.triplestore-secure.tls.certresolver=httpresolver"
 #      - "traefik.http.routers.triplestore-secure.service=triplestore"
@@ -95,21 +116,35 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.s3system.entrypoints=http"
-      - "traefik.http.routers.s3system.rule=Host(`${GLEANER_OSS_DOMAIN}`)"
-#      - "traefik.http.middlewares.s3system-https-redirect.redirectscheme.scheme=https"
+#      - "traefik.http.routers.s3system.rule=Host(`${GLEANER_OSS_DOMAIN}`)"
+      - "traefik.http.routers.s3system.rule=Host(`${HOST}`) && PathPrefix(`/oss`)"
+# uses http, since it is local
+      - "traefik.http.middlewares.s3system_prefix.StripPrefix.prefixes=/oss"
+      - "traefik.http.routers.s3system.middlewares=s3system_prefix"
+#      - "traefik.htt p.middlewares.s3system-https-redirect.redirectscheme.scheme=https"
 #      - "traefik.http.routers.s3system.middlewares=s3system-https-redirect"
 #      - "traefik.http.routers.s3system-secure.entrypoints=https"
-#      - "traefik.http.routers.s3system-secure.rule=Host(`${GLEANER_OSS_DOMAIN}`)"
+###      - "traefik.http.routers.s3system-secure.rule=Host(`${GLEANER_OSS_DOMAIN}`)"
+#      - "traefik.http.routers.s3system-secure.rule=Host(`${HOST}`) && PathPrefix(`/oss`)"
+#      - "traefik.http.routers.s3system-secure.middlewares=s3system_prefix"
+
 #      - "traefik.http.routers.s3system-secure.tls=true"
 #      - "traefik.http.routers.s3system-secure.tls.certresolver=httpresolver"
 #      - "traefik.http.routers.s3system-secure.service=s3system"
       - "traefik.http.services.s3system.loadbalancer.server.port=9000"
       - "traefik.http.routers.s3admin.entrypoints=http"
-      - "traefik.http.routers.s3admin.rule=Host(`${GLEANER_OSS_CONSOLE_DOMAIN}`)"
+#      - "traefik.http.routers.s3admin.rule=Host(`${GLEANER_OSS_CONSOLE_DOMAIN}`)"
+      - "traefik.http.routers.s3admin.rule=Host(`${HOST}`) && PathPrefix(`/minioadmin`)"
+# uses http, since it is local
+      - "traefik.http.middlewares.s3admin_prefix.StripPrefix.prefixes=/minioadmin"
+      - "traefik.http.routers.s3admin.middlewares=s3admin_prefix"
+
 #      - "traefik.http.middlewares.s3admin-https-redirect.redirectscheme.scheme=https"
 #      - "traefik.http.routers.s3admin.middlewares=s3admin-https-redirect"
 #      - "traefik.http.routers.s3admin-secure.entrypoints=https"
-#      - "traefik.http.routers.s3admin-secure.rule=Host(`${GLEANER_OSS_CONSOLE_DOMAIN}`)"
+###      - "traefik.http.routers.s3admin-secure.rule=Host(`${GLEANER_OSS_CONSOLE_DOMAIN}`)"
+#      - "traefik.http.routers.s3admin-secure.rule=Host(`${HOST}`) && PathPrefix(`/minioadmin`)"
+#      - "traefik.http.routers.s3admin-secure.middlewares=s3admin_prefix"
 #      - "traefik.http.routers.s3admin-secure.tls=true"
 #      - "traefik.http.routers.s3admin-secure.tls.certresolver=httpresolver"
 #      - "traefik.http.routers.s3admin-secure.service=s3admin"
@@ -144,14 +179,21 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.sparqlgui.entrypoints=http"
       - "traefik.http.routers.sparqlgui.priority=92"
-      - "traefik.http.routers.sparqlgui.rule=Host(`${GLEANER_SPARQLGUI_DOMAIN}` )  "
+#      - "traefik.http.routers.sparqlgui.rule=Host(`${GLEANER_SPARQLGUI_DOMAIN}` )  "
+      - "traefik.http.routers.sparqlgui.rule=Host(`${HOST}` )   && PathPrefix(`/sparqlgui`)"
+# uses http, since it is local
+      - "traefik.http.middlewares.sparqlgui_prefix.StripPrefix.prefixes=/sparqlgui"
+      - "traefik.http.routers.sparqlgui.middlewares=sparqlgui_prefix"
+
       - "traefik.http.routers.sparqlgui.service=sparqlgui"
 #      - "traefik.http.middlewares.sparqlgui-https-redirect.redirectscheme.scheme=https"
 #      - "traefik.http.routers.sparqlgui.middlewares=sparqlgui-https-redirect"
 #      - "traefik.http.routers.sparqlgui-secure.priority=94"
 #      - "traefik.http.routers.sparqlgui-secure.entrypoints=https"
-#      - "traefik.http.routers.sparqlgui-secure.rule=Host(`${GLEANER_SPARQLGUI_DOMAIN}`) "
-#      - "traefik.http.routers.sparqlgui-secure.tls=true"
+###      - "traefik.http.routers.sparqlgui-secure.rule=Host(`${GLEANER_SPARQLGUI_DOMAIN}`) "
+#      - "traefik.http.routers.sparqlgui-secure.rule=Host(`${HOST}`)  && PathPrefix(`/sparqlgui`)"
+#      - "traefik.http.routers.sparqlgui.middlewares=sparqlgui_prefix"
+      #      - "traefik.http.routers.sparqlgui-secure.tls=true"
 #      - "traefik.http.routers.sparqlgui-secure.tls.certresolver=httpresolver"
 #      - "traefik.http.routers.sparqlgui-secure.service=sparqlgui"
       - "traefik.http.services.sparqlgui.loadbalancer.server.port=80"
@@ -160,7 +202,6 @@ services:
       - "traefik.http.middlewares.sparqlgui.headers.accesscontrolalloworigin=*"
       - "traefik.http.middlewares.sparqlgui.headers.accesscontrolmaxage=100"
       - "traefik.http.middlewares.sparqlgui.headers.addvaryheader=true"
-
     networks:
       - traefik_proxy
 networks:
