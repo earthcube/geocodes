@@ -1,16 +1,10 @@
 version: '3'
 # initial starting point was gleaner: https://github.com/gleanerio/gleaner/blob/master/deployment/gleaner-DS-traefik.yml
 
-# ${GLEANER_ADMIN_DOMAIN}
-# ${GLEANER_OSS_DOMAIN}
-# ${GLEANER_GRAPH_DOMAIN}
+#  Fuseki service uses a CONFIG in portainer.
+#  * upload the earthcube.ttl as a config file
+#  * open the graph2 seervice, add the config to: /fuseki-base/configuration/earthcube.ttl
 
-# ${MINIO_ACCESS_KEY}
-# ${MINIO_SECRET_KEY}
-#
-# ${GLEANER_TRAEFIK}
-# ${GLEANER_OBJECTS}
-# ${GLEANER_GRAPH}
 volumes:
   graph_2:
 #    driver: local
@@ -68,6 +62,9 @@ services:
     volumes:
       - graph_2:/fuseki-base/databases
     # - graph_2:/fuseki/databases
+#  Fuseki service uses a CONFIG in portainer.
+#  * upload the earthcube.ttl as a config file
+#  * open the graph2 seervice, add the config to: /fuseki-base/configuration/earthcube.ttl
       - fuseki_configuration:/fuseki-base/configuration/
       #-  logs saying not writable... mounted in a different version of container running as different user...
       #- fuseki_logs:/fuseki-base/logs/
