@@ -57,6 +57,9 @@ services:
     image: portainer/portainer-ce:latest
     container_name: portainer
     restart: unless-stopped
+    ports:
+      - target: 9443
+        published: 9443
     security_opt:
       - no-new-privileges:true
     networks:
