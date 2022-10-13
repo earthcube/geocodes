@@ -1,0 +1,61 @@
+@prefix :        <http://localhost/jena_example/#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix tdb:     <http://jena.hpl.hp.com/2008/tdb#> .
+@prefix text:    <http://jena.apache.org/text#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix fuseki:  <http://jena.apache.org/fuseki#> .
+@prefix schema:  <http://schema.org/> .
+
+[] rdf:type fuseki:Server ;
+   fuseki:services (
+     :myservice
+   ) .
+
+:myservice rdf:type fuseki:Service ;
+    fuseki:name                       "earthcube" ;     # e.g : `s-query --service=http://localhost:3030/myds "select * ..."`
+    fuseki:serviceQuery               "query" ;    # SPARQL query service
+    fuseki:serviceUpdate              "update" ;   # SPARQL update service
+    fuseki:serviceUpload              "upload" ;   # Non-SPARQL upload service
+    fuseki:serviceReadWriteGraphStore "data" ;     # SPARQL Graph store protocol (read and write)
+    fuseki:dataset                    :text_dataset ;
+    .
+
+## ---------------------------------------------------------------
+
+# A TextDataset is a regular dataset with a text index.
+:text_dataset rdf:type     text:TextDataset ;
+    text:dataset   :mydataset ; # <-- replace `:my_dataset` with the desired URI
+    text:index     <#indexLucene> ;
+.
+
+# A TDB dataset used for RDF storage
+:mydataset rdf:type      tdb:DatasetTDB ; # <-- replace `:my_dataset` with the desired URI - as above
+    tdb:location "ECDB" ;
+    tdb:unionDefaultGraph true ; # Optional
+.
+
+# Text index description
+<#indexLucene> a text:TextIndexLucene ;
+    text:directory <file:./ecdata> ;  # <-- replace `<file:path>` with your path (e.g., `<file:/.../fuseki/run/databases/MY_INDEX>`)
+    text:entityMap <#entMap> ;
+    text:storeValues true ;
+    text:analyzer [ a text:StandardAnalyzer ] ;
+    text:queryAnalyzer [ a text:KeywordAnalyzer ] ;
+    text:queryParser text:AnalyzingQueryParser ;
+ #   text:defineAnalyzers [ . . . ] ;
+    text:multilingualSupport true ; # optional
+.
+# Entity map (see documentation for other options)
+<#entMap> a text:EntityMap ;
+    text:defaultField     "desc" ;
+    text:entityField      "uri" ;
+    text:uidField         "uid" ;
+    text:langField        "lang" ;
+    text:graphField       "graph" ;
+    text:map (
+        [ text:field "label" ;
+          text:predicate schema:text]
+        [ text:field "desc" ;
+          text:predicate schema:description]
+    ) .

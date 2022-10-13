@@ -1,10 +1,53 @@
 ##  Setup Machine:
-Container services
-* docker
-* **DNS hosting of machine names**
-* creating a set of base containers so that we have an http proxy and container user interface
-  * add a headless with a large shared memory ./run_gleaner.sh
-* Adding "Stacks" for services, and geocodes
+
+# services:
+This is what will be needed to create a production server
+* base virtual machine for containers
+* ability to request DNS,
+
+### Steps:
+
+* create a machine in openstack (if production)
+  * select size
+  * associate floating IP
+    * ask for DNS for that ip to be configured with needed names
+* ssh to machine. You do not need to have the DNS's to install the software. But it will be needed.
+  * update apt
+    * `sudo apt update`
+  * update base software
+    * `sudo apt upgrade`
+  * install docker
+    * `sudo apt install docker.io`
+  * reboot
+    * `sudo reboot now`
+  * verify proper base configuration
+    * docker compose --help shows a -p flag
+* clone geocodes
+* `git clone https://github.com/earthcube/geocodes.git`
+* configure a base server
+
+
+----
+
+
+## create a machine in openstack
+#### Suggested size:
+SDSC Openstack:
+- ubuntu 22
+- 500 gig
+  - m1.2xlarge (8 CPU, 32 gig)
+  - network: earthcube
+-  Security groups:
+  - remote ssh
+  - geocodes
+- Keypair: earthcube
+
+
+ **Notes:**
+  Portainer, minio not needed, we are proxying on 80 and 443
+
+**Associate a Public IP.**
+After the machine is created, we can change the IP to the one associated with geocodes.earthcube.org
 
 # setup domain names
 It is ESSENTIAL for PRODUCTION that the names are defined in a DNS. This allows for https for all services
@@ -21,9 +64,9 @@ entries needed.
 [Local testing and development](local_developer/index.md) can be using  the local compose configuration. This use http, and 
 local ports for services that cannot be proxied
 
+## ssh to machine and verify
 
-## create a machine in openstack 
-or other host
+ssh -i ~/.ssh/earthcube.pem ubuntu@{public IP}
 
 
 
