@@ -3,7 +3,7 @@
 helpFunction()
 {
    echo "setup a base portainer and traefik command line"
-   echo "Usage: $0 -e envfile  -r  -d "
+   echo "Usage: $0 -e envfile  -u"
    echo -e "\t-e envfile to use"
    echo -e "\t-u DO NOT RUN detached"
       echo -e "\tMAC: You may have to add /tmp/gleaner to the file sharing preferences in the docker app"
@@ -22,8 +22,16 @@ done
 
 if [ ! $envfile ]
   then
-#     envfile=".env"
-      envfile="portainer.env"
+     envfile=".env"
+#      envfile="portainer.env"
+fi
+
+if [ -f $envfile ]
+  then 
+    echo "environment file exists"
+  else 
+    echo "missing environment file pass -e file   or cp portainer.env .env" 
+    exit 1 
 fi
 
 ## need to docker (network|volume) ls | grep (traefik_proxy|traefik_proxy) before these calll
@@ -44,9 +52,9 @@ docker volume create minio
 echo $detached
 
 # uses swarm :
-if [ $detached ]
+if [ "$detached" = true  ]
   then
-    docker compose -p base --env-file $envfile  -f base-machine-compose.yaml  up -d
+    docker compose -p base --env-file $envfile  -f base-machine-compose.yaml  up  -d
   else
-    docker compose -p base --env-file $envfile  -f base-machine-compose.yaml  up
+    docker compose -p base --env-file $envfile  -f base-machine-compose.yaml  up 
 fi
