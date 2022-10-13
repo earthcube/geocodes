@@ -56,7 +56,8 @@ SDSC Openstack:
 
 
  **Notes:**
-  Portainer, minio not needed, we are proxying on 80 and 443
+ minio not needed, we are proxying on 80 and 443
+ Portainer needed temporarily if you want to play a bit pre-DNS.
 
 **Associate a Public IP.**
 
