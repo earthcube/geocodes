@@ -7,7 +7,6 @@ minioadmin.geocodes-dev cname   geocodes-dev.earthcube.org.
 oss.geocodes-dev        cname   geocodes-dev.earthcube.org.
 graph.geocodes-dev      cname   geocodes-dev.earthcube.org.
 geocodes.geocodes-dev   cname   geocodes-dev.earthcube.org.
-admin.geocodes-dev      cname   geocodes-dev.earthcube.org.
 sparqlui.geocodes-dev   cname   geocodes-dev.earthcube.org.
 graph2.geocodes-dev   cname   geocodes-dev.earthcube.org.
 
