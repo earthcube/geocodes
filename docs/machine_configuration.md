@@ -16,6 +16,7 @@ This is what will be needed to create a production server
     * `sudo apt update`
   * update base software
     * `sudo apt upgrade`
+
   * install docker
     *   **use these docker install** [instruction](https://docs.docker.com/engine/install/ubuntu/)
   * add ubuntu to docker group
@@ -89,7 +90,7 @@ ssh -i ~/.ssh/earthcube.pem ubuntu@{public IP}
     *   **use these docker install** [instruction](https://docs.docker.com/engine/install/ubuntu/)
   * git clone https://github.com/earthcube/geocodes.git
   * cd geocodes/deployment
-  * copy env.example, to {myhost}.env
+  * copy portainer.env or env.example, to .env
      * modify the file
   * modify the treafik-data/traefik.yml
      *  [lets encrypt](https://doc.traefik.io/traefik/https/acme/), 
@@ -107,8 +108,8 @@ ssh -i ~/.ssh/earthcube.pem ubuntu@{public IP}
   * start the base containers 
     * new machine or developer
       * `./run_base.sh -e {your environment file}`
-    * production: this uses the default portainer.env
-      * ./run_base.sh -e {production_config_name.env}
+    * production: this uses the default .env (cp  portainer.env .env)
+      * ./run_base.sh 
 ```      
       ubuntu@geocodes-dev:~/geocodes/deployment$ ./run_base.sh -e geocodes-1.env
       Error response from daemon: network with name traefik_proxy already exists
