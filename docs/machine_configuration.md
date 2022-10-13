@@ -17,14 +17,25 @@ This is what will be needed to create a production server
   * update base software
     * `sudo apt upgrade`
   * install docker
-    * `sudo apt install docker.io`
+    *   **use these docker install** [instruction](https://docs.docker.com/engine/install/ubuntu/)
+  * add ubuntu to docker group
+    * `sudo groupadd docker`
+    * `sudo usermod -aG docker ubuntu`
   * reboot
     * `sudo reboot now`
+  * init docker swarm
+    * `docker swarm init`
   * verify proper base configuration
     * docker compose --help shows a -p flag
+* SNAPSHOT and creaate an image
+  * 
 * clone geocodes
 * `git clone https://github.com/earthcube/geocodes.git`
 * configure a base server
+* take a break and wait for the DNS entries.
+  * if you cant wait you can go to the no cert port 
+    * https://{HOST}}:9443/
+    * use chrome, click advanced, and go to the port.
 
 
 ----
@@ -40,6 +51,7 @@ SDSC Openstack:
 -  Security groups:
   - remote ssh
   - geocodes
+  - portainer
 - Keypair: earthcube
 
 
@@ -47,6 +59,7 @@ SDSC Openstack:
   Portainer, minio not needed, we are proxying on 80 and 443
 
 **Associate a Public IP.**
+
 After the machine is created, we can change the IP to the one associated with geocodes.earthcube.org
 
 # setup domain names
@@ -72,6 +85,7 @@ ssh -i ~/.ssh/earthcube.pem ubuntu@{public IP}
 
 ## configure a base server
   * add docker, git
+    *   **use these docker install** [instruction](https://docs.docker.com/engine/install/ubuntu/)
   * git clone https://github.com/earthcube/geocodes.git
   * cd geocodes/deployment
   * copy env.example, to {myhost}.env
@@ -90,12 +104,12 @@ ssh -i ~/.ssh/earthcube.pem ubuntu@{public IP}
 ```
      
   * start the base containers 
-    * developer
-      * ./run_base.sh -e {your environment file}
+    * new machine or developer
+      * `./run_base.sh -e {your environment file}`
     * production: this uses the default portainer.env
-      * ./run_base.sh 
+      * ./run_base.sh -e {production_config_name.env}
 ```      
-      ubuntu@geocodes-dev:~/geocodes/deployment$ ./run_base.sh
+      ubuntu@geocodes-dev:~/geocodes/deployment$ ./run_base.sh -e geocodes-1.env
       Error response from daemon: network with name traefik_proxy already exists
       NETWORK ID     NAME              DRIVER    SCOPE
       ad6cbce4ec60   bridge            bridge    local
