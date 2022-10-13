@@ -6,20 +6,21 @@ This is a list of the stack containers.
 REPEAT, so to setup a test machine for production, you need to request DNS.**
 The local stacks are under developement.
 
-| container     | name            | stack             | dev path | notes                                           
-|---------------|-----------------|-------------------|----------|-------------------------------------------------|
-| traekfik      | admin           | base              |          | http router                                     |
-| portainer     | portainer       | base              |          | container management                            |
-| s3system      | oss, minioadmin | services          |          | s3 store                                        |
-| triplestore   | graph           | services          |          |                                                 |
-| fuseki        | graph2          | fuseki            |          | WILL BE ADDED TO Services to replace triplstore |
-| sparqlgui     | sparqlui        | services          |          | sparql ui                                       |
-| headless      | {none}          | gleaner_via_shell |          | start with ./run_gleaner.sh                     |
-| vue-client    | geocodes        | geocodes          |          | facetsearch ui                                  |
-| vue-services  | geocodes        | geocodes          |          | api ,at geocodes/ec/api                         |
-| notebook-proxy | geocodes        | geocodes          |          | notebook proxy, at geocodes/notebook            |
-| geodexclient  | geodex          | geodex            |          | for harvesting                                  |
-| geodexapi     | api             | geodex            |          | for harvesting                                  |
+| container     | name         | stack             | dev path                           | notes                                           
+|---------------|--------------|-------------------|------------------------------------|-------------------------------------------------|
+| traekfik      | admin.{HOST} | base              | http://localhost:8888/dashboard/#/ | http router                                     |
+| portainer     | portainer.{HOST}    | base              | n/a                                | container management                            |
+| s3system      | oss.{HOST}          | services          | http://localhost:9000              | s3 store                                        |
+| s3system      | minioadmin.{HOST}   | services          | http://localhost:9001              | s3 store                                        |
+| triplestore   | graph.{HOST}        | services          | http://localhost:8888/blazegraph/  |                                                 |
+| fuseki        | graph2.{HOST}       | fuseki            |                                    | WILL BE ADDED TO Services to replace triplstore |
+| sparqlgui     | sparqlui.{HOST}     | services          | http://localhost:8888/sparqlgui    | sparql ui                                       |
+| headless      | {none}       | gleaner_via_shell |                                    | start with ./run_gleaner.sh                     |
+| vue-client    | geocodes.{HOST}     | geocodes          | http://localhost:8888/             | facetsearch ui                                  |
+| vue-services  | geocodes.{HOST}     | geocodes          | http://localhost:8888/ec/api       | api ,at geocodes/ec/api                         |
+| notebook-proxy | geocodes.{HOST}     | geocodes          | http://localhost:8888/notebook           | notebook proxy, at geocodes/notebook            |
+| geodexclient  | geodex.{HOST}       | geodex            | n/a                                | for harvesting                                  |
+| geodexapi     | api.{HOST}          | geodex            | n/a                                | for harvesting                                  |
 
 
 ~~~mermaid

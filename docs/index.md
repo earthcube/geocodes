@@ -3,8 +3,8 @@
 Table of Contents here
 
 
-### Overview:
-* Needs prior to starting
+## Overview:
+### Needs prior to starting
   * ALL
     * Docker, v2+ `docker compose --help` needs to show the -p --project flag 
   * Production
@@ -12,7 +12,7 @@ Table of Contents here
       * so the treafik routing will work
   * Local(Tutorial)/Development
     * TODO: there are compose-local.yaml configurations 
-* CONTAINERS
+### Creeating and managing CONTAINERS
   * [configure a base server](./machine_configuration.md)
       * docker
       * git clone https://github.com/earthcube/geocodes.git
@@ -25,10 +25,11 @@ Table of Contents here
       * add services-compose.yaml
       * add gecodes-compose.yaml
 
-* Data Loading
+### Data Loading
   * [Create a  'Production' config](./creatingProductionConfigs.md)
   * [Testing](indexing_with_gleanerio_for_testing.md(./))
   * [Ingest]()
+### NOTES
 * [Troubleshooting](troubleshooting.md)
 
 ~~~mermaid

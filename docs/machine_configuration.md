@@ -1,16 +1,27 @@
 ##  Setup Machine:
 Container services
 * docker
-* DNS hosting of machine names
+* **DNS hosting of machine names**
 * creating a set of base containers so that we have an http proxy and container user interface
   * add a headless with a large shared memory ./run_gleaner.sh
 * Adding "Stacks" for services, and geocodes
 
 # setup domain names
+It is ESSENTIAL for PRODUCTION that the names are defined in a DNS. This allows for https for all services
+and some services (aka s3/minio) do not play well with a proxy. (Fuseki unknown)
 
    [Machines]( stack_machines.md )
    [Name for remote DNS](../deployment/hosts.geocodes)
+
+You might be able to run production stack using localhost, with these DNS...
+but that mucks with the lets encrypt HTTPS certs... if you control your own DNS, these are the 
+entries needed.
    [Name for local DNS](../deployment/hosts.geocodes-local)
+
+[Local testing and development](local_developer/index.md) can be using  the local compose configuration. This use http, and 
+local ports for services that cannot be proxied
+
+
 ## create a machine in openstack 
 or other host
 
