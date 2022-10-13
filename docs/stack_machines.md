@@ -6,7 +6,7 @@ This is a list of the stack containers.
 REPEAT, so to setup a test machine for production, you need to request DNS.**
 The local stacks are under developement.
 
-| container     | name         | stack             | dev path                           | notes                                           
+| container     | name         | stack             | -local path                    | notes                                           
 |---------------|--------------|-------------------|------------------------------------|-------------------------------------------------|
 | traekfik      | admin.{HOST} | base              | http://localhost:8888/dashboard/#/ | http router                                     |
 | portainer     | portainer.{HOST}    | base              | n/a                                | container management                            |
@@ -18,7 +18,7 @@ The local stacks are under developement.
 | headless      | {none}       | gleaner_via_shell |                                    | start with ./run_gleaner.sh                     |
 | vue-client    | geocodes.{HOST}     | geocodes          | http://localhost:8888/             | facetsearch ui                                  |
 | vue-services  | geocodes.{HOST}     | geocodes          | http://localhost:8888/ec/api       | api ,at geocodes/ec/api                         |
-| notebook-proxy | geocodes.{HOST}     | geocodes          | http://localhost:8888/notebook           | notebook proxy, at geocodes/notebook            |
+| notebook-proxy | geocodes.{HOST}     | geocodes          | http://localhost:8888/notebook     | notebook proxy, at geocodes/notebook            |
 | geodexclient  | geodex.{HOST}       | geodex            | n/a                                | for harvesting                                  |
 | geodexapi     | api.{HOST}          | geodex            | n/a                                | for harvesting                                  |
 

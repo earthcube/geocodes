@@ -6,13 +6,16 @@ Table of Contents here
 ## Overview:
 ### Needs prior to starting
   * ALL
-    * Docker, v2+ `docker compose --help` needs to show the -p --project flag 
+    * Docker, v2+ `docker compose --help` needs to show the -p --project flag
+      * **Known issue** with (at least) Ubuntu default docker package. Install the [official docker package](https://docs.docker.com/engine/install/ubuntu/)
   * Production
     * YOU NEED SETUP DNS.  setup [DNS names for the aliases](../deployment/hosts.geocodes) 
       * so the treafik routing will work
   * Local(Tutorial)/Development
-    * TODO: there are compose-local.yaml configurations 
-### Creeating and managing CONTAINERS
+    * TODO: there are compose-local.yaml configurations. 
+    * The run_local.sh works. There is no portainer for these. all command line.
+    * minio (and maybe others) use ports. [See "-local path " at this page](./stack_machines.md)
+### Creating and managing CONTAINERS
   * [configure a base server](./machine_configuration.md)
       * docker
       * git clone https://github.com/earthcube/geocodes.git
@@ -26,9 +29,11 @@ Table of Contents here
       * add gecodes-compose.yaml
 
 ### Data Loading
-  * [Create a  'Production' config](./creatingProductionConfigs.md)
-  * [Testing](indexing_with_gleanerio_for_testing.md(./))
-  * [Ingest]()
+
+* [Testing](indexing_with_gleanerio_for_testing.md(./))
+* [Create a  'Production' config](./creatingProductionConfigs.md) 
+* [Ingest]
+
 ### NOTES
 * [Troubleshooting](troubleshooting.md)
 
