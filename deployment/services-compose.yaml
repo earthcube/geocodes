@@ -61,6 +61,12 @@ services:
       - "traefik.docker.network=traefik_proxy"
     volumes:
       - graph:/var/lib/blazegraph
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -T 35 http://localhost:9999/blazegraph/#status" ]
+      interval: 2m
+      timeout: 30s
+      retries: 3
+      start_period: 60s
     networks:
       - traefik_proxy
 #########
@@ -128,7 +134,7 @@ services:
 ####
   minioconsole:
     image: minio/mc
-    command: /bin/bash
+    entrypoint: /bin/bash
     networks:
       - traefik_proxy
 
