@@ -62,7 +62,7 @@ services:
     volumes:
       - graph:/var/lib/blazegraph
     healthcheck:
-      test: [ "CMD-SHELL", "wget -T 35 http://localhost:9999/blazegraph/#status" ]
+      test: [ "CMD-SHELL", "wget --no-cache --spider -T 35 http://localhost:9999/blazegraph/#status" ]
       interval: 2m
       timeout: 30s
       retries: 3
