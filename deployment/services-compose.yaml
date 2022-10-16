@@ -76,7 +76,7 @@ services:
     image: quay.io/minio/minio
     ports:
       - 9000:9000
-#      - 9001:9001
+      - 9001:9001
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.s3system.entrypoints=http"
