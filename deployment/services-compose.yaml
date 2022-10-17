@@ -31,8 +31,9 @@ services:
 ###############
   graph:
     image: nawer/blazegraph
-    sysctls:
-      - vm.swappiness=0
+# vm not currently supported. run "sudo sysctl -w vm.swappiness=0"
+#    sysctls:
+#      - vm.swappiness=0
     ulimits:
       nproc: 65535
       nofile:
