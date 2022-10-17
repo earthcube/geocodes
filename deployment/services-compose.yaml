@@ -120,7 +120,7 @@ services:
     networks:
       - traefik_proxy
 #    command: ["server", "/data"]
-    command: server /data --address "${GLEANER_OSS_DOMAIN}:9000" --console-address ":9001"
+    command: server /data --address ":9000" --console-address ":9001"
 
 
 ### #####
