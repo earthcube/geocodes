@@ -9,7 +9,7 @@ Table of Contents here
     * Docker, v2+ `docker compose --help` needs to show the -p --project flag
       * **Known issue** with (at least) Ubuntu default docker package. Install the [official docker package](https://docs.docker.com/engine/install/ubuntu/)
   * Production
-    * YOU NEED SETUP DNS.  setup [DNS names for the aliases](../deployment/hosts.geocodes) 
+    * YOU NEED SETUP DNS.  setup [DNS names for the aliases](https://raw.githubusercontent.com/earthcube/geocodes/main/deployment/hosts.geocodes) 
       * so the treafik routing will work
   * Local(Tutorial)/Development
     * TODO: there are compose-local.yaml configurations. 
