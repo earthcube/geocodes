@@ -31,7 +31,7 @@ Table of Contents here
 ### Data Loading
 
 * [Testing](indexing_with_gleanerio_for_testing.md(./))
-* [Create a  'Production' config](./creatingProductionConfigs.md) 
+* [Create a  'Production' config](production/creatingProductionConfigs.md) 
 * [Ingest]
 
 ### NOTES
