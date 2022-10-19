@@ -1,5 +1,6 @@
 #!/bin/bash
 
+###
 helpFunction()
 {
    echo "run geocodes from command line"
@@ -20,6 +21,14 @@ do
       ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
    esac
 done
+
+echo RUN LOCAL GEOCODES AND GECODE SERVICES STACK
+echo minio at port 9000 minioadmin at port 9001
+echo blazegraph at /blazegraph
+echo treafik at /dashboard and /api
+echo geocodes at: /
+echo geocodes api at /ec/api
+
 
 if [ ! $envfile ]
   then
@@ -45,7 +54,7 @@ docker volume create minio
 
 if [ "$detached" = true ]
   then
-    docker compose -p geocodes --env-file $envfile  -f geocodes-compose-local.yaml -f services-compose-local.yaml  up -d
+    docker compose -p geocodes_dev --env-file $envfile  -f geocodes-compose-local.yaml -f services-compose-local.yaml  up -d
   else
-    docker compose -p geocodes --env-file $envfile  -f geocodes-compose-local.yaml -f services-compose-local.yaml   up
+    docker compose -p geocodes_dev --env-file $envfile  -f geocodes-compose-local.yaml -f services-compose-local.yaml   up
 fi

@@ -11,6 +11,10 @@ helpFunction()
    exit 1 # Exit script after printing help
 }
 
+echo RUN Procuction GEOCODES AND GECODE SERVICES STACK, on a host without portainer.
+echo DNS names listing in hosts.geocodes is required.
+echo  using localhost means that let's encrypt certificates will fail.'
+
 while getopts "e:rd" opt
 do
    case "$opt" in
@@ -46,7 +50,7 @@ docker volume create minio
 
 if [ "$detached" = true ]
   then
-    docker compose -p geocodes --env-file $envfile  -f geocodes-compose.yaml -f services-compose.yaml --profile=geocodes up -d
+    docker compose -p geocodes_stacks --env-file $envfile  -f geocodes-compose.yaml -f services-compose.yaml  up -d
   else
-    docker compose -p geocodes --env-file $envfile  -f geocodes-compose.yaml -f services-compose.yaml  --profile=geocodes up
+    docker compose -p geocodes_stacks --env-file $envfile  -f geocodes-compose.yaml -f services-compose.yaml   up
 fi

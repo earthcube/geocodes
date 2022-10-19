@@ -95,6 +95,10 @@ ssh -i ~/.ssh/earthcube.pem ubuntu@{public IP}
   * modify the treafik-data/traefik.yml
      *  [lets encrypt](https://doc.traefik.io/traefik/https/acme/), 
         * (developers) set to use [staging environment](https://letsencrypt.org/docs/staging-environment/) server while testing
+
+If you are doing development, then leave the caServer uncommented.
+ 
+If produciton, comment the line as shown 
 ```    
    acme:
       # using staging for testing/development
