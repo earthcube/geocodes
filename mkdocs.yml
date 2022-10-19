@@ -8,6 +8,5 @@ nav:
   - Testing and Validation: indexing_with_gleanerio_for_testing.md
   - Tooling:
       - Install Glcon: install_glcon.md
-  - Production Configuration: creatingProductionConfigs.md
-
+  - Production: production
   - Troubleshooting: troubleshooting.md

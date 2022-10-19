@@ -3,10 +3,10 @@
 helpFunction()
 {
    echo "run geocodes from command line"
-   echo "Usage: $0 -e envfile  -r  -d "
+   echo "Usage: $0 -e envfile  -u "
    echo -e "\t-e envfile to use"
-   echo -e "\t-r refresh geocodes comtainers"
-   echo -e "\t-d RUN detached"
+#   echo -e "\t-r refresh geocodes containers"
+   echo -e "\t-u do not run detached"
       echo -e "\tMAC: You may have to add /tmp/gleaner to the file sharing preferences in the docker app"
    exit 1 # Exit script after printing help
 }
@@ -24,11 +24,21 @@ done
 if [ ! $envfile ]
   then
      envfile=".env"
+#      envfile="portainer.env"
 fi
+
+if [ -f $envfile ]
+  then
+    echo "environment file exists"
+  else
+    echo "missing environment file pass -e file   or cp portainer.env .env"
+    exit 1
+fi
+
 docker volume create graph
 docker volume create minio
 
-if [ $detached ]
+if [ "$detached" = true ]
   then
     docker compose -p geocodes --env-file $envfile  -f geocodes-compose.yaml -f services-compose.yaml --profile=geocodes up -d
   else

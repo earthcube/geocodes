@@ -18,7 +18,7 @@ Should this be an actual production configuration, the names need to be changed 
 `ls indexing`
 
 If glcon does not exist
-[Install glcon](install_glcon.md)
+[Install glcon](../install_glcon.md)
 
 ## create a new configuration directory
 `cd indexing`

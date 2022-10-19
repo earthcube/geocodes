@@ -2,6 +2,8 @@
 
 Graph of production
 
+[Configuration for loading](creatingProductionConfigs.md)
+[Managing Services](managing_services.md)
 
 Machines:
 * [geodex.org](./geodex.org.md)
@@ -15,6 +17,7 @@ Builds:
 * pu
 
 ## Troubleshooting
+
 Why is dev different from production
 
 dev is built from source and pushed to server automatically by the XXX github action.

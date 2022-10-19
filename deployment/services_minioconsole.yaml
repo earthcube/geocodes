@@ -1,0 +1,24 @@
+version: '3.5'
+####
+# this many not even need to be it's own stack.
+#
+#####
+# minio console container
+#  https://hub.docker.com/r/minio/mc
+# need to figure out where minio config is stored, so we can add a volume, or we add a config to portainer
+
+#  Note:
+#    Above examples run mc against MinIO play environment by default. To run mc against other S3 compatible servers, start the container this way:
+#
+#  docker run -it --entrypoint=/bin/sh minio/mc
+#  then use the mc config command.
+####
+networks:
+  traefik_proxy:
+    external: true
+services:
+  minioconsole:
+    image: minio/mc
+    command: /bin/bash
+    networks:
+      - traefik_proxy

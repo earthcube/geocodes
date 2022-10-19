@@ -31,13 +31,26 @@ services:
 ###############
   graph:
     image: nawer/blazegraph
+# vm not currently supported. run "sudo sysctl -w vm.swappiness=0"
+#    sysctls:
+#      - vm.swappiness=0
+    ulimits:
+      nproc: 20000
+#      nofile:
+#        soft: 20000
+#        hard: 40000
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
 # ports needed for setup. Do not expose to world
     ports:
-      - 9999:9999
+      - 9999
     environment:
-      JAVA_XMS: 2g
-      JAVA_XMX: 8g
-      JAVA_OPTS: -Xmx6g -Xms2g --XX:+UseG1GC
+      JAVA_XMS: 8g
+      JAVA_XMX: 24g
+   # java_opts not used in nawer/blaszgraph
+   #   JAVA_OPTS: -Xmx8g -Xms2g --XX:+UseG1GC
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.triplestore.entrypoints=http"
@@ -61,6 +74,12 @@ services:
       - "traefik.docker.network=traefik_proxy"
     volumes:
       - graph:/var/lib/blazegraph
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --no-cache --spider -T 35 http://localhost:9999/blazegraph/#status" ]
+      interval: 2m
+      timeout: 30s
+      retries: 3
+#      start_period: 15s
     networks:
       - traefik_proxy
 #########
@@ -69,8 +88,8 @@ services:
   s3system:
     image: quay.io/minio/minio
     ports:
-      - 9000:9000
-#      - 9001:9001
+      - 9000
+      - 9001
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.s3system.entrypoints=http"
@@ -114,22 +133,8 @@ services:
     networks:
       - traefik_proxy
 #    command: ["server", "/data"]
-    command: server /data --console-address ":9001"
-#####
-# minio console container
-#  https://hub.docker.com/r/minio/mc
-# need to figure out where minio config is stored, so we can add a volume, or we add a config to portainer
+    command: server /data --address ":9000" --console-address ":9001"
 
-#  Note:
-#    Above examples run mc against MinIO play environment by default. To run mc against other S3 compatible servers, start the container this way:
-#
-#  docker run -it --entrypoint=/bin/sh minio/mc
-#  then use the mc config command.
-####
-  minioconsole:
-    image: minio/mc
-    networks:
-      - traefik_proxy
 
 ### #####
 # UI for graphstore
