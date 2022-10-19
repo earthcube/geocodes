@@ -1,8 +1,28 @@
 # Production
 
-Graph of production
+~~~mermaid
+flowchart TB
+    subgraph Base Machine Stacks
+      subgraph base
+         traefik[traefik routing]
+         portainer[portainer container admin]
+      end
+      subgraph services
+         oss["oss s3"]
+         sparqlgui
+         triplestore["graph -- triplestore"]
+      end
+      subgraph geocodes
+         facetsearch-->facetsearchservices
+      end
+      subgraph gleaner
+         headless
+      end
+  end
+~~~
 
 [Configuration for loading](creatingProductionConfigs.md)
+
 [Managing Services](managing_services.md)
 
 Machines:
@@ -13,8 +33,8 @@ Builds:
 * Containers
   * [dockerhub nsfearthcube](https://hub.docker.com/orgs/nsfearthcube/repositories)
   * actions
-* gitbub
-* pu
+* github
+
 
 ## Troubleshooting
 
