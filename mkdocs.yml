@@ -11,7 +11,7 @@ plugins:
 
 nav:
   - Home: index.md
-     - List of services: stack_machines.md
+  - List of services: stack_machines.md
   - Setup:
       - Base Machine: machine_configuration.md
       - Services and Geocodes UI: setup_geocodes_containers.md
