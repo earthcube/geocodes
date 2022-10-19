@@ -114,6 +114,10 @@ If produciton, comment the line as shown
       * `./run_base.sh -e {your environment file}`
     * production: this uses the default .env (cp  portainer.env .env)
       * ./run_base.sh 
+
+This is **expected**, after the first run.
+
+_Error response from daemon: network with name traefik_proxy already exists_
 ```      
       ubuntu@geocodes-dev:~/geocodes/deployment$ ./run_base.sh -e geocodes-1.env
       Error response from daemon: network with name traefik_proxy already exists
@@ -175,6 +179,7 @@ NAME:traefik_proxy needs to exist, and be DRIVER:overlay, SCOPE:swarm
 
 ## How tos needed:
 * LOCAL DNS SETUP
-  * editing hosts does not work with letsencrypt. If user has a local name server they control, that might work
+  * editing your local machine /etc/hosts file does not work with letsencrypt. 
+  * If user has a local name server they control, that might work.
 * setup a new password for traefik
 * lets encrypt
