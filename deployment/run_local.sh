@@ -29,9 +29,14 @@ fi
 
 if [ -f $envfile ]
   then
-    echo "environment file exists"
+    echo "using " $envfile
   else
-    echo "missing environment file pass -e file   or cp portainer.env .env"
+    echo "missing environment file. pass flag, or copy and edit file"
+    echo "./run_base.sh -e file "
+
+    echo "OR"
+    echo "cp {yourenv}.env .env"
+
     exit 1
 fi
 

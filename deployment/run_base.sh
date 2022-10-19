@@ -27,19 +27,26 @@ if [ ! $envfile ]
 fi
 
 if [ -f $envfile ]
-  then 
-    echo "environment file exists"
-  else 
-    echo "missing environment file pass -e file   or cp portainer.env .env" 
-    exit 1 
+  then
+    echo "using " $envfile
+  else
+    echo "missing environment file. pass flag, or copy and edit file"
+    echo "./run_base.sh -e file "
+    echo "OR PRODUCTION"
+    echo "cp portainer.env .env"
+    echo "OR"
+    echo "cp {yourenv}.env .env"
+
+    exit 1
 fi
 
 ## need to docker (network|volume) ls | grep (traefik_proxy|traefik_proxy) before these calll
 ## or an error will be thrown
+echo "This message is OK **Error response from daemon: network with name traefik_proxy already exists.** "
 docker network create -d overlay --attachable traefik_proxy
 docker network ls
 
-echo Verify that the traefik_proxy network  SCOPE is swarm
+echo NOTE: Verify that the traefik_proxy network  SCOPE is swarm
 
 docker volume create traefik_data
 docker volume create portainer_data
@@ -49,12 +56,12 @@ docker volume create fuseki_configuration
 docker volume create fuseki_logs
 docker volume create minio
 
-echo $detached
+echo run as detached: $detached
 
 # uses swarm :
 if [ "$detached" = true  ]
   then
     docker compose -p base --env-file $envfile  -f base-machine-compose.yaml  up  -d
   else
-    docker compose -p base --env-file $envfile  -f base-machine-compose.yaml  up 
+    docker compose -p base --env-file $envfile  -f base-machine-compose.yaml  up
 fi
