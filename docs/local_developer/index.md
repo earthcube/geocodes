@@ -13,9 +13,10 @@ Container Stacks:
 * or copy env.local.example to yourconfig.env
 * `./run_local.sh -e yourconfig.env`
 
-Did it work:
 
-This is the dashboard for treafik.
 
-http://localhost:8080/admin/dashboard/#/
-(admin:password)
+traefik admin
+
+http://localhost:8888//dashboard/#/
+(admin:1forget)
+
