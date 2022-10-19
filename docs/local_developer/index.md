@@ -14,9 +14,13 @@ Container Stacks:
 * `./run_local.sh -e yourconfig.env`
 
 
-
+====
+## is it Running?
 traefik admin
 
 http://localhost:8888//dashboard/#/
 (admin:1forget)
+
+Graph: http://localhost:8888/blazegraph
+
 
