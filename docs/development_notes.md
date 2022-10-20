@@ -38,3 +38,6 @@ Headless:
 Improving performance: 
 I tried to replicated the headless container, but that make headless queries fail.
 
+## healthcheck
+
+https://medium.com/geekculture/how-to-successfully-implement-a-healthcheck-in-docker-compose-efced60bc08e
