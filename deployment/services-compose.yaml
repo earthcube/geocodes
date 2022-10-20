@@ -75,7 +75,7 @@ services:
     volumes:
       - graph:/var/lib/blazegraph
     healthcheck:
-      test: wget --no-verbose --tries=1 --spider -T 35 http://localhost:9999/blazegraph/#status" || exit 1
+      test: wget --no-verbose --tries=1 --spider -T 35 "http://localhost:9999/blazegraph/#status" || exit 1
       interval: 1m
       timeout: 30s
       retries: 3
