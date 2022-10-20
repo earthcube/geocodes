@@ -75,8 +75,8 @@ services:
     volumes:
       - graph:/var/lib/blazegraph
     healthcheck:
-      test: [ "CMD-SHELL", "wget --no-cache --spider -T 35 http://localhost:9999/blazegraph/#status" ]
-      interval: 2m
+      test: wget --no-cache --spider -T 35 http://localhost:9999/blazegraph/#status"
+      interval: 1m
       timeout: 30s
       retries: 3
 #      start_period: 15s
