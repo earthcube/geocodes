@@ -24,14 +24,30 @@ if [ ! $facets_config ]
   then
      facets_config="./facets/config.yaml"
 fi
+if  `docker config ls | grep -q "facets_config"` ; then
+   echo facets_config exists as swarm, deleting original
+   docker config rm facets_config
+   docker config create facets_config $facets_config
+   echo THERE MAY BE AN ERROR if so stop the geocodes stack, and add manually, then restart stack
+else
+   echo creating facets_config
+ # facets config
+    docker config create facets_config $facets_config
+fi
 
-# facets config
-docker config create facets_config $facets_config
 
 if [ ! $fuseki_config ]
   then
-     fuseki_config="./fuseki/configuration/earthcube.ttl"
+   fuseki_config="./fuseki/configuration/earthcube.ttl"
+fi
+if  `docker config ls | grep -q "fuseki_config` ; then
+   echo fuseki_config exists as swarm, deleting original
+   docker config rm fuseki_config
+   docker config create fuseki_config $fuseki_config
+   echo THERE MAY BE AN ERROR if so stop the geocodes stack, and add manually, then restart stack
+else
+   echo creating fuseki_config
+ # facets config
+    docker config create fuseki_config $facets_config
 fi
 
-# facets config
-docker config create fuseki_config $fuseki_config
