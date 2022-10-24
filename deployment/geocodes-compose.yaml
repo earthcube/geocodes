@@ -31,7 +31,7 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=geocodestest
-      - S3ADDRESS=${GLEANER_OSS_CONSOLE_DOMAIN}
+      - S3ADDRESS=${GLEANER_OSS_DOMAIN}
       - S3KEY=${MINIO_ROOT_ACCESS_KEY}
       - S3SECRET=${MINIO_ROOT_SECRET_KEY}
       - S3SSL=${S3SSL}
