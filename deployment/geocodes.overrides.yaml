@@ -1,0 +1,5 @@
+version: '3.3'
+
+configs:
+  ecgraph:
+    file: ./facets/config.yaml

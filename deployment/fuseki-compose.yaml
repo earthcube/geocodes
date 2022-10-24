@@ -1,4 +1,4 @@
-version: '3'
+version: '3.3'
 # initial starting point was gleaner: https://github.com/gleanerio/gleaner/blob/master/deployment/gleaner-DS-traefik.yml
 
 #  Fuseki service uses a CONFIG in portainer.
@@ -17,6 +17,9 @@ volumes:
 #    external: true
 networks:
   traefik_proxy:
+    external: true
+configs:
+  ecgraph:
     external: true
 
 services:
@@ -38,6 +41,12 @@ services:
       JAVA_XMX: 8g
       JAVA_OPTS: -Xmx8g -Xms2g --XX:+UseG1GC
       ADMIN_PASSWORD: ${FUSEKI_ADMIN_PASSWORD}
+    configs:
+      - source:   ecgraph
+        target: /fuseki-base/configuration/earthcube.tll
+ #       uid: '103'
+ #       gid: '103'
+ #       mode: 0440
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.triplestore2.entrypoints=http"
@@ -78,4 +87,5 @@ services:
 #      start_period: 2m
     networks:
       - traefik_proxy
+
 

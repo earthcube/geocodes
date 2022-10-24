@@ -42,11 +42,14 @@ fi
 
 ## need to docker (network|volume) ls | grep (traefik_proxy|traefik_proxy) before these calll
 ## or an error will be thrown
-echo "This message is OK **Error response from daemon: network with name traefik_proxy already exists.** "
-docker network create -d overlay --attachable traefik_proxy
-docker network ls
-
-echo NOTE: Verify that the traefik_proxy network  SCOPE is swarm
+#echo "This message is OK **Error response from daemon: network with name traefik_proxy already exists.** "
+if  `docker network inspect traefik_proxy | grep -q "swarm"` ; then
+   echo traefik_proxy netowrk exists as swarm
+else
+   echo creating network
+   docker network create -d overlay --attachable traefik_proxy
+fi
+#echo NOTE: Verify that the traefik_proxy network  SCOPE is swarm
 
 docker volume create traefik_data
 docker volume create portainer_data

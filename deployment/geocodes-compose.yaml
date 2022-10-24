@@ -1,6 +1,9 @@
-version: '3'
+version: '3.3'
 networks:
   traefik_proxy:
+    external: true
+configs:
+  facets_config:
     external: true
 
 services:
@@ -66,6 +69,12 @@ services:
     environment:
       - NODE_ENV=geocodestest
       - DOMAIN=https://${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}/
+    configs:
+      - source:   facets_config
+        target: /usr/src/app/dist/public/config/config.yaml
+  #      uid: '103'
+  #      gid: '103'
+  #      mode: 0440
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.beta.entrypoints=http"
