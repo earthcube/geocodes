@@ -24,10 +24,17 @@ services:
     environment:
       - NODE_ENV=production
       - S3ADDRESS=s3system:9000
-      - S3BUCKET=sites
-      - DOMAIN=https://${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}/
-      - S3KEY=${MINIO_SERVICE_ACCESS_KEY}
-      - S3SECRET=${MINIO_SERVICE_SECRET_KEY}
+      - GLEANER_OSS_CONSOLE_DOMAIN=${GLEANER_OSS_CONSOLE_DOMAIN}
+      - S3KEY=${MINIO_ROOT_ACCESS_KEY}
+      - S3SECRET=${MINIO_ROOT_SECRET_KEY}
+      - S3SSL=${S3SSL}
+      - S3PORT=${S3PORT]
+      - BUCKET=${BUCKET]
+      - BUCKETPATH=${BUCKETPATH}
+      - PATHTEMPLATE=${PATHTEMPLATE]
+      - TOOLTEMPLATE=${TOOLTEMPLATE}
+      - TOOLPATH=${TOOLPATH]
+      - TOOLREPO=${TOOLREPO]
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.beta-server.entrypoints=http"

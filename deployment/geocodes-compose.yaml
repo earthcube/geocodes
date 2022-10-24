@@ -5,8 +5,7 @@ networks:
 configs:
   facets_config:
     external: true
-  facets_services_config:
-    external: true
+
 services:
   # the base routes:
   # geocodes /
@@ -32,17 +31,17 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=geocodestest
-      - FACET_SERVICES_FILE=`${FACET_SERVICES_FILE:?./config/services.js}`
-      #  this overrides the config... we don't want that
-#      - S3ADDRESS=s3system:9000
-#      - S3BUCKET=sites
-#      - DOMAIN=https://${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}/
-      - S3KEY=${MINIO_SERVICE_ACCESS_KEY}
-      - S3SECRET=${MINIO_SERVICE_SECRET_KEY}
-    configs:
-      - source:   facets_services_config
-        target:
-          /usr/src/app/config/services.js
+      - GLEANER_OSS_CONSOLE_DOMAIN=${GLEANER_OSS_CONSOLE_DOMAIN}
+      - S3KEY=${MINIO_ROOT_ACCESS_KEY}
+      - S3SECRET=${MINIO_ROOT_SECRET_KEY}
+      - S3SSL=${S3SSL}
+      - S3PORT=${S3PORT]
+      - BUCKET=${BUCKET]
+      - BUCKETPATH=${BUCKETPATH}
+      - PATHTEMPLATE=${PATHTEMPLATE]
+      - TOOLTEMPLATE=${TOOLTEMPLATE}
+      - TOOLPATH=${TOOLPATH]
+      - TOOLREPO=${TOOLREPO]
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.beta-server.entrypoints=http"
