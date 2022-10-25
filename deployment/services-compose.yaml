@@ -49,9 +49,10 @@ services:
 # ports needed for setup. Do not expose to world
     ports:
       - 9999
+
     environment:
       JAVA_XMS: 8g
-      JAVA_XMX: 24g
+      JAVA_XMX: 16g
    # java_opts not used in nawer/blaszgraph
    #   JAVA_OPTS: -Xmx8g -Xms2g --XX:+UseG1GC
     labels:
@@ -93,6 +94,10 @@ services:
     ports:
       - 9000
       - 9001
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.s3system.entrypoints=http"

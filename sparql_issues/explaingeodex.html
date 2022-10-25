@@ -1,0 +1,2036 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html><head><meta http-equiv="Content-Type" content="text&#47;html;charset=UTF-8"><title>blazegraph&trade; by SYSTAP</title
+></head
+><body<h1>Query</h1
+><h2>SPARQL</h2
+><pre>PREFIX bds: &lt;http:&#47;&#47;www.bigdata.com&#47;rdf&#47;search#&gt;
+PREFIX rdf: &lt;http:&#47;&#47;www.w3.org&#47;1999&#47;02&#47;22-rdf-syntax-ns#&gt;
+PREFIX rdfs: &lt;http:&#47;&#47;www.w3.org&#47;2000&#47;01&#47;rdf-schema#&gt;
+prefix schema: &lt;http:&#47;&#47;schema.org&#47;&gt;
+prefix sschema: &lt;https:&#47;&#47;schema.org&#47;&gt;
+SELECT distinct ?subj ?g ?resourceType ?name ?description  ?pubname
+	(GROUP_CONCAT(DISTINCT ?placename; SEPARATOR=&#34;, &#34;) AS ?placenames)
+        (GROUP_CONCAT(DISTINCT ?kwu; SEPARATOR=&#34;, &#34;) AS ?kw)
+        ?datep  (GROUP_CONCAT(DISTINCT ?url; SEPARATOR=&#34;, &#34;) AS ?disurl) (MAX(?score1) as ?score)
+	#   (MAX(?lat) as ?maxlat) (Min(?lat) as ?minlat) (MAX(?lon) as ?maxlon) (Min(?lon) as ?minlon)
+        WHERE {
+            ?lit bds:search &#34;arizona&#34; .
+            ?lit bds:matchAllTerms false .
+            ?lit bds:relevance ?score1 .
+            ?lit bds:minRelevance 0.44 .
+            ?subj ?p ?lit .
+            #filter( ?score1 &gt; 0.14).
+          graph ?g {
+    	     ?subj schema:name|sschema:name ?name .
+             ?subj schema:description|sschema:description ?description .
+            #Minus {?subj a sschema:ResearchProject } .
+           # Minus {?subj a schema:ResearchProject } .
+           # Minus {?subj a schema:Person } .
+           # Minus {?subj a sschema:Person } .
+             }
+#BIND (IF (exists {?subj a schema:Dataset .} ||exists{?subj a sschema:Dataset .} , &#34;data&#34;, &#34;tool&#34; ) AS ?resourceType).
+            ?subj a ?type .
+          values (?type ?resourceType) {
+            (schema:Dataset &#34;data&#34;)
+            (sschema:Dataset &#34;data&#34;)
+            (schema:ResearchProject &#34;Research Project&#34;) #BCODMO- project
+            (sschema:ResearchProject  &#34;Research Project&#34;)
+             (schema:SoftwareApplication  &#34;tool&#34;)
+             (sschema:SoftwareApplication  &#34;tool&#34;)
+             (schema:Person  &#34;Person&#34;) #BCODMO- Person
+             (sschema:Person  &#34;Person&#34;)
+              (schema:Event  &#34;Event&#34;) #BCODMO- deployment
+              (sschema:Event  &#34;Event&#34;)
+               (schema:Award  &#34;Award&#34;) #BCODMO- Award
+               (sschema:Award  &#34;Award&#34;)
+              (schema:DataCatalog  &#34;DataCatalog&#34;)
+              (sschema:DataCatalog  &#34;DataCatalog&#34;)
+            #(UNDEF &#34;other&#34;)  # assume it&#39;s data. At least we should get  name.
+          } 
+            optional {?subj schema:distribution&#47;schema:url|sschema:subjectOf&#47;sschema:url ?url .}
+            OPTIONAL {?subj schema:datePublished|sschema:datePublished ?datep .}
+            OPTIONAL {?subj schema:publisher&#47;schema:name|sschema:publisher&#47;sschema:name|sschema:sdPublisher|sschema:provider&#47;schema:name ?pubname .}
+            OPTIONAL {?subj schema:spatialCoverage&#47;schema:name|sschema:spatialCoverage&#47;sschema:name ?placename .}
+
+            OPTIONAL {?subj schema:keywords|sschema:keywords ?kwu .}
+
+        }
+        GROUP BY 
+	# ?subj ?pubname ?placenames ?kw ?datep ?disurl ?score ?name ?description  ?resourceType ?g ?minlat ?maxlat ?minlon ?maxlon
+	?subj ?g ?resourceType ?name ?description ?pubname ?placenames ?kw ?datep ?disurl ?score
+        ORDER BY DESC(?score)
+LIMIT 1000
+OFFSET 0</pre
+><h2>Parse Tree</h2
+><pre>QueryContainer
+ PrefixDecl (prefix=bds)
+  IRI (http:&#47;&#47;www.bigdata.com&#47;rdf&#47;search#)
+ PrefixDecl (prefix=rdf)
+  IRI (http:&#47;&#47;www.w3.org&#47;1999&#47;02&#47;22-rdf-syntax-ns#)
+ PrefixDecl (prefix=rdfs)
+  IRI (http:&#47;&#47;www.w3.org&#47;2000&#47;01&#47;rdf-schema#)
+ PrefixDecl (prefix=schema)
+  IRI (http:&#47;&#47;schema.org&#47;)
+ PrefixDecl (prefix=sschema)
+  IRI (https:&#47;&#47;schema.org&#47;)
+ SelectQuery
+  Select ( distinct )
+   ProjectionElem
+    Var (subj)
+   ProjectionElem
+    Var (g)
+   ProjectionElem
+    Var (resourceType)
+   ProjectionElem
+    Var (name)
+   ProjectionElem
+    Var (description)
+   ProjectionElem
+    Var (pubname)
+   ProjectionElem
+    GroupConcat
+     Var (placename)
+     RDFLiteral
+      String (, )
+    Var (placenames)
+   ProjectionElem
+    GroupConcat
+     Var (kwu)
+     RDFLiteral
+      String (, )
+    Var (kw)
+   ProjectionElem
+    Var (datep)
+   ProjectionElem
+    GroupConcat
+     Var (url)
+     RDFLiteral
+      String (, )
+    Var (disurl)
+   ProjectionElem
+    Max
+     Var (score1)
+    Var (score)
+  WhereClause
+   GraphPatternGroup
+    BasicGraphPattern
+     TriplesSameSubjectPath
+      Var (lit)
+      PropertyListPath
+       PathAlternative
+        PathSequence
+         PathElt
+          IRI (http:&#47;&#47;www.bigdata.com&#47;rdf&#47;search#search)
+       ObjectList
+        RDFLiteral
+         String (arizona)
+     TriplesSameSubjectPath
+      Var (lit)
+      PropertyListPath
+       PathAlternative
+        PathSequence
+         PathElt
+          IRI (http:&#47;&#47;www.bigdata.com&#47;rdf&#47;search#matchAllTerms)
+       ObjectList
+        False
+     TriplesSameSubjectPath
+      Var (lit)
+      PropertyListPath
+       PathAlternative
+        PathSequence
+         PathElt
+          IRI (http:&#47;&#47;www.bigdata.com&#47;rdf&#47;search#relevance)
+       ObjectList
+        Var (score1)
+     TriplesSameSubjectPath
+      Var (lit)
+      PropertyListPath
+       PathAlternative
+        PathSequence
+         PathElt
+          IRI (http:&#47;&#47;www.bigdata.com&#47;rdf&#47;search#minRelevance)
+       ObjectList
+        NumericLiteral (value=0.44, datatype=http:&#47;&#47;www.w3.org&#47;2001&#47;XMLSchema#decimal)
+     TriplesSameSubjectPath
+      Var (subj)
+      PropertyListPath
+       Var (p)
+       ObjectList
+        Var (lit)
+    GraphGraphPattern
+     Var (g)
+     GraphPatternGroup
+      BasicGraphPattern
+       TriplesSameSubjectPath
+        Var (subj)
+        PropertyListPath
+         PathAlternative
+          PathSequence
+           PathElt
+            IRI (http:&#47;&#47;schema.org&#47;name)
+          PathSequence
+           PathElt
+            IRI (https:&#47;&#47;schema.org&#47;name)
+         ObjectList
+          Var (name)
+       TriplesSameSubjectPath
+        Var (subj)
+        PropertyListPath
+         PathAlternative
+          PathSequence
+           PathElt
+            IRI (http:&#47;&#47;schema.org&#47;description)
+          PathSequence
+           PathElt
+            IRI (https:&#47;&#47;schema.org&#47;description)
+         ObjectList
+          Var (description)
+    BasicGraphPattern
+     TriplesSameSubjectPath
+      Var (subj)
+      PropertyListPath
+       PathAlternative
+        PathSequence
+         PathElt
+          IRI (http:&#47;&#47;www.w3.org&#47;1999&#47;02&#47;22-rdf-syntax-ns#type)
+       ObjectList
+        Var (type)
+    InlineData
+     Var (type)
+     Var (resourceType)
+     BindingSet
+      BindingValue
+       IRI (http:&#47;&#47;schema.org&#47;Dataset)
+      BindingValue
+       RDFLiteral
+        String (data)
+     BindingSet
+      BindingValue
+       IRI (https:&#47;&#47;schema.org&#47;Dataset)
+      BindingValue
+       RDFLiteral
+        String (data)
+     BindingSet
+      BindingValue
+       IRI (http:&#47;&#47;schema.org&#47;ResearchProject)
+      BindingValue
+       RDFLiteral
+        String (Research Project)
+     BindingSet
+      BindingValue
+       IRI (https:&#47;&#47;schema.org&#47;ResearchProject)
+      BindingValue
+       RDFLiteral
+        String (Research Project)
+     BindingSet
+      BindingValue
+       IRI (http:&#47;&#47;schema.org&#47;SoftwareApplication)
+      BindingValue
+       RDFLiteral
+        String (tool)
+     BindingSet
+      BindingValue
+       IRI (https:&#47;&#47;schema.org&#47;SoftwareApplication)
+      BindingValue
+       RDFLiteral
+        String (tool)
+     BindingSet
+      BindingValue
+       IRI (http:&#47;&#47;schema.org&#47;Person)
+      BindingValue
+       RDFLiteral
+        String (Person)
+     BindingSet
+      BindingValue
+       IRI (https:&#47;&#47;schema.org&#47;Person)
+      BindingValue
+       RDFLiteral
+        String (Person)
+     BindingSet
+      BindingValue
+       IRI (http:&#47;&#47;schema.org&#47;Event)
+      BindingValue
+       RDFLiteral
+        String (Event)
+     BindingSet
+      BindingValue
+       IRI (https:&#47;&#47;schema.org&#47;Event)
+      BindingValue
+       RDFLiteral
+        String (Event)
+     BindingSet
+      BindingValue
+       IRI (http:&#47;&#47;schema.org&#47;Award)
+      BindingValue
+       RDFLiteral
+        String (Award)
+     BindingSet
+      BindingValue
+       IRI (https:&#47;&#47;schema.org&#47;Award)
+      BindingValue
+       RDFLiteral
+        String (Award)
+     BindingSet
+      BindingValue
+       IRI (http:&#47;&#47;schema.org&#47;DataCatalog)
+      BindingValue
+       RDFLiteral
+        String (DataCatalog)
+     BindingSet
+      BindingValue
+       IRI (https:&#47;&#47;schema.org&#47;DataCatalog)
+      BindingValue
+       RDFLiteral
+        String (DataCatalog)
+    OptionalGraphPattern
+     BasicGraphPattern
+      TriplesSameSubjectPath
+       Var (subj)
+       PropertyListPath
+        PathAlternative
+         PathSequence
+          PathElt
+           IRI (http:&#47;&#47;schema.org&#47;distribution)
+          PathElt
+           IRI (http:&#47;&#47;schema.org&#47;url)
+         PathSequence
+          PathElt
+           IRI (https:&#47;&#47;schema.org&#47;subjectOf)
+          PathElt
+           IRI (https:&#47;&#47;schema.org&#47;url)
+        ObjectList
+         Var (url)
+    OptionalGraphPattern
+     BasicGraphPattern
+      TriplesSameSubjectPath
+       Var (subj)
+       PropertyListPath
+        PathAlternative
+         PathSequence
+          PathElt
+           IRI (http:&#47;&#47;schema.org&#47;datePublished)
+         PathSequence
+          PathElt
+           IRI (https:&#47;&#47;schema.org&#47;datePublished)
+        ObjectList
+         Var (datep)
+    OptionalGraphPattern
+     BasicGraphPattern
+      TriplesSameSubjectPath
+       Var (subj)
+       PropertyListPath
+        PathAlternative
+         PathSequence
+          PathElt
+           IRI (http:&#47;&#47;schema.org&#47;publisher)
+          PathElt
+           IRI (http:&#47;&#47;schema.org&#47;name)
+         PathSequence
+          PathElt
+           IRI (https:&#47;&#47;schema.org&#47;publisher)
+          PathElt
+           IRI (https:&#47;&#47;schema.org&#47;name)
+         PathSequence
+          PathElt
+           IRI (https:&#47;&#47;schema.org&#47;sdPublisher)
+         PathSequence
+          PathElt
+           IRI (https:&#47;&#47;schema.org&#47;provider)
+          PathElt
+           IRI (http:&#47;&#47;schema.org&#47;name)
+        ObjectList
+         Var (pubname)
+    OptionalGraphPattern
+     BasicGraphPattern
+      TriplesSameSubjectPath
+       Var (subj)
+       PropertyListPath
+        PathAlternative
+         PathSequence
+          PathElt
+           IRI (http:&#47;&#47;schema.org&#47;spatialCoverage)
+          PathElt
+           IRI (http:&#47;&#47;schema.org&#47;name)
+         PathSequence
+          PathElt
+           IRI (https:&#47;&#47;schema.org&#47;spatialCoverage)
+          PathElt
+           IRI (https:&#47;&#47;schema.org&#47;name)
+        ObjectList
+         Var (placename)
+    OptionalGraphPattern
+     BasicGraphPattern
+      TriplesSameSubjectPath
+       Var (subj)
+       PropertyListPath
+        PathAlternative
+         PathSequence
+          PathElt
+           IRI (http:&#47;&#47;schema.org&#47;keywords)
+         PathSequence
+          PathElt
+           IRI (https:&#47;&#47;schema.org&#47;keywords)
+        ObjectList
+         Var (kwu)
+  GroupClause
+   GroupCondition
+    Var (subj)
+   GroupCondition
+    Var (g)
+   GroupCondition
+    Var (resourceType)
+   GroupCondition
+    Var (name)
+   GroupCondition
+    Var (description)
+   GroupCondition
+    Var (pubname)
+   GroupCondition
+    Var (placenames)
+   GroupCondition
+    Var (kw)
+   GroupCondition
+    Var (datep)
+   GroupCondition
+    Var (disurl)
+   GroupCondition
+    Var (score)
+  OrderClause
+   OrderCondition (DESC)
+    Var (score)
+  Limit (1000)
+  Offset (0)</pre
+><h2>Original AST</h2
+><pre>
+PREFIX bds: &lt;http:&#47;&#47;www.bigdata.com&#47;rdf&#47;search#&gt;
+PREFIX rdf: &lt;http:&#47;&#47;www.w3.org&#47;1999&#47;02&#47;22-rdf-syntax-ns#&gt;
+PREFIX rdfs: &lt;http:&#47;&#47;www.w3.org&#47;2000&#47;01&#47;rdf-schema#&gt;
+PREFIX schema: &lt;http:&#47;&#47;schema.org&#47;&gt;
+PREFIX sschema: &lt;https:&#47;&#47;schema.org&#47;&gt;
+PREFIX sesame: &lt;http:&#47;&#47;www.openrdf.org&#47;schema&#47;sesame#&gt;
+PREFIX owl: &lt;http:&#47;&#47;www.w3.org&#47;2002&#47;07&#47;owl#&gt;
+PREFIX xsd: &lt;http:&#47;&#47;www.w3.org&#47;2001&#47;XMLSchema#&gt;
+PREFIX fn: &lt;http:&#47;&#47;www.w3.org&#47;2005&#47;xpath-functions#&gt;
+PREFIX foaf: &lt;http:&#47;&#47;xmlns.com&#47;foaf&#47;0.1&#47;&gt;
+PREFIX dc: &lt;http:&#47;&#47;purl.org&#47;dc&#47;elements&#47;1.1&#47;&gt;
+PREFIX hint: &lt;http:&#47;&#47;www.bigdata.com&#47;queryHints#&gt;
+PREFIX bd: &lt;http:&#47;&#47;www.bigdata.com&#47;rdf#&gt;
+QueryType: SELECT
+includeInferred=true
+SELECT DISTINCT VarNode(subj) VarNode(g) VarNode(resourceType) VarNode(name) VarNode(description) VarNode(pubname) ( com.bigdata.rdf.sparql.ast.FunctionNode(VarNode(placename))[ FunctionNode.scalarVals={com.bigdata.bop.aggregate.AggregateBase.distinct=true, separator=, }, FunctionNode.functionURI=http:&#47;&#47;www.w3.org&#47;2006&#47;sparql-functions#groupConcat, valueExpr=com.bigdata.bop.rdf.aggregate.GROUP_CONCAT(placename)[ AggregateBase.distinct=true, separator=, , GROUP_CONCAT.namespace=earthcube.lex]] AS VarNode(placenames) ) ( com.bigdata.rdf.sparql.ast.FunctionNode(VarNode(kwu))[ FunctionNode.scalarVals={com.bigdata.bop.aggregate.AggregateBase.distinct=true, separator=, }, FunctionNode.functionURI=http:&#47;&#47;www.w3.org&#47;2006&#47;sparql-functions#groupConcat, valueExpr=com.bigdata.bop.rdf.aggregate.GROUP_CONCAT(kwu)[ AggregateBase.distinct=true, separator=, , GROUP_CONCAT.namespace=earthcube.lex]] AS VarNode(kw) ) VarNode(datep) ( com.bigdata.rdf.sparql.ast.FunctionNode(VarNode(url))[ FunctionNode.scalarVals={com.bigdata.bop.aggregate.AggregateBase.distinct=true, separator=, }, FunctionNode.functionURI=http:&#47;&#47;www.w3.org&#47;2006&#47;sparql-functions#groupConcat, valueExpr=com.bigdata.bop.rdf.aggregate.GROUP_CONCAT(url)[ AggregateBase.distinct=true, separator=, , GROUP_CONCAT.namespace=earthcube.lex]] AS VarNode(disurl) ) ( com.bigdata.rdf.sparql.ast.FunctionNode(VarNode(score1))[ FunctionNode.scalarVals=null, FunctionNode.functionURI=http:&#47;&#47;www.w3.org&#47;2006&#47;sparql-functions#max, valueExpr=com.bigdata.bop.rdf.aggregate.MAX(score1)] AS VarNode(score) )
+  JoinGroupNode {
+    StatementPatternNode(VarNode(lit), ConstantNode(TermId(0U)[http:&#47;&#47;www.bigdata.com&#47;rdf&#47;search#search]), ConstantNode(TermId(0L)[arizona])) [scope=DEFAULT_CONTEXTS]
+    StatementPatternNode(VarNode(lit), ConstantNode(TermId(0U)[http:&#47;&#47;www.bigdata.com&#47;rdf&#47;search#matchAllTerms]), ConstantNode(TermId(0L)[false])) [scope=DEFAULT_CONTEXTS]
+    StatementPatternNode(VarNode(lit), ConstantNode(TermId(0U)[http:&#47;&#47;www.bigdata.com&#47;rdf&#47;search#relevance]), VarNode(score1)) [scope=DEFAULT_CONTEXTS]
+    StatementPatternNode(VarNode(lit), ConstantNode(TermId(0U)[http:&#47;&#47;www.bigdata.com&#47;rdf&#47;search#minRelevance]), ConstantNode(XSDDecimal(0.44))) [scope=DEFAULT_CONTEXTS]
+    StatementPatternNode(VarNode(subj), VarNode(p), VarNode(lit)) [scope=DEFAULT_CONTEXTS]
+    JoinGroupNode [context=VarNode(g)] {
+      PropertyPathNode(VarNode(subj), com.bigdata.rdf.sparql.ast.PathNode(PathAlternative), VarNode(name), VarNode(g)) [scope=NAMED_CONTEXTS]
+      PropertyPathNode(VarNode(subj), com.bigdata.rdf.sparql.ast.PathNode(PathAlternative), VarNode(description), VarNode(g)) [scope=NAMED_CONTEXTS]
+    }
+    StatementPatternNode(VarNode(subj), ConstantNode(TermId(0U)[http:&#47;&#47;www.w3.org&#47;1999&#47;02&#47;22-rdf-syntax-ns#type]), VarNode(type)) [scope=DEFAULT_CONTEXTS]
+    BindingsClause ?type ?resourceType
+    {
+      [ count=14 ]
+    }
+    JoinGroupNode [optional] {
+      PropertyPathNode(VarNode(subj), com.bigdata.rdf.sparql.ast.PathNode(PathAlternative), VarNode(url)) [scope=DEFAULT_CONTEXTS]
+    }
+    JoinGroupNode [optional] {
+      PropertyPathNode(VarNode(subj), com.bigdata.rdf.sparql.ast.PathNode(PathAlternative), VarNode(datep)) [scope=DEFAULT_CONTEXTS]
+    }
+    JoinGroupNode [optional] {
+      PropertyPathNode(VarNode(subj), com.bigdata.rdf.sparql.ast.PathNode(PathAlternative), VarNode(pubname)) [scope=DEFAULT_CONTEXTS]
+    }
+    JoinGroupNode [optional] {
+      PropertyPathNode(VarNode(subj), com.bigdata.rdf.sparql.ast.PathNode(PathAlternative), VarNode(placename)) [scope=DEFAULT_CONTEXTS]
+    }
+    JoinGroupNode [optional] {
+      PropertyPathNode(VarNode(subj), com.bigdata.rdf.sparql.ast.PathNode(PathAlternative), VarNode(kwu)) [scope=DEFAULT_CONTEXTS]
+    }
+  }
+group by VarNode(subj) VarNode(g) VarNode(resourceType) VarNode(name) VarNode(description) VarNode(pubname) VarNode(placenames) VarNode(kw) VarNode(datep) VarNode(disurl) VarNode(score)
+ORDER BY com.bigdata.rdf.sparql.ast.OrderByExpr(VarNode(score))[ ascending=false]
+slice(limit=1000)</pre
+><h2>Static Analysis Statistics</h2
+><p>Static Analysis Statistics are not available.</p
+><h2>Optimized AST</h2
+><pre>
+PREFIX bds: &lt;http:&#47;&#47;www.bigdata.com&#47;rdf&#47;search#&gt;
+PREFIX rdf: &lt;http:&#47;&#47;www.w3.org&#47;1999&#47;02&#47;22-rdf-syntax-ns#&gt;
+PREFIX rdfs: &lt;http:&#47;&#47;www.w3.org&#47;2000&#47;01&#47;rdf-schema#&gt;
+PREFIX schema: &lt;http:&#47;&#47;schema.org&#47;&gt;
+PREFIX sschema: &lt;https:&#47;&#47;schema.org&#47;&gt;
+PREFIX sesame: &lt;http:&#47;&#47;www.openrdf.org&#47;schema&#47;sesame#&gt;
+PREFIX owl: &lt;http:&#47;&#47;www.w3.org&#47;2002&#47;07&#47;owl#&gt;
+PREFIX xsd: &lt;http:&#47;&#47;www.w3.org&#47;2001&#47;XMLSchema#&gt;
+PREFIX fn: &lt;http:&#47;&#47;www.w3.org&#47;2005&#47;xpath-functions#&gt;
+PREFIX foaf: &lt;http:&#47;&#47;xmlns.com&#47;foaf&#47;0.1&#47;&gt;
+PREFIX dc: &lt;http:&#47;&#47;purl.org&#47;dc&#47;elements&#47;1.1&#47;&gt;
+PREFIX hint: &lt;http:&#47;&#47;www.bigdata.com&#47;queryHints#&gt;
+PREFIX bd: &lt;http:&#47;&#47;www.bigdata.com&#47;rdf#&gt;
+WITH {
+  QueryType: SELECT
+  SELECT VarNode(lit) VarNode(score1)
+    JoinGroupNode {
+      SERVICE &lt;ConstantNode(TermId(0U)[http:&#47;&#47;www.bigdata.com&#47;rdf&#47;search#search])&gt; {
+        JoinGroupNode {
+          StatementPatternNode(VarNode(lit), ConstantNode(TermId(0U)[http:&#47;&#47;www.bigdata.com&#47;rdf&#47;search#search]), ConstantNode(TermId(669699L)[arizona])) [scope=DEFAULT_CONTEXTS]
+          StatementPatternNode(VarNode(lit), ConstantNode(TermId(0U)[http:&#47;&#47;www.bigdata.com&#47;rdf&#47;search#matchAllTerms]), ConstantNode(XSDBoolean(false) com.bigdata.rdf.model.BigdataValueFactoryImpl@621cbd37{namespace=earthcube.lex})) [scope=DEFAULT_CONTEXTS]
+          StatementPatternNode(VarNode(lit), ConstantNode(TermId(0U)[http:&#47;&#47;www.bigdata.com&#47;rdf&#47;search#relevance]), VarNode(score1)) [scope=DEFAULT_CONTEXTS]
+          StatementPatternNode(VarNode(lit), ConstantNode(TermId(0U)[http:&#47;&#47;www.bigdata.com&#47;rdf&#47;search#minRelevance]), ConstantNode(XSDDecimal(0.44))) [scope=DEFAULT_CONTEXTS]
+        }
+      }
+    }
+} AS %-anon-service-call-0 JOIN ON () DEPENDS ON ()
+QueryType: SELECT
+includeInferred=true
+SELECT DISTINCT ( VarNode(subj) AS VarNode(subj) ) ( VarNode(g) AS VarNode(g) ) ( VarNode(resourceType) AS VarNode(resourceType) ) ( VarNode(name) AS VarNode(name) ) ( VarNode(description) AS VarNode(description) ) ( VarNode(pubname) AS VarNode(pubname) ) ( com.bigdata.rdf.sparql.ast.FunctionNode(VarNode(placename))[ FunctionNode.scalarVals={com.bigdata.bop.aggregate.AggregateBase.distinct=true, separator=, }, FunctionNode.functionURI=http:&#47;&#47;www.w3.org&#47;2006&#47;sparql-functions#groupConcat, valueExpr=com.bigdata.bop.rdf.aggregate.GROUP_CONCAT(placename)[ AggregateBase.distinct=true, separator=, , GROUP_CONCAT.namespace=earthcube.lex]] AS VarNode(placenames) ) ( com.bigdata.rdf.sparql.ast.FunctionNode(VarNode(kwu))[ FunctionNode.scalarVals={com.bigdata.bop.aggregate.AggregateBase.distinct=true, separator=, }, FunctionNode.functionURI=http:&#47;&#47;www.w3.org&#47;2006&#47;sparql-functions#groupConcat, valueExpr=com.bigdata.bop.rdf.aggregate.GROUP_CONCAT(kwu)[ AggregateBase.distinct=true, separator=, , GROUP_CONCAT.namespace=earthcube.lex]] AS VarNode(kw) ) ( VarNode(datep) AS VarNode(datep) ) ( com.bigdata.rdf.sparql.ast.FunctionNode(VarNode(url))[ FunctionNode.scalarVals={com.bigdata.bop.aggregate.AggregateBase.distinct=true, separator=, }, FunctionNode.functionURI=http:&#47;&#47;www.w3.org&#47;2006&#47;sparql-functions#groupConcat, valueExpr=com.bigdata.bop.rdf.aggregate.GROUP_CONCAT(url)[ AggregateBase.distinct=true, separator=, , GROUP_CONCAT.namespace=earthcube.lex]] AS VarNode(disurl) ) ( com.bigdata.rdf.sparql.ast.FunctionNode(VarNode(score1))[ FunctionNode.scalarVals=null, FunctionNode.functionURI=http:&#47;&#47;www.w3.org&#47;2006&#47;sparql-functions#max, valueExpr=com.bigdata.bop.rdf.aggregate.MAX(score1)] AS VarNode(score) )
+  JoinGroupNode {
+    INCLUDE %-anon-service-call-0 JOIN ON ()
+    StatementPatternNode(VarNode(subj), VarNode(p), VarNode(lit)) [scope=DEFAULT_CONTEXTS]
+      AST2BOpBase.estimatedCardinality=28512091
+      AST2BOpBase.originalIndex=SPOC
+    StatementPatternNode(VarNode(subj), ConstantNode(Vocab(14)[http:&#47;&#47;www.w3.org&#47;1999&#47;02&#47;22-rdf-syntax-ns#type]), VarNode(type)) [scope=DEFAULT_CONTEXTS]
+      AST2BOpBase.estimatedCardinality=1225028
+      AST2BOpBase.originalIndex=POCS
+    PropertyPathUnionNode [joinVars=[subj]] [projectInVars=[subj]] {
+      JoinGroupNode [joinVars=[subj]] [projectInVars=[subj]] {
+        StatementPatternNode(VarNode(subj), ConstantNode(TermId(665357U)[http:&#47;&#47;schema.org&#47;description]), VarNode(description), VarNode(g)) [scope=NAMED_CONTEXTS]
+          AST2BOpBase.estimatedCardinality=634928
+          AST2BOpBase.originalIndex=POCS
+      } JOIN ON (subj) AST2BOpBase.estimatedCardinality=634928
+      JoinGroupNode [joinVars=[subj]] [projectInVars=[subj]] {
+        StatementPatternNode(VarNode(subj), ConstantNode(TermId(731U)[https:&#47;&#47;schema.org&#47;description]), VarNode(description), VarNode(g)) [scope=NAMED_CONTEXTS]
+          AST2BOpBase.estimatedCardinality=792137
+          AST2BOpBase.originalIndex=POCS
+      } JOIN ON (subj) AST2BOpBase.estimatedCardinality=792137
+    } JOIN ON (subj) AST2BOpBase.estimatedCardinality=1427065
+    PropertyPathUnionNode [joinVars=[subj, g]] [projectInVars=[subj, g]] {
+      JoinGroupNode [joinVars=[subj, g]] [projectInVars=[subj, g]] {
+        StatementPatternNode(VarNode(subj), ConstantNode(TermId(665361U)[http:&#47;&#47;schema.org&#47;name]), VarNode(name), VarNode(g)) [scope=NAMED_CONTEXTS]
+          AST2BOpBase.estimatedCardinality=360178
+          AST2BOpBase.originalIndex=POCS
+      } JOIN ON (subj,g) AST2BOpBase.estimatedCardinality=360178
+      JoinGroupNode [joinVars=[subj, g]] [projectInVars=[subj, g]] {
+        StatementPatternNode(VarNode(subj), ConstantNode(TermId(736U)[https:&#47;&#47;schema.org&#47;name]), VarNode(name), VarNode(g)) [scope=NAMED_CONTEXTS]
+          AST2BOpBase.estimatedCardinality=1381456
+          AST2BOpBase.originalIndex=POCS
+      } JOIN ON (subj,g) AST2BOpBase.estimatedCardinality=1381456
+    } JOIN ON (subj,g) AST2BOpBase.estimatedCardinality=1741634
+    JoinGroupNode [optional] [joinVars=[subj]] [projectInVars=[subj]] {
+      PropertyPathUnionNode [joinVars=[subj]] [projectInVars=[subj]] {
+        JoinGroupNode [joinVars=[subj]] [projectInVars=[subj]] {
+          StatementPatternNode(VarNode(subj), ConstantNode(TermId(1630018U)[http:&#47;&#47;schema.org&#47;distribution]), VarNode(--pp-anon-da16ccd8-737d-403f-9ecf-1a355adf61c4)[anonymous]) [scope=DEFAULT_CONTEXTS]
+            AST2BOpBase.estimatedCardinality=74999
+            AST2BOpBase.originalIndex=POCS
+          StatementPatternNode(VarNode(--pp-anon-da16ccd8-737d-403f-9ecf-1a355adf61c4)[anonymous], ConstantNode(TermId(665364U)[http:&#47;&#47;schema.org&#47;url]), VarNode(url)) [scope=DEFAULT_CONTEXTS]
+            AST2BOpBase.estimatedCardinality=299124
+            AST2BOpBase.originalIndex=POCS
+        } JOIN ON (subj)
+        JoinGroupNode [joinVars=[subj]] [projectInVars=[subj]] {
+          StatementPatternNode(VarNode(subj), ConstantNode(TermId(968045U)[https:&#47;&#47;schema.org&#47;subjectOf]), VarNode(--pp-anon-312479c8-02af-41dc-a7a6-75225c5287a0)[anonymous]) [scope=DEFAULT_CONTEXTS]
+            AST2BOpBase.estimatedCardinality=28471
+            AST2BOpBase.originalIndex=POCS
+          StatementPatternNode(VarNode(--pp-anon-312479c8-02af-41dc-a7a6-75225c5287a0)[anonymous], ConstantNode(TermId(741U)[https:&#47;&#47;schema.org&#47;url]), VarNode(url)) [scope=DEFAULT_CONTEXTS]
+            AST2BOpBase.estimatedCardinality=797738
+            AST2BOpBase.originalIndex=POCS
+        } JOIN ON (subj)
+      } JOIN ON (subj)
+    } JOIN ON (subj)
+    JoinGroupNode [optional] [joinVars=[subj]] [projectInVars=[subj]] {
+      PropertyPathUnionNode [joinVars=[subj]] [projectInVars=[subj]] {
+        JoinGroupNode [joinVars=[subj]] [projectInVars=[subj]] {
+          StatementPatternNode(VarNode(subj), ConstantNode(TermId(1630017U)[http:&#47;&#47;schema.org&#47;datePublished]), VarNode(datep)) [scope=DEFAULT_CONTEXTS]
+            AST2BOpBase.estimatedCardinality=69145
+            AST2BOpBase.originalIndex=POCS
+        } JOIN ON (subj) AST2BOpBase.estimatedCardinality=69145
+        JoinGroupNode [joinVars=[subj]] [projectInVars=[subj]] {
+          StatementPatternNode(VarNode(subj), ConstantNode(TermId(968040U)[https:&#47;&#47;schema.org&#47;datePublished]), VarNode(datep)) [scope=DEFAULT_CONTEXTS]
+            AST2BOpBase.estimatedCardinality=39916
+            AST2BOpBase.originalIndex=POCS
+        } JOIN ON (subj) AST2BOpBase.estimatedCardinality=39916
+      } JOIN ON (subj) AST2BOpBase.estimatedCardinality=109061
+    } JOIN ON (subj) AST2BOpBase.estimatedCardinality=109061
+    JoinGroupNode [optional] [joinVars=[subj]] [projectInVars=[subj]] {
+      PropertyPathUnionNode [joinVars=[subj]] [projectInVars=[subj]] {
+        JoinGroupNode [joinVars=[subj]] [projectInVars=[subj]] {
+          StatementPatternNode(VarNode(subj), ConstantNode(TermId(1630033U)[http:&#47;&#47;schema.org&#47;publisher]), VarNode(--pp-anon-21b6b2fd-de58-450d-8d02-5ef787717163)[anonymous]) [scope=DEFAULT_CONTEXTS]
+            AST2BOpBase.estimatedCardinality=36874
+            AST2BOpBase.originalIndex=POCS
+          StatementPatternNode(VarNode(--pp-anon-21b6b2fd-de58-450d-8d02-5ef787717163)[anonymous], ConstantNode(TermId(665361U)[http:&#47;&#47;schema.org&#47;name]), VarNode(pubname)) [scope=DEFAULT_CONTEXTS]
+            AST2BOpBase.estimatedCardinality=360178
+            AST2BOpBase.originalIndex=POCS
+        } JOIN ON (subj)
+        JoinGroupNode [joinVars=[subj]] [projectInVars=[subj]] {
+          StatementPatternNode(VarNode(subj), ConstantNode(TermId(644149U)[https:&#47;&#47;schema.org&#47;publisher]), VarNode(--pp-anon-a5eb5a1d-30b2-4055-b401-dc93eabb0650)[anonymous]) [scope=DEFAULT_CONTEXTS]
+            AST2BOpBase.estimatedCardinality=41387
+            AST2BOpBase.originalIndex=POCS
+          StatementPatternNode(VarNode(--pp-anon-a5eb5a1d-30b2-4055-b401-dc93eabb0650)[anonymous], ConstantNode(TermId(736U)[https:&#47;&#47;schema.org&#47;name]), VarNode(pubname)) [scope=DEFAULT_CONTEXTS]
+            AST2BOpBase.estimatedCardinality=1381456
+            AST2BOpBase.originalIndex=POCS
+        } JOIN ON (subj)
+        JoinGroupNode [joinVars=[subj]] [projectInVars=[subj]] {
+          StatementPatternNode(VarNode(subj), ConstantNode(TermId(3110063U)[https:&#47;&#47;schema.org&#47;sdPublisher]), VarNode(pubname)) [scope=DEFAULT_CONTEXTS]
+            AST2BOpBase.estimatedCardinality=14321
+            AST2BOpBase.originalIndex=POCS
+        } JOIN ON (subj) AST2BOpBase.estimatedCardinality=14321
+        JoinGroupNode [joinVars=[subj]] [projectInVars=[subj]] {
+          StatementPatternNode(VarNode(subj), ConstantNode(TermId(668961U)[https:&#47;&#47;schema.org&#47;provider]), VarNode(--pp-anon-5d96b09e-bb72-4f00-bd60-e1bed0dea52b)[anonymous]) [scope=DEFAULT_CONTEXTS]
+            AST2BOpBase.estimatedCardinality=52444
+            AST2BOpBase.originalIndex=POCS
+          StatementPatternNode(VarNode(--pp-anon-5d96b09e-bb72-4f00-bd60-e1bed0dea52b)[anonymous], ConstantNode(TermId(665361U)[http:&#47;&#47;schema.org&#47;name]), VarNode(pubname)) [scope=DEFAULT_CONTEXTS]
+            AST2BOpBase.estimatedCardinality=360178
+            AST2BOpBase.originalIndex=POCS
+        } JOIN ON (subj)
+      } JOIN ON (subj)
+    } JOIN ON (subj)
+    JoinGroupNode [optional] [joinVars=[subj]] [projectInVars=[subj]] {
+      PropertyPathUnionNode [joinVars=[subj]] [projectInVars=[subj]] {
+        JoinGroupNode [joinVars=[subj]] [projectInVars=[subj]] {
+          StatementPatternNode(VarNode(subj), ConstantNode(TermId(1630034U)[http:&#47;&#47;schema.org&#47;spatialCoverage]), VarNode(--pp-anon-12cf1227-e0e8-48bf-9910-7c9a34d4a1c5)[anonymous]) [scope=DEFAULT_CONTEXTS]
+            AST2BOpBase.estimatedCardinality=251540
+            AST2BOpBase.originalIndex=POCS
+          StatementPatternNode(VarNode(--pp-anon-12cf1227-e0e8-48bf-9910-7c9a34d4a1c5)[anonymous], ConstantNode(TermId(665361U)[http:&#47;&#47;schema.org&#47;name]), VarNode(placename)) [scope=DEFAULT_CONTEXTS]
+            AST2BOpBase.estimatedCardinality=360178
+            AST2BOpBase.originalIndex=POCS
+        } JOIN ON (subj)
+        JoinGroupNode [joinVars=[subj]] [projectInVars=[subj]] {
+          StatementPatternNode(VarNode(subj), ConstantNode(TermId(644150U)[https:&#47;&#47;schema.org&#47;spatialCoverage]), VarNode(--pp-anon-6b17a674-9891-48b7-8cd8-dfe39d3be1f9)[anonymous]) [scope=DEFAULT_CONTEXTS]
+            AST2BOpBase.estimatedCardinality=120566
+            AST2BOpBase.originalIndex=POCS
+          StatementPatternNode(VarNode(--pp-anon-6b17a674-9891-48b7-8cd8-dfe39d3be1f9)[anonymous], ConstantNode(TermId(736U)[https:&#47;&#47;schema.org&#47;name]), VarNode(placename)) [scope=DEFAULT_CONTEXTS]
+            AST2BOpBase.estimatedCardinality=1381456
+            AST2BOpBase.originalIndex=POCS
+        } JOIN ON (subj)
+      } JOIN ON (subj)
+    } JOIN ON (subj)
+    JoinGroupNode [optional] [joinVars=[subj]] [projectInVars=[subj]] {
+      PropertyPathUnionNode [joinVars=[subj]] [projectInVars=[subj]] {
+        JoinGroupNode [joinVars=[subj]] [projectInVars=[subj]] {
+          StatementPatternNode(VarNode(subj), ConstantNode(TermId(665360U)[http:&#47;&#47;schema.org&#47;keywords]), VarNode(kwu)) [scope=DEFAULT_CONTEXTS]
+            AST2BOpBase.estimatedCardinality=122376
+            AST2BOpBase.originalIndex=POCS
+        } JOIN ON (subj) AST2BOpBase.estimatedCardinality=122376
+        JoinGroupNode [joinVars=[subj]] [projectInVars=[subj]] {
+          StatementPatternNode(VarNode(subj), ConstantNode(TermId(734U)[https:&#47;&#47;schema.org&#47;keywords]), VarNode(kwu)) [scope=DEFAULT_CONTEXTS]
+            AST2BOpBase.estimatedCardinality=421927
+            AST2BOpBase.originalIndex=POCS
+        } JOIN ON (subj) AST2BOpBase.estimatedCardinality=421927
+      } JOIN ON (subj) AST2BOpBase.estimatedCardinality=544303
+    } JOIN ON (subj) AST2BOpBase.estimatedCardinality=544303
+  }
+group by ( VarNode(subj) AS VarNode(subj) ) ( VarNode(g) AS VarNode(g) ) ( VarNode(resourceType) AS VarNode(resourceType) ) ( VarNode(name) AS VarNode(name) ) ( VarNode(description) AS VarNode(description) ) ( VarNode(pubname) AS VarNode(pubname) ) ( VarNode(placenames) AS VarNode(placenames) ) ( VarNode(kw) AS VarNode(kw) ) ( VarNode(datep) AS VarNode(datep) ) ( VarNode(disurl) AS VarNode(disurl) ) ( VarNode(score) AS VarNode(score) )
+ORDER BY com.bigdata.rdf.sparql.ast.OrderByExpr(VarNode(score))[ ascending=false]
+slice(limit=1000)
+
+with static (exogeneous) bindings defined as follows: 
+{
+  { type=TermId(665354U)[http:&#47;&#47;schema.org&#47;Dataset], resourceType=TermId(47924L)[data] },
+  { type=TermId(644134U)[https:&#47;&#47;schema.org&#47;Dataset], resourceType=TermId(47924L)[data] },
+  { type=TermId(6073205U)[http:&#47;&#47;schema.org&#47;ResearchProject], resourceType=TermId(0L)[Research Project] },
+  { type=TermId(669272U)[https:&#47;&#47;schema.org&#47;ResearchProject], resourceType=TermId(0L)[Research Project] },
+  { type=TermId(0U)[http:&#47;&#47;schema.org&#47;SoftwareApplication], resourceType=TermId(1479024L)[tool] },
+  { type=TermId(0U)[https:&#47;&#47;schema.org&#47;SoftwareApplication], resourceType=TermId(1479024L)[tool] },
+  { type=TermId(665363U)[http:&#47;&#47;schema.org&#47;Person], resourceType=TermId(1048080L)[Person] },
+  { type=TermId(738U)[https:&#47;&#47;schema.org&#47;Person], resourceType=TermId(1048080L)[Person] },
+  { type=TermId(0U)[http:&#47;&#47;schema.org&#47;Event], resourceType=TermId(698410L)[Event] },
+  { type=TermId(967901U)[https:&#47;&#47;schema.org&#47;Event], resourceType=TermId(698410L)[Event] },
+  { type=TermId(0U)[http:&#47;&#47;schema.org&#47;Award], resourceType=TermId(0L)[Award] },
+  ... (4 more)
+}
+</pre
+><h2>Query Plan</h2
+><pre>com.bigdata.bop.solutions.SliceOp[137](ProjectionOp[136])[ BOp.bopId=137, SliceOp.offset=0, SliceOp.limit=1000, BOp.evaluationContext=CONTROLLER, PipelineOp.pipelined=true, PipelineOp.maxParallel=1, PipelineOp.reorderSolutions=false, PipelineOp.sharedState=true, BOp.namespace=earthcube, QueryEngine.queryId=de9a9ca6-ecd4-428c-9336-788323b96f39, QueryEngine.chunkHandler=com.bigdata.bop.engine.ManagedHeapStandloneChunkHandler@756fe671]
+  com.bigdata.bop.solutions.ProjectionOp[136](JVMDistinctBindingSetsOp[135])[ BOp.bopId=136, BOp.evaluationContext=CONTROLLER, PipelineOp.sharedState=true, JoinAnnotations.select=[subj, g, resourceType, name, description, pubname, placenames, kw, datep, disurl, score], PipelineOp.maxParallel=1, PipelineOp.reorderSolutions=false]
+    com.bigdata.bop.solutions.JVMDistinctBindingSetsOp[135](MemorySortOp[133])[ BOp.bopId=135, HashJoinAnnotations.joinVars=[subj, g, resourceType, name, description, pubname, placenames, kw, datep, disurl, score], BOp.evaluationContext=CONTROLLER, PipelineOp.sharedState=true, PipelineOp.maxParallel=1, PipelineOp.reorderSolutions=false]
+      com.bigdata.bop.solutions.MemorySortOp[133](ChunkedMaterializationOp[134])[ BOp.bopId=133, SortOp.sortOrder=[DESC(score)], SortOp.valueComparator=com.bigdata.bop.solutions.IVComparator@2ed8cc1b, BOp.evaluationContext=CONTROLLER, PipelineOp.pipelined=true, PipelineOp.maxParallel=1, PipelineOp.reorderSolutions=false, PipelineOp.lastPass=true]
+        com.bigdata.bop.rdf.join.ChunkedMaterializationOp[134](MemoryGroupByOp[131])[ ChunkedMaterializationOp.vars=[score], IPredicate.relationName=[earthcube.lex], IPredicate.timestamp=1666712011353, ChunkedMaterializationOp.materializeAll=false, PipelineOp.sharedState=true, PipelineOp.reorderSolutions=true, PipelineOp.maxParallel=5, BOp.bopId=134]
+          com.bigdata.bop.solutions.MemoryGroupByOp[131](ChunkedMaterializationOp[132])[ BOp.bopId=131, BOp.evaluationContext=CONTROLLER, PipelineOp.pipelined=false, PipelineOp.maxMemory=0, GroupByOp.groupByState=GroupByState{select=[com.bigdata.bop.Bind(subj,subj), com.bigdata.bop.Bind(g,g), com.bigdata.bop.Bind(resourceType,resourceType), com.bigdata.bop.Bind(name,name), com.bigdata.bop.Bind(description,description), com.bigdata.bop.Bind(pubname,pubname), com.bigdata.bop.Bind(placenames,com.bigdata.bop.rdf.aggregate.GROUP_CONCAT(placename)[ AggregateBase.distinct=true, separator=, , GROUP_CONCAT.namespace=earthcube.lex]), com.bigdata.bop.Bind(kw,com.bigdata.bop.rdf.aggregate.GROUP_CONCAT(kwu)[ AggregateBase.distinct=true, separator=, , GROUP_CONCAT.namespace=earthcube.lex]), com.bigdata.bop.Bind(datep,datep), com.bigdata.bop.Bind(disurl,com.bigdata.bop.rdf.aggregate.GROUP_CONCAT(url)[ AggregateBase.distinct=true, separator=, , GROUP_CONCAT.namespace=earthcube.lex]), com.bigdata.bop.Bind(score,com.bigdata.bop.rdf.aggregate.MAX(score1))],groupBy=[com.bigdata.bop.Bind(subj,subj), com.bigdata.bop.Bind(g,g), com.bigdata.bop.Bind(resourceType,resourceType), com.bigdata.bop.Bind(name,name), com.bigdata.bop.Bind(description,description), com.bigdata.bop.Bind(pubname,pubname), com.bigdata.bop.Bind(placenames,placenames), com.bigdata.bop.Bind(kw,kw), com.bigdata.bop.Bind(datep,datep), com.bigdata.bop.Bind(disurl,disurl), com.bigdata.bop.Bind(score,score)],having=null}, GroupByOp.groupByRewrite=GroupByRewriter{aggExpr={com.bigdata.bop.rdf.aggregate.GROUP_CONCAT(placename)[ AggregateBase.distinct=true, separator=, , GROUP_CONCAT.namespace=earthcube.lex]=3a29612a-5cbc-4df4-90e7-88109f1a8df2, com.bigdata.bop.rdf.aggregate.GROUP_CONCAT(kwu)[ AggregateBase.distinct=true, separator=, , GROUP_CONCAT.namespace=earthcube.lex]=8a75ac66-703e-4b84-b73c-137056234665, com.bigdata.bop.rdf.aggregate.GROUP_CONCAT(url)[ AggregateBase.distinct=true, separator=, , GROUP_CONCAT.namespace=earthcube.lex]=ff1bd79c-51de-4828-bf3d-5c608b2f0626, com.bigdata.bop.rdf.aggregate.MAX(score1)=5d54358a-0269-4d72-aad9-50feef951513},select2=[com.bigdata.bop.Bind(subj,subj), com.bigdata.bop.Bind(g,g), com.bigdata.bop.Bind(resourceType,resourceType), com.bigdata.bop.Bind(name,name), com.bigdata.bop.Bind(description,description), com.bigdata.bop.Bind(pubname,pubname), com.bigdata.bop.Bind(placenames,3a29612a-5cbc-4df4-90e7-88109f1a8df2), com.bigdata.bop.Bind(kw,8a75ac66-703e-4b84-b73c-137056234665), com.bigdata.bop.Bind(datep,datep), com.bigdata.bop.Bind(disurl,ff1bd79c-51de-4828-bf3d-5c608b2f0626), com.bigdata.bop.Bind(score,5d54358a-0269-4d72-aad9-50feef951513)],having2=null}]
+            com.bigdata.bop.rdf.join.ChunkedMaterializationOp[132](JVMSolutionSetHashJoinOp[130])[ ChunkedMaterializationOp.vars=[placename, kwu, url, score1], IPredicate.relationName=[earthcube.lex], IPredicate.timestamp=1666712011353, ChunkedMaterializationOp.materializeAll=false, PipelineOp.sharedState=true, PipelineOp.reorderSolutions=true, PipelineOp.maxParallel=5, BOp.bopId=132]
+              com.bigdata.bop.join.JVMSolutionSetHashJoinOp[130](CopyOp[119])[ BOp.bopId=130, BOp.evaluationContext=CONTROLLER, PipelineOp.maxParallel=1, PipelineOp.sharedState=true, JoinAnnotations.constraints=null, SolutionSetHashJoinOp.release=true, PipelineOp.lastPass=true, namedSetRef=NamedSolutionSetRef{localName=--set-117,queryId=de9a9ca6-ecd4-428c-9336-788323b96f39,joinVars=[subj]}]
+                com.bigdata.bop.bset.CopyOp[119](PipelineJoin[129])[ BOp.bopId=119, BOp.evaluationContext=CONTROLLER]
+                  com.bigdata.bop.join.PipelineJoin[129](CopyOp[121])[ BOp.bopId=129, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[127](subj=null, TermId(734U)[https:&#47;&#47;schema.org&#47;keywords], kwu=null, --anon-128=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=127, AST2BOpBase.estimatedCardinality=421927, AST2BOpBase.originalIndex=POCS, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL], IPredicate.accessPathFilter=cutthecrap.utils.striterators.NOPFilter@2090006b{annotations=null,filterChain=[com.bigdata.bop.rdf.filter.StripContextFilter(), com.bigdata.bop.ap.filter.DistinctFilter()]}], PipelineOp.sinkRef=119]
+                    com.bigdata.bop.bset.CopyOp[121](PipelineJoin[126])[ BOp.bopId=121]
+                      com.bigdata.bop.join.PipelineJoin[126](CopyOp[120])[ BOp.bopId=126, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[124](subj=null, TermId(665360U)[http:&#47;&#47;schema.org&#47;keywords], kwu=null, --anon-125=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=124, AST2BOpBase.estimatedCardinality=122376, AST2BOpBase.originalIndex=POCS, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL], IPredicate.accessPathFilter=cutthecrap.utils.striterators.NOPFilter@74a2b6e6{annotations=null,filterChain=[com.bigdata.bop.rdf.filter.StripContextFilter(), com.bigdata.bop.ap.filter.DistinctFilter()]}], PipelineOp.sinkRef=119]
+                        com.bigdata.bop.bset.CopyOp[120](Tee[122])[ BOp.bopId=120]
+                          com.bigdata.bop.bset.Tee[122](HashIndexOp[118])[ BOp.bopId=122, PipelineOp.sinkRef=120, PipelineOp.altSinkRef=121]
+                            com.bigdata.bop.join.HashIndexOp[118](JVMSolutionSetHashJoinOp[116])[ BOp.bopId=118, BOp.evaluationContext=CONTROLLER, PipelineOp.maxParallel=1, PipelineOp.lastPass=true, PipelineOp.sharedState=true, JoinAnnotations.joinType=Optional, HashJoinAnnotations.joinVars=[subj], bindingSets=null, HashJoinAnnotations.outputDistinctJVs=true, JoinAnnotations.constraints=null, HashJoinAnnotations.askVar=null, HashIndexOpBase.utilFactory=com.bigdata.bop.join.JVMHashJoinUtility$1@79357138, namedSetRef=NamedSolutionSetRef{localName=--set-117,queryId=de9a9ca6-ecd4-428c-9336-788323b96f39,joinVars=[subj]}, IPredicate.relationName=[earthcube.lex]]
+                              com.bigdata.bop.join.JVMSolutionSetHashJoinOp[116](CopyOp[99])[ BOp.bopId=116, BOp.evaluationContext=CONTROLLER, PipelineOp.maxParallel=1, PipelineOp.sharedState=true, JoinAnnotations.constraints=null, SolutionSetHashJoinOp.release=true, PipelineOp.lastPass=true, namedSetRef=NamedSolutionSetRef{localName=--set-97,queryId=de9a9ca6-ecd4-428c-9336-788323b96f39,joinVars=[subj]}]
+                                com.bigdata.bop.bset.CopyOp[99](PipelineJoin[115])[ BOp.bopId=99, BOp.evaluationContext=CONTROLLER]
+                                  com.bigdata.bop.join.PipelineJoin[115](PipelineJoin[112])[ BOp.bopId=115, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[113](--pp-anon-6b17a674-9891-48b7-8cd8-dfe39d3be1f9=null, TermId(736U)[https:&#47;&#47;schema.org&#47;name], placename=null, --anon-114=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=113, AST2BOpBase.estimatedCardinality=1381456, AST2BOpBase.originalIndex=POCS, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL], IPredicate.accessPathFilter=cutthecrap.utils.striterators.NOPFilter@22efe8ff{annotations=null,filterChain=[com.bigdata.bop.rdf.filter.StripContextFilter(), com.bigdata.bop.ap.filter.DistinctFilter()]}], PipelineOp.sinkRef=99]
+                                    com.bigdata.bop.join.PipelineJoin[112](CopyOp[101])[ BOp.bopId=112, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[110](subj=null, TermId(644150U)[https:&#47;&#47;schema.org&#47;spatialCoverage], --pp-anon-6b17a674-9891-48b7-8cd8-dfe39d3be1f9=null, --anon-111=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=110, AST2BOpBase.estimatedCardinality=120566, AST2BOpBase.originalIndex=POCS, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL], IPredicate.accessPathFilter=cutthecrap.utils.striterators.NOPFilter@4a3f40ad{annotations=null,filterChain=[com.bigdata.bop.rdf.filter.StripContextFilter(), com.bigdata.bop.ap.filter.DistinctFilter()]}]]
+                                      com.bigdata.bop.bset.CopyOp[101](PipelineJoin[109])[ BOp.bopId=101]
+                                        com.bigdata.bop.join.PipelineJoin[109](PipelineJoin[106])[ BOp.bopId=109, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[107](--pp-anon-12cf1227-e0e8-48bf-9910-7c9a34d4a1c5=null, TermId(665361U)[http:&#47;&#47;schema.org&#47;name], placename=null, --anon-108=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=107, AST2BOpBase.estimatedCardinality=360178, AST2BOpBase.originalIndex=POCS, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL], IPredicate.accessPathFilter=cutthecrap.utils.striterators.NOPFilter@6a0c82d9{annotations=null,filterChain=[com.bigdata.bop.rdf.filter.StripContextFilter(), com.bigdata.bop.ap.filter.DistinctFilter()]}], PipelineOp.sinkRef=99]
+                                          com.bigdata.bop.join.PipelineJoin[106](CopyOp[100])[ BOp.bopId=106, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[104](subj=null, TermId(1630034U)[http:&#47;&#47;schema.org&#47;spatialCoverage], --pp-anon-12cf1227-e0e8-48bf-9910-7c9a34d4a1c5=null, --anon-105=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=104, AST2BOpBase.estimatedCardinality=251540, AST2BOpBase.originalIndex=POCS, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL], IPredicate.accessPathFilter=cutthecrap.utils.striterators.NOPFilter@bf80cf8{annotations=null,filterChain=[com.bigdata.bop.rdf.filter.StripContextFilter(), com.bigdata.bop.ap.filter.DistinctFilter()]}]]
+                                            com.bigdata.bop.bset.CopyOp[100](Tee[102])[ BOp.bopId=100]
+                                              com.bigdata.bop.bset.Tee[102](HashIndexOp[98])[ BOp.bopId=102, PipelineOp.sinkRef=100, PipelineOp.altSinkRef=101]
+                                                com.bigdata.bop.join.HashIndexOp[98](JVMSolutionSetHashJoinOp[96])[ BOp.bopId=98, BOp.evaluationContext=CONTROLLER, PipelineOp.maxParallel=1, PipelineOp.lastPass=true, PipelineOp.sharedState=true, JoinAnnotations.joinType=Optional, HashJoinAnnotations.joinVars=[subj], bindingSets=null, HashJoinAnnotations.outputDistinctJVs=true, JoinAnnotations.constraints=null, HashJoinAnnotations.askVar=null, HashIndexOpBase.utilFactory=com.bigdata.bop.join.JVMHashJoinUtility$1@79357138, namedSetRef=NamedSolutionSetRef{localName=--set-97,queryId=de9a9ca6-ecd4-428c-9336-788323b96f39,joinVars=[subj]}, IPredicate.relationName=[earthcube.lex]]
+                                                  com.bigdata.bop.join.JVMSolutionSetHashJoinOp[96](CopyOp[66])[ BOp.bopId=96, BOp.evaluationContext=CONTROLLER, PipelineOp.maxParallel=1, PipelineOp.sharedState=true, JoinAnnotations.constraints=null, SolutionSetHashJoinOp.release=true, PipelineOp.lastPass=true, namedSetRef=NamedSolutionSetRef{localName=--set-64,queryId=de9a9ca6-ecd4-428c-9336-788323b96f39,joinVars=[subj]}]
+                                                    com.bigdata.bop.bset.CopyOp[66](PipelineJoin[95])[ BOp.bopId=66, BOp.evaluationContext=CONTROLLER]
+                                                      com.bigdata.bop.join.PipelineJoin[95](PipelineJoin[92])[ BOp.bopId=95, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[93](--pp-anon-5d96b09e-bb72-4f00-bd60-e1bed0dea52b=null, TermId(665361U)[http:&#47;&#47;schema.org&#47;name], pubname=null, --anon-94=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=93, AST2BOpBase.estimatedCardinality=360178, AST2BOpBase.originalIndex=POCS, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL], IPredicate.accessPathFilter=cutthecrap.utils.striterators.NOPFilter@560db568{annotations=null,filterChain=[com.bigdata.bop.rdf.filter.StripContextFilter(), com.bigdata.bop.ap.filter.DistinctFilter()]}], PipelineOp.sinkRef=66]
+                                                        com.bigdata.bop.join.PipelineJoin[92](CopyOp[70])[ BOp.bopId=92, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[90](subj=null, TermId(668961U)[https:&#47;&#47;schema.org&#47;provider], --pp-anon-5d96b09e-bb72-4f00-bd60-e1bed0dea52b=null, --anon-91=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=90, AST2BOpBase.estimatedCardinality=52444, AST2BOpBase.originalIndex=POCS, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL], IPredicate.accessPathFilter=cutthecrap.utils.striterators.NOPFilter@6687ad2c{annotations=null,filterChain=[com.bigdata.bop.rdf.filter.StripContextFilter(), com.bigdata.bop.ap.filter.DistinctFilter()]}]]
+                                                          com.bigdata.bop.bset.CopyOp[70](PipelineJoin[89])[ BOp.bopId=70]
+                                                            com.bigdata.bop.join.PipelineJoin[89](CopyOp[69])[ BOp.bopId=89, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[87](subj=null, TermId(3110063U)[https:&#47;&#47;schema.org&#47;sdPublisher], pubname=null, --anon-88=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=87, AST2BOpBase.estimatedCardinality=14321, AST2BOpBase.originalIndex=POCS, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL], IPredicate.accessPathFilter=cutthecrap.utils.striterators.NOPFilter@6813e16f{annotations=null,filterChain=[com.bigdata.bop.rdf.filter.StripContextFilter(), com.bigdata.bop.ap.filter.DistinctFilter()]}], PipelineOp.sinkRef=66]
+                                                              com.bigdata.bop.bset.CopyOp[69](PipelineJoin[86])[ BOp.bopId=69]
+                                                                com.bigdata.bop.join.PipelineJoin[86](PipelineJoin[83])[ BOp.bopId=86, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[84](--pp-anon-a5eb5a1d-30b2-4055-b401-dc93eabb0650=null, TermId(736U)[https:&#47;&#47;schema.org&#47;name], pubname=null, --anon-85=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=84, AST2BOpBase.estimatedCardinality=1381456, AST2BOpBase.originalIndex=POCS, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL], IPredicate.accessPathFilter=cutthecrap.utils.striterators.NOPFilter@2347bf59{annotations=null,filterChain=[com.bigdata.bop.rdf.filter.StripContextFilter(), com.bigdata.bop.ap.filter.DistinctFilter()]}], PipelineOp.sinkRef=66]
+                                                                  com.bigdata.bop.join.PipelineJoin[83](CopyOp[68])[ BOp.bopId=83, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[81](subj=null, TermId(644149U)[https:&#47;&#47;schema.org&#47;publisher], --pp-anon-a5eb5a1d-30b2-4055-b401-dc93eabb0650=null, --anon-82=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=81, AST2BOpBase.estimatedCardinality=41387, AST2BOpBase.originalIndex=POCS, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL], IPredicate.accessPathFilter=cutthecrap.utils.striterators.NOPFilter@18daf8ac{annotations=null,filterChain=[com.bigdata.bop.rdf.filter.StripContextFilter(), com.bigdata.bop.ap.filter.DistinctFilter()]}]]
+                                                                    com.bigdata.bop.bset.CopyOp[68](PipelineJoin[80])[ BOp.bopId=68]
+                                                                      com.bigdata.bop.join.PipelineJoin[80](PipelineJoin[77])[ BOp.bopId=80, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[78](--pp-anon-21b6b2fd-de58-450d-8d02-5ef787717163=null, TermId(665361U)[http:&#47;&#47;schema.org&#47;name], pubname=null, --anon-79=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=78, AST2BOpBase.estimatedCardinality=360178, AST2BOpBase.originalIndex=POCS, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL], IPredicate.accessPathFilter=cutthecrap.utils.striterators.NOPFilter@43efc856{annotations=null,filterChain=[com.bigdata.bop.rdf.filter.StripContextFilter(), com.bigdata.bop.ap.filter.DistinctFilter()]}], PipelineOp.sinkRef=66]
+                                                                        com.bigdata.bop.join.PipelineJoin[77](CopyOp[67])[ BOp.bopId=77, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[75](subj=null, TermId(1630033U)[http:&#47;&#47;schema.org&#47;publisher], --pp-anon-21b6b2fd-de58-450d-8d02-5ef787717163=null, --anon-76=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=75, AST2BOpBase.estimatedCardinality=36874, AST2BOpBase.originalIndex=POCS, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL], IPredicate.accessPathFilter=cutthecrap.utils.striterators.NOPFilter@340041dd{annotations=null,filterChain=[com.bigdata.bop.rdf.filter.StripContextFilter(), com.bigdata.bop.ap.filter.DistinctFilter()]}]]
+                                                                          com.bigdata.bop.bset.CopyOp[67](Tee[73])[ BOp.bopId=67]
+                                                                            com.bigdata.bop.bset.Tee[73](Tee[72])[ BOp.bopId=73, PipelineOp.sinkRef=69, PipelineOp.altSinkRef=70]
+                                                                              com.bigdata.bop.bset.Tee[72](Tee[71])[ BOp.bopId=72, PipelineOp.sinkRef=73, PipelineOp.altSinkRef=68]
+                                                                                com.bigdata.bop.bset.Tee[71](HashIndexOp[65])[ BOp.bopId=71, PipelineOp.sinkRef=72, PipelineOp.altSinkRef=67]
+                                                                                  com.bigdata.bop.join.HashIndexOp[65](JVMSolutionSetHashJoinOp[63])[ BOp.bopId=65, BOp.evaluationContext=CONTROLLER, PipelineOp.maxParallel=1, PipelineOp.lastPass=true, PipelineOp.sharedState=true, JoinAnnotations.joinType=Optional, HashJoinAnnotations.joinVars=[subj], bindingSets=null, HashJoinAnnotations.outputDistinctJVs=true, JoinAnnotations.constraints=null, HashJoinAnnotations.askVar=null, HashIndexOpBase.utilFactory=com.bigdata.bop.join.JVMHashJoinUtility$1@79357138, namedSetRef=NamedSolutionSetRef{localName=--set-64,queryId=de9a9ca6-ecd4-428c-9336-788323b96f39,joinVars=[subj]}, IPredicate.relationName=[earthcube.lex]]
+                                                                                    com.bigdata.bop.join.JVMSolutionSetHashJoinOp[63](CopyOp[52])[ BOp.bopId=63, BOp.evaluationContext=CONTROLLER, PipelineOp.maxParallel=1, PipelineOp.sharedState=true, JoinAnnotations.constraints=null, SolutionSetHashJoinOp.release=true, PipelineOp.lastPass=true, namedSetRef=NamedSolutionSetRef{localName=--set-50,queryId=de9a9ca6-ecd4-428c-9336-788323b96f39,joinVars=[subj]}]
+                                                                                      com.bigdata.bop.bset.CopyOp[52](PipelineJoin[62])[ BOp.bopId=52, BOp.evaluationContext=CONTROLLER]
+                                                                                        com.bigdata.bop.join.PipelineJoin[62](CopyOp[54])[ BOp.bopId=62, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[60](subj=null, TermId(968040U)[https:&#47;&#47;schema.org&#47;datePublished], datep=null, --anon-61=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=60, AST2BOpBase.estimatedCardinality=39916, AST2BOpBase.originalIndex=POCS, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL], IPredicate.accessPathFilter=cutthecrap.utils.striterators.NOPFilter@2a239d73{annotations=null,filterChain=[com.bigdata.bop.rdf.filter.StripContextFilter(), com.bigdata.bop.ap.filter.DistinctFilter()]}], PipelineOp.sinkRef=52]
+                                                                                          com.bigdata.bop.bset.CopyOp[54](PipelineJoin[59])[ BOp.bopId=54]
+                                                                                            com.bigdata.bop.join.PipelineJoin[59](CopyOp[53])[ BOp.bopId=59, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[57](subj=null, TermId(1630017U)[http:&#47;&#47;schema.org&#47;datePublished], datep=null, --anon-58=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=57, AST2BOpBase.estimatedCardinality=69145, AST2BOpBase.originalIndex=POCS, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL], IPredicate.accessPathFilter=cutthecrap.utils.striterators.NOPFilter@65731f03{annotations=null,filterChain=[com.bigdata.bop.rdf.filter.StripContextFilter(), com.bigdata.bop.ap.filter.DistinctFilter()]}], PipelineOp.sinkRef=52]
+                                                                                              com.bigdata.bop.bset.CopyOp[53](Tee[55])[ BOp.bopId=53]
+                                                                                                com.bigdata.bop.bset.Tee[55](HashIndexOp[51])[ BOp.bopId=55, PipelineOp.sinkRef=53, PipelineOp.altSinkRef=54]
+                                                                                                  com.bigdata.bop.join.HashIndexOp[51](JVMSolutionSetHashJoinOp[49])[ BOp.bopId=51, BOp.evaluationContext=CONTROLLER, PipelineOp.maxParallel=1, PipelineOp.lastPass=true, PipelineOp.sharedState=true, JoinAnnotations.joinType=Optional, HashJoinAnnotations.joinVars=[subj], bindingSets=null, HashJoinAnnotations.outputDistinctJVs=true, JoinAnnotations.constraints=null, HashJoinAnnotations.askVar=null, HashIndexOpBase.utilFactory=com.bigdata.bop.join.JVMHashJoinUtility$1@79357138, namedSetRef=NamedSolutionSetRef{localName=--set-50,queryId=de9a9ca6-ecd4-428c-9336-788323b96f39,joinVars=[subj]}, IPredicate.relationName=[earthcube.lex]]
+                                                                                                    com.bigdata.bop.join.JVMSolutionSetHashJoinOp[49](CopyOp[32])[ BOp.bopId=49, BOp.evaluationContext=CONTROLLER, PipelineOp.maxParallel=1, PipelineOp.sharedState=true, JoinAnnotations.constraints=null, SolutionSetHashJoinOp.release=true, PipelineOp.lastPass=true, namedSetRef=NamedSolutionSetRef{localName=--set-30,queryId=de9a9ca6-ecd4-428c-9336-788323b96f39,joinVars=[subj]}]
+                                                                                                      com.bigdata.bop.bset.CopyOp[32](PipelineJoin[48])[ BOp.bopId=32, BOp.evaluationContext=CONTROLLER]
+                                                                                                        com.bigdata.bop.join.PipelineJoin[48](PipelineJoin[45])[ BOp.bopId=48, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[46](--pp-anon-312479c8-02af-41dc-a7a6-75225c5287a0=null, TermId(741U)[https:&#47;&#47;schema.org&#47;url], url=null, --anon-47=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=46, AST2BOpBase.estimatedCardinality=797738, AST2BOpBase.originalIndex=POCS, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL], IPredicate.accessPathFilter=cutthecrap.utils.striterators.NOPFilter@58e3c683{annotations=null,filterChain=[com.bigdata.bop.rdf.filter.StripContextFilter(), com.bigdata.bop.ap.filter.DistinctFilter()]}], PipelineOp.sinkRef=32]
+                                                                                                          com.bigdata.bop.join.PipelineJoin[45](CopyOp[34])[ BOp.bopId=45, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[43](subj=null, TermId(968045U)[https:&#47;&#47;schema.org&#47;subjectOf], --pp-anon-312479c8-02af-41dc-a7a6-75225c5287a0=null, --anon-44=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=43, AST2BOpBase.estimatedCardinality=28471, AST2BOpBase.originalIndex=POCS, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL], IPredicate.accessPathFilter=cutthecrap.utils.striterators.NOPFilter@6e5b6aeb{annotations=null,filterChain=[com.bigdata.bop.rdf.filter.StripContextFilter(), com.bigdata.bop.ap.filter.DistinctFilter()]}]]
+                                                                                                            com.bigdata.bop.bset.CopyOp[34](PipelineJoin[42])[ BOp.bopId=34]
+                                                                                                              com.bigdata.bop.join.PipelineJoin[42](PipelineJoin[39])[ BOp.bopId=42, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[40](--pp-anon-da16ccd8-737d-403f-9ecf-1a355adf61c4=null, TermId(665364U)[http:&#47;&#47;schema.org&#47;url], url=null, --anon-41=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=40, AST2BOpBase.estimatedCardinality=299124, AST2BOpBase.originalIndex=POCS, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL], IPredicate.accessPathFilter=cutthecrap.utils.striterators.NOPFilter@58a5ba56{annotations=null,filterChain=[com.bigdata.bop.rdf.filter.StripContextFilter(), com.bigdata.bop.ap.filter.DistinctFilter()]}], PipelineOp.sinkRef=32]
+                                                                                                                com.bigdata.bop.join.PipelineJoin[39](CopyOp[33])[ BOp.bopId=39, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[37](subj=null, TermId(1630018U)[http:&#47;&#47;schema.org&#47;distribution], --pp-anon-da16ccd8-737d-403f-9ecf-1a355adf61c4=null, --anon-38=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=37, AST2BOpBase.estimatedCardinality=74999, AST2BOpBase.originalIndex=POCS, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL], IPredicate.accessPathFilter=cutthecrap.utils.striterators.NOPFilter@25d32d46{annotations=null,filterChain=[com.bigdata.bop.rdf.filter.StripContextFilter(), com.bigdata.bop.ap.filter.DistinctFilter()]}]]
+                                                                                                                  com.bigdata.bop.bset.CopyOp[33](Tee[35])[ BOp.bopId=33]
+                                                                                                                    com.bigdata.bop.bset.Tee[35](HashIndexOp[31])[ BOp.bopId=35, PipelineOp.sinkRef=33, PipelineOp.altSinkRef=34]
+                                                                                                                      com.bigdata.bop.join.HashIndexOp[31](CopyOp[21])[ BOp.bopId=31, BOp.evaluationContext=CONTROLLER, PipelineOp.maxParallel=1, PipelineOp.lastPass=true, PipelineOp.sharedState=true, JoinAnnotations.joinType=Optional, HashJoinAnnotations.joinVars=[subj], bindingSets=null, HashJoinAnnotations.outputDistinctJVs=true, JoinAnnotations.constraints=null, HashJoinAnnotations.askVar=null, HashIndexOpBase.utilFactory=com.bigdata.bop.join.JVMHashJoinUtility$1@79357138, namedSetRef=NamedSolutionSetRef{localName=--set-30,queryId=de9a9ca6-ecd4-428c-9336-788323b96f39,joinVars=[subj]}, IPredicate.relationName=[earthcube.lex]]
+                                                                                                                        com.bigdata.bop.bset.CopyOp[21](PipelineJoin[29])[ BOp.bopId=21, BOp.evaluationContext=CONTROLLER]
+                                                                                                                          com.bigdata.bop.join.PipelineJoin[29](CopyOp[23])[ BOp.bopId=29, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[28](subj=null, TermId(736U)[https:&#47;&#47;schema.org&#47;name], name=null, g=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=28, AST2BOpBase.estimatedCardinality=1381456, AST2BOpBase.originalIndex=POCS, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL]], PipelineOp.sinkRef=21]
+                                                                                                                            com.bigdata.bop.bset.CopyOp[23](PipelineJoin[27])[ BOp.bopId=23]
+                                                                                                                              com.bigdata.bop.join.PipelineJoin[27](CopyOp[22])[ BOp.bopId=27, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[26](subj=null, TermId(665361U)[http:&#47;&#47;schema.org&#47;name], name=null, g=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=26, AST2BOpBase.estimatedCardinality=360178, AST2BOpBase.originalIndex=POCS, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL]], PipelineOp.sinkRef=21]
+                                                                                                                                com.bigdata.bop.bset.CopyOp[22](Tee[24])[ BOp.bopId=22]
+                                                                                                                                  com.bigdata.bop.bset.Tee[24](CopyOp[12])[ BOp.bopId=24, PipelineOp.sinkRef=22, PipelineOp.altSinkRef=23]
+                                                                                                                                    com.bigdata.bop.bset.CopyOp[12](PipelineJoin[20])[ BOp.bopId=12, BOp.evaluationContext=CONTROLLER]
+                                                                                                                                      com.bigdata.bop.join.PipelineJoin[20](CopyOp[14])[ BOp.bopId=20, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[19](subj=null, TermId(731U)[https:&#47;&#47;schema.org&#47;description], description=null, g=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=19, AST2BOpBase.estimatedCardinality=792137, AST2BOpBase.originalIndex=POCS, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL]], PipelineOp.sinkRef=12]
+                                                                                                                                        com.bigdata.bop.bset.CopyOp[14](PipelineJoin[18])[ BOp.bopId=14]
+                                                                                                                                          com.bigdata.bop.join.PipelineJoin[18](CopyOp[13])[ BOp.bopId=18, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[17](subj=null, TermId(665357U)[http:&#47;&#47;schema.org&#47;description], description=null, g=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=17, AST2BOpBase.estimatedCardinality=634928, AST2BOpBase.originalIndex=POCS, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL]], PipelineOp.sinkRef=12]
+                                                                                                                                            com.bigdata.bop.bset.CopyOp[13](Tee[15])[ BOp.bopId=13]
+                                                                                                                                              com.bigdata.bop.bset.Tee[15](PipelineJoin[11])[ BOp.bopId=15, PipelineOp.sinkRef=13, PipelineOp.altSinkRef=14]
+                                                                                                                                                com.bigdata.bop.join.PipelineJoin[11](PipelineJoin[8])[ BOp.bopId=11, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[9](subj=null, Vocab(14)[http:&#47;&#47;www.w3.org&#47;1999&#47;02&#47;22-rdf-syntax-ns#type], type=null, --anon-10=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=9, AST2BOpBase.estimatedCardinality=1225028, AST2BOpBase.originalIndex=POCS, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL], IPredicate.accessPathFilter=cutthecrap.utils.striterators.NOPFilter@634220a1{annotations=null,filterChain=[com.bigdata.bop.rdf.filter.StripContextFilter(), com.bigdata.bop.ap.filter.DistinctFilter()]}]]
+                                                                                                                                                  com.bigdata.bop.join.PipelineJoin[8](JVMSolutionSetHashJoinOp[5])[ BOp.bopId=8, JoinAnnotations.constraints=null, AST2BOpBase.simpleJoin=true, BOp.evaluationContext=ANY, AccessPathJoinAnnotations.predicate=com.bigdata.rdf.spo.SPOPredicate[6](subj=null, p=null, lit=null, --anon-7=null)[ IPredicate.relationName=[earthcube.spo], IPredicate.timestamp=1666712011353, BOp.bopId=6, AST2BOpBase.estimatedCardinality=28512091, AST2BOpBase.originalIndex=SPOC, IPredicate.flags=[KEYS,VALS,READONLY,PARALLEL], IPredicate.accessPathFilter=cutthecrap.utils.striterators.NOPFilter@567b1210{annotations=null,filterChain=[com.bigdata.bop.rdf.filter.StripContextFilter(), com.bigdata.bop.ap.filter.DistinctFilter()]}]]
+                                                                                                                                                    com.bigdata.bop.join.JVMSolutionSetHashJoinOp[5](JVMNamedSubqueryOp[4])[ BOp.bopId=5, BOp.evaluationContext=CONTROLLER, PipelineOp.sharedState=true, namedSetRef=NamedSolutionSetRef{localName=%-anon-service-call-0,queryId=de9a9ca6-ecd4-428c-9336-788323b96f39,joinVars=[]}, JoinAnnotations.constraints=null, SolutionSetHashJoinOp.release=false]
+                                                                                                                                                      com.bigdata.bop.controller.JVMNamedSubqueryOp[4]()[ BOp.bopId=4, BOp.evaluationContext=CONTROLLER, PipelineOp.pipelined=false, PipelineOp.maxParallel=1, PipelineOp.sharedState=true, SubqueryAnnotations.subquery=com.bigdata.bop.solutions.ProjectionOp[3](ServiceCallJoin[2])[ BOp.bopId=3, BOp.evaluationContext=CONTROLLER, PipelineOp.sharedState=true, JoinAnnotations.select=[lit, score1], BOp.namespace=earthcube], HashJoinAnnotations.joinVars=[], namedSetRef=NamedSolutionSetRef{localName=%-anon-service-call-0,queryId=de9a9ca6-ecd4-428c-9336-788323b96f39,joinVars=[]}]
+                                                                                                                                                      @com.bigdata.bop.controller.SubqueryAnnotations.subquery:
+                                                                                                                                                        com.bigdata.bop.solutions.ProjectionOp[3](ServiceCallJoin[2])[ BOp.bopId=3, BOp.evaluationContext=CONTROLLER, PipelineOp.sharedState=true, JoinAnnotations.select=[lit, score1], BOp.namespace=earthcube]
+                                                                                                                                                          com.bigdata.bop.controller.ServiceCallJoin[2](JVMDistinctBindingSetsOp[1])[ BOp.bopId=2, BOp.evaluationContext=CONTROLLER, PipelineOp.pipelined=false, PipelineOp.sharedState=true, ServiceCallJoin.serviceNode=
+SERVICE &lt;ConstantNode(TermId(0U)[http:&#47;&#47;www.bigdata.com&#47;rdf&#47;search#search])&gt; {
+  JoinGroupNode {
+    StatementPatternNode(VarNode(lit), ConstantNode(TermId(0U)[http:&#47;&#47;www.bigdata.com&#47;rdf&#47;search#search]), ConstantNode(TermId(669699L)[arizona])) [scope=DEFAULT_CONTEXTS]
+    StatementPatternNode(VarNode(lit), ConstantNode(TermId(0U)[http:&#47;&#47;www.bigdata.com&#47;rdf&#47;search#matchAllTerms]), ConstantNode(XSDBoolean(false) com.bigdata.rdf.model.BigdataValueFactoryImpl@621cbd37{namespace=earthcube.lex})) [scope=DEFAULT_CONTEXTS]
+    StatementPatternNode(VarNode(lit), ConstantNode(TermId(0U)[http:&#47;&#47;www.bigdata.com&#47;rdf&#47;search#relevance]), VarNode(score1)) [scope=DEFAULT_CONTEXTS]
+    StatementPatternNode(VarNode(lit), ConstantNode(TermId(0U)[http:&#47;&#47;www.bigdata.com&#47;rdf&#47;search#minRelevance]), ConstantNode(XSDDecimal(0.44))) [scope=DEFAULT_CONTEXTS]
+  }
+}, ServiceCallJoin.namespace=earthcube, ServiceCallJoin.timestamp=1666712011353, HashJoinAnnotations.joinVars=[], JoinAnnotations.constraints=null]
+                                                                                                                                                            com.bigdata.bop.solutions.JVMDistinctBindingSetsOp[1]()[ BOp.bopId=1, HashJoinAnnotations.joinVars=[lit, score1], BOp.evaluationContext=CONTROLLER, PipelineOp.sharedState=true]</pre
+><h2>Query Evaluation Statistics</h2
+><p>solutions=62, chunks=1, subqueries=1, elapsed=2049ms.</p
+><table border="1" summary="Query Statistics"
+><tr
+><th>queryId</th><th>deadline</th><th>elapsed</th><th>cause</th><th>evalOrder</th><th>bopSummary</th><th>predSummary</th><th>nvars</th><th>fastRangeCount</th><th>sumMillis</th><th>unitsIn</th><th>unitsOut</th><th>typeErrors</th><th>joinRatio</th></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>total</td
+><td>total</td
+><td></td
+><td></td
+><td></td
+><td>13181</td
+><td>44213</td
+><td>44228</td
+><td>0</td
+><td>1.0003392667315043</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>0</td
+><td>JVMNamedSubqueryOp[4]</td
+><td>JVMHashJoinUtility{open=true,joinType=Normal,joinVars=[],outputDistinctJVs=false,size=33,considered(left=14,right=462,joins=462)},namedSet=%-anon-service-call-0</td
+><td></td
+><td></td
+><td>40</td
+><td>47</td
+><td>14</td
+><td>0</td
+><td>0.2978723404255319</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>1</td
+><td>JVMSolutionSetHashJoinOp[5]</td
+><td>JVMHashJoinUtility{open=true,joinType=Normal,joinVars=[],outputDistinctJVs=false,size=33,considered(left=14,right=462,joins=462)},namedSet=%-anon-service-call-0</td
+><td></td
+><td></td
+><td>2</td
+><td>14</td
+><td>462</td
+><td>0</td
+><td>33.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>2</td
+><td>PipelineJoin[8]</td
+><td>SPOPredicate[6](?subj, ?p, ?lit, ?--anon-7)</td
+><td>4</td
+><td>28512091</td
+><td>4263</td
+><td>462</td
+><td>19068</td
+><td>0</td
+><td>41.27272727272727</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>3</td
+><td>PipelineJoin[11]</td
+><td>SPOPredicate[9](?subj, Vocab(14)[http:&#47;&#47;www.w3.org&#47;1999&#47;02&#47;22-rdf-syntax-ns#type], ?type, ?--anon-10)</td
+><td>3</td
+><td>1225028</td
+><td>8286</td
+><td>19068</td
+><td>48</td
+><td>0</td
+><td>0.0025173064820641915</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>4</td
+><td>Tee[15]</td
+><td></td
+><td></td
+><td></td
+><td>9</td
+><td>48</td
+><td>96</td
+><td>0</td
+><td>2.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>5</td
+><td>CopyOp[13]</td
+><td></td
+><td></td
+><td></td
+><td>10</td
+><td>48</td
+><td>48</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>6</td
+><td>PipelineJoin[18]</td
+><td>SPOPredicate[17](?subj, TermId(665357U)[http:&#47;&#47;schema.org&#47;description], ?description, ?g)</td
+><td>3</td
+><td>634928</td
+><td>22</td
+><td>48</td
+><td>36</td
+><td>0</td
+><td>0.75</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>7</td
+><td>CopyOp[14]</td
+><td></td
+><td></td
+><td></td
+><td>7</td
+><td>48</td
+><td>48</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>8</td
+><td>PipelineJoin[20]</td
+><td>SPOPredicate[19](?subj, TermId(731U)[https:&#47;&#47;schema.org&#47;description], ?description, ?g)</td
+><td>3</td
+><td>792137</td
+><td>22</td
+><td>48</td
+><td>30</td
+><td>0</td
+><td>0.625</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>9</td
+><td>CopyOp[12]</td
+><td></td
+><td></td
+><td></td
+><td>11</td
+><td>66</td
+><td>66</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>10</td
+><td>Tee[24]</td
+><td></td
+><td></td
+><td></td
+><td>8</td
+><td>66</td
+><td>132</td
+><td>0</td
+><td>2.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>11</td
+><td>CopyOp[22]</td
+><td></td
+><td></td
+><td></td
+><td>8</td
+><td>66</td
+><td>66</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>12</td
+><td>PipelineJoin[27]</td
+><td>SPOPredicate[26](?subj, TermId(665361U)[http:&#47;&#47;schema.org&#47;name], ?name, ?g)</td
+><td>3</td
+><td>360178</td
+><td>29</td
+><td>66</td
+><td>36</td
+><td>0</td
+><td>0.5454545454545454</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>13</td
+><td>CopyOp[23]</td
+><td></td
+><td></td
+><td></td
+><td>4</td
+><td>66</td
+><td>66</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>14</td
+><td>PipelineJoin[29]</td
+><td>SPOPredicate[28](?subj, TermId(736U)[https:&#47;&#47;schema.org&#47;name], ?name, ?g)</td
+><td>3</td
+><td>1381456</td
+><td>30</td
+><td>66</td
+><td>30</td
+><td>0</td
+><td>0.45454545454545453</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>15</td
+><td>CopyOp[21]</td
+><td></td
+><td></td
+><td></td
+><td>12</td
+><td>66</td
+><td>66</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>16</td
+><td>HashIndexOp[31]</td
+><td>JVMHashJoinUtility{open=false,joinType=Optional,joinVars=[subj],outputDistinctJVs=true,size=66,considered(left=78,right=178,joins=178)},namedSet=--set-30</td
+><td></td
+><td></td
+><td>1</td
+><td>66</td
+><td>30</td
+><td>0</td
+><td>0.45454545454545453</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>17</td
+><td>Tee[35]</td
+><td></td
+><td></td
+><td></td
+><td>0</td
+><td>30</td
+><td>60</td
+><td>0</td
+><td>2.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>18</td
+><td>CopyOp[33]</td
+><td></td
+><td></td
+><td></td
+><td>1</td
+><td>30</td
+><td>30</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>19</td
+><td>PipelineJoin[39]</td
+><td>SPOPredicate[37](?subj, TermId(1630018U)[http:&#47;&#47;schema.org&#47;distribution], ?--pp-anon-da16ccd8-737d-403f-9ecf-1a355adf61c4, ?--anon-38)</td
+><td>3</td
+><td>74999</td
+><td>0</td
+><td>30</td
+><td>60</td
+><td>0</td
+><td>2.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>20</td
+><td>PipelineJoin[42]</td
+><td>SPOPredicate[40](?--pp-anon-da16ccd8-737d-403f-9ecf-1a355adf61c4, TermId(665364U)[http:&#47;&#47;schema.org&#47;url], ?url, ?--anon-41)</td
+><td>3</td
+><td>299124</td
+><td>148</td
+><td>60</td
+><td>60</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>21</td
+><td>CopyOp[34]</td
+><td></td
+><td></td
+><td></td
+><td>0</td
+><td>30</td
+><td>30</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>22</td
+><td>PipelineJoin[45]</td
+><td>SPOPredicate[43](?subj, TermId(968045U)[https:&#47;&#47;schema.org&#47;subjectOf], ?--pp-anon-312479c8-02af-41dc-a7a6-75225c5287a0, ?--anon-44)</td
+><td>3</td
+><td>28471</td
+><td>1</td
+><td>30</td
+><td>18</td
+><td>0</td
+><td>0.6</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>23</td
+><td>PipelineJoin[48]</td
+><td>SPOPredicate[46](?--pp-anon-312479c8-02af-41dc-a7a6-75225c5287a0, TermId(741U)[https:&#47;&#47;schema.org&#47;url], ?url, ?--anon-47)</td
+><td>3</td
+><td>797738</td
+><td>1</td
+><td>18</td
+><td>18</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>24</td
+><td>CopyOp[32]</td
+><td></td
+><td></td
+><td></td
+><td>0</td
+><td>78</td
+><td>78</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>25</td
+><td>JVMSolutionSetHashJoinOp[49]</td
+><td>JVMHashJoinUtility{open=false,joinType=Optional,joinVars=[subj],outputDistinctJVs=true,size=66,considered(left=78,right=178,joins=178)},namedSet=--set-30</td
+><td></td
+><td></td
+><td>0</td
+><td>78</td
+><td>186</td
+><td>0</td
+><td>2.3846153846153846</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>26</td
+><td>HashIndexOp[51]</td
+><td>JVMHashJoinUtility{open=false,joinType=Optional,joinVars=[subj],outputDistinctJVs=true,size=186,considered(left=19,right=154,joins=154)},namedSet=--set-50</td
+><td></td
+><td></td
+><td>0</td
+><td>186</td
+><td>30</td
+><td>0</td
+><td>0.16129032258064516</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>27</td
+><td>Tee[55]</td
+><td></td
+><td></td
+><td></td
+><td>1</td
+><td>30</td
+><td>60</td
+><td>0</td
+><td>2.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>28</td
+><td>CopyOp[53]</td
+><td></td
+><td></td
+><td></td
+><td>0</td
+><td>30</td
+><td>30</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>29</td
+><td>PipelineJoin[59]</td
+><td>SPOPredicate[57](?subj, TermId(1630017U)[http:&#47;&#47;schema.org&#47;datePublished], ?datep, ?--anon-58)</td
+><td>3</td
+><td>69145</td
+><td>0</td
+><td>30</td
+><td>15</td
+><td>0</td
+><td>0.5</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>30</td
+><td>CopyOp[54]</td
+><td></td
+><td></td
+><td></td
+><td>0</td
+><td>30</td
+><td>30</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>31</td
+><td>PipelineJoin[62]</td
+><td>SPOPredicate[60](?subj, TermId(968040U)[https:&#47;&#47;schema.org&#47;datePublished], ?datep, ?--anon-61)</td
+><td>3</td
+><td>39916</td
+><td>1</td
+><td>30</td
+><td>4</td
+><td>0</td
+><td>0.13333333333333333</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>32</td
+><td>CopyOp[52]</td
+><td></td
+><td></td
+><td></td
+><td>1</td
+><td>19</td
+><td>19</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>33</td
+><td>JVMSolutionSetHashJoinOp[63]</td
+><td>JVMHashJoinUtility{open=false,joinType=Optional,joinVars=[subj],outputDistinctJVs=true,size=186,considered(left=19,right=154,joins=154)},namedSet=--set-50</td
+><td></td
+><td></td
+><td>1</td
+><td>19</td
+><td>186</td
+><td>0</td
+><td>9.789473684210526</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>34</td
+><td>HashIndexOp[65]</td
+><td>JVMHashJoinUtility{open=false,joinType=Optional,joinVars=[subj],outputDistinctJVs=true,size=186,considered(left=35,right=196,joins=196)},namedSet=--set-64</td
+><td></td
+><td></td
+><td>0</td
+><td>186</td
+><td>30</td
+><td>0</td
+><td>0.16129032258064516</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>35</td
+><td>Tee[71]</td
+><td></td
+><td></td
+><td></td
+><td>0</td
+><td>30</td
+><td>60</td
+><td>0</td
+><td>2.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>36</td
+><td>Tee[72]</td
+><td></td
+><td></td
+><td></td
+><td>1</td
+><td>30</td
+><td>60</td
+><td>0</td
+><td>2.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>37</td
+><td>Tee[73]</td
+><td></td
+><td></td
+><td></td
+><td>1</td
+><td>30</td
+><td>60</td
+><td>0</td
+><td>2.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>38</td
+><td>CopyOp[67]</td
+><td></td
+><td></td
+><td></td
+><td>0</td
+><td>30</td
+><td>30</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>39</td
+><td>PipelineJoin[77]</td
+><td>SPOPredicate[75](?subj, TermId(1630033U)[http:&#47;&#47;schema.org&#47;publisher], ?--pp-anon-21b6b2fd-de58-450d-8d02-5ef787717163, ?--anon-76)</td
+><td>3</td
+><td>36874</td
+><td>1</td
+><td>30</td
+><td>15</td
+><td>0</td
+><td>0.5</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>40</td
+><td>PipelineJoin[80]</td
+><td>SPOPredicate[78](?--pp-anon-21b6b2fd-de58-450d-8d02-5ef787717163, TermId(665361U)[http:&#47;&#47;schema.org&#47;name], ?pubname, ?--anon-79)</td
+><td>3</td
+><td>360178</td
+><td>11</td
+><td>15</td
+><td>15</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>41</td
+><td>CopyOp[68]</td
+><td></td
+><td></td
+><td></td
+><td>0</td
+><td>30</td
+><td>30</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>42</td
+><td>PipelineJoin[83]</td
+><td>SPOPredicate[81](?subj, TermId(644149U)[https:&#47;&#47;schema.org&#47;publisher], ?--pp-anon-a5eb5a1d-30b2-4055-b401-dc93eabb0650, ?--anon-82)</td
+><td>3</td
+><td>41387</td
+><td>0</td
+><td>30</td
+><td>8</td
+><td>0</td
+><td>0.26666666666666666</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>43</td
+><td>PipelineJoin[86]</td
+><td>SPOPredicate[84](?--pp-anon-a5eb5a1d-30b2-4055-b401-dc93eabb0650, TermId(736U)[https:&#47;&#47;schema.org&#47;name], ?pubname, ?--anon-85)</td
+><td>3</td
+><td>1381456</td
+><td>55</td
+><td>8</td
+><td>8</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>44</td
+><td>CopyOp[69]</td
+><td></td
+><td></td
+><td></td
+><td>0</td
+><td>30</td
+><td>30</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>45</td
+><td>PipelineJoin[89]</td
+><td>SPOPredicate[87](?subj, TermId(3110063U)[https:&#47;&#47;schema.org&#47;sdPublisher], ?pubname, ?--anon-88)</td
+><td>3</td
+><td>14321</td
+><td>1</td
+><td>30</td
+><td>0</td
+><td>0</td
+><td>0.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>46</td
+><td>CopyOp[70]</td
+><td></td
+><td></td
+><td></td
+><td>0</td
+><td>30</td
+><td>30</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>47</td
+><td>PipelineJoin[92]</td
+><td>SPOPredicate[90](?subj, TermId(668961U)[https:&#47;&#47;schema.org&#47;provider], ?--pp-anon-5d96b09e-bb72-4f00-bd60-e1bed0dea52b, ?--anon-91)</td
+><td>3</td
+><td>52444</td
+><td>0</td
+><td>30</td
+><td>12</td
+><td>0</td
+><td>0.4</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>48</td
+><td>PipelineJoin[95]</td
+><td>SPOPredicate[93](?--pp-anon-5d96b09e-bb72-4f00-bd60-e1bed0dea52b, TermId(665361U)[http:&#47;&#47;schema.org&#47;name], ?pubname, ?--anon-94)</td
+><td>3</td
+><td>360178</td
+><td>0</td
+><td>12</td
+><td>12</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>49</td
+><td>CopyOp[66]</td
+><td></td
+><td></td
+><td></td
+><td>1</td
+><td>35</td
+><td>35</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>50</td
+><td>JVMSolutionSetHashJoinOp[96]</td
+><td>JVMHashJoinUtility{open=false,joinType=Optional,joinVars=[subj],outputDistinctJVs=true,size=186,considered(left=35,right=196,joins=196)},namedSet=--set-64</td
+><td></td
+><td></td
+><td>1</td
+><td>35</td
+><td>200</td
+><td>0</td
+><td>5.714285714285714</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>51</td
+><td>HashIndexOp[98]</td
+><td>JVMHashJoinUtility{open=false,joinType=Optional,joinVars=[subj],outputDistinctJVs=true,size=200,considered(left=45,right=346,joins=346)},namedSet=--set-97</td
+><td></td
+><td></td
+><td>0</td
+><td>200</td
+><td>30</td
+><td>0</td
+><td>0.15</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>52</td
+><td>Tee[102]</td
+><td></td
+><td></td
+><td></td
+><td>1</td
+><td>30</td
+><td>60</td
+><td>0</td
+><td>2.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>53</td
+><td>CopyOp[100]</td
+><td></td
+><td></td
+><td></td
+><td>0</td
+><td>30</td
+><td>30</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>54</td
+><td>PipelineJoin[106]</td
+><td>SPOPredicate[104](?subj, TermId(1630034U)[http:&#47;&#47;schema.org&#47;spatialCoverage], ?--pp-anon-12cf1227-e0e8-48bf-9910-7c9a34d4a1c5, ?--anon-105)</td
+><td>3</td
+><td>251540</td
+><td>3</td
+><td>30</td
+><td>808</td
+><td>0</td
+><td>26.933333333333334</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>55</td
+><td>PipelineJoin[109]</td
+><td>SPOPredicate[107](?--pp-anon-12cf1227-e0e8-48bf-9910-7c9a34d4a1c5, TermId(665361U)[http:&#47;&#47;schema.org&#47;name], ?placename, ?--anon-108)</td
+><td>3</td
+><td>360178</td
+><td>48</td
+><td>808</td
+><td>30</td
+><td>0</td
+><td>0.03712871287128713</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>56</td
+><td>CopyOp[101]</td
+><td></td
+><td></td
+><td></td
+><td>1</td
+><td>30</td
+><td>30</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>57</td
+><td>PipelineJoin[112]</td
+><td>SPOPredicate[110](?subj, TermId(644150U)[https:&#47;&#47;schema.org&#47;spatialCoverage], ?--pp-anon-6b17a674-9891-48b7-8cd8-dfe39d3be1f9, ?--anon-111)</td
+><td>3</td
+><td>120566</td
+><td>2</td
+><td>30</td
+><td>19</td
+><td>0</td
+><td>0.6333333333333333</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>58</td
+><td>PipelineJoin[115]</td
+><td>SPOPredicate[113](?--pp-anon-6b17a674-9891-48b7-8cd8-dfe39d3be1f9, TermId(736U)[https:&#47;&#47;schema.org&#47;name], ?placename, ?--anon-114)</td
+><td>3</td
+><td>1381456</td
+><td>1</td
+><td>19</td
+><td>15</td
+><td>0</td
+><td>0.7894736842105263</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>59</td
+><td>CopyOp[99]</td
+><td></td
+><td></td
+><td></td
+><td>1</td
+><td>45</td
+><td>45</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>60</td
+><td>JVMSolutionSetHashJoinOp[116]</td
+><td>JVMHashJoinUtility{open=false,joinType=Optional,joinVars=[subj],outputDistinctJVs=true,size=200,considered(left=45,right=346,joins=346)},namedSet=--set-97</td
+><td></td
+><td></td
+><td>3</td
+><td>45</td
+><td>368</td
+><td>0</td
+><td>8.177777777777777</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>61</td
+><td>HashIndexOp[118]</td
+><td>JVMHashJoinUtility{open=false,joinType=Optional,joinVars=[subj],outputDistinctJVs=true,size=368,considered(left=422,right=9764,joins=9764)},namedSet=--set-117</td
+><td></td
+><td></td
+><td>1</td
+><td>368</td
+><td>30</td
+><td>0</td
+><td>0.08152173913043478</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>62</td
+><td>Tee[122]</td
+><td></td
+><td></td
+><td></td
+><td>0</td
+><td>30</td
+><td>60</td
+><td>0</td
+><td>2.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>63</td
+><td>CopyOp[120]</td
+><td></td
+><td></td
+><td></td
+><td>0</td
+><td>30</td
+><td>30</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>64</td
+><td>PipelineJoin[126]</td
+><td>SPOPredicate[124](?subj, TermId(665360U)[http:&#47;&#47;schema.org&#47;keywords], ?kwu, ?--anon-125)</td
+><td>3</td
+><td>122376</td
+><td>6</td
+><td>30</td
+><td>344</td
+><td>0</td
+><td>11.466666666666667</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>65</td
+><td>CopyOp[121]</td
+><td></td
+><td></td
+><td></td
+><td>0</td
+><td>30</td
+><td>30</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>66</td
+><td>PipelineJoin[129]</td
+><td>SPOPredicate[127](?subj, TermId(734U)[https:&#47;&#47;schema.org&#47;keywords], ?kwu, ?--anon-128)</td
+><td>3</td
+><td>421927</td
+><td>2</td
+><td>30</td
+><td>78</td
+><td>0</td
+><td>2.6</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>67</td
+><td>CopyOp[119]</td
+><td></td
+><td></td
+><td></td
+><td>1</td
+><td>422</td
+><td>422</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>68</td
+><td>JVMSolutionSetHashJoinOp[130]</td
+><td>JVMHashJoinUtility{open=false,joinType=Optional,joinVars=[subj],outputDistinctJVs=true,size=368,considered(left=422,right=9764,joins=9764)},namedSet=--set-117</td
+><td></td
+><td></td
+><td>35</td
+><td>422</td
+><td>9768</td
+><td>0</td
+><td>23.14691943127962</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>69</td
+><td>ChunkedMaterializationOp[132]</td
+><td>vars=[placename, kwu, url, score1],materializeInlineIVs=false</td
+><td></td
+><td></td
+><td>61</td
+><td>9768</td
+><td>9768</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>70</td
+><td>MemoryGroupByOp[131]</td
+><td>GroupByState{select=[com.bigdata.bop.Bind(subj,subj), com.bigdata.bop.Bind(g,g), com.bigdata.bop.Bind(resourceType,resourceType), com.bigdata.bop.Bind(name,name), com.bigdata.bop.Bind(description,description), com.bigdata.bop.Bind(pubname,pubname), com.bigdata.bop.Bind(placenames,com.bigdata.bop.rdf.aggregate.GROUP_CONCAT(placename)[ AggregateBase.distinct=true, separator=, , GROUP_CONCAT.namespace=earthcube.lex]), com.bigdata.bop.Bind(kw,com.bigdata.bop.rdf.aggregate.GROUP_CONCAT(kwu)[ AggregateBase.distinct=true, separator=, , GROUP_CONCAT.namespace=earthcube.lex]), com.bigdata.bop.Bind(datep,datep), com.bigdata.bop.Bind(disurl,com.bigdata.bop.rdf.aggregate.GROUP_CONCAT(url)[ AggregateBase.distinct=true, separator=, , GROUP_CONCAT.namespace=earthcube.lex]), com.bigdata.bop.Bind(score,com.bigdata.bop.rdf.aggregate.MAX(score1))],groupBy=[com.bigdata.bop.Bind(subj,subj), com.bigdata.bop.Bind(g,g), com.bigdata.bop.Bind(resourceType,resourceType), com.bigdata.bop.Bind(name,name), com.bigdata.bop.Bind(description,description), com.bigdata.bop.Bind(pubname,pubname), com.bigdata.bop.Bind(placenames,placenames), com.bigdata.bop.Bind(kw,kw), com.bigdata.bop.Bind(datep,datep), com.bigdata.bop.Bind(disurl,disurl), com.bigdata.bop.Bind(score,score)],having=null}</td
+><td></td
+><td></td
+><td>23</td
+><td>9768</td
+><td>62</td
+><td>0</td
+><td>0.006347256347256347</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>71</td
+><td>ChunkedMaterializationOp[134]</td
+><td>vars=[score],materializeInlineIVs=false</td
+><td></td
+><td></td
+><td>0</td
+><td>62</td
+><td>62</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>72</td
+><td>MemorySortOp[133]</td
+><td></td
+><td></td
+><td></td
+><td>1</td
+><td>62</td
+><td>62</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>73</td
+><td>JVMDistinctBindingSetsOp[135]</td
+><td></td
+><td></td
+><td></td
+><td>0</td
+><td>62</td
+><td>62</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>74</td
+><td>ProjectionOp[136]</td
+><td>[subj, g, resourceType, name, description, pubname, placenames, kw, datep, disurl, score]</td
+><td></td
+><td></td
+><td>0</td
+><td>62</td
+><td>62</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><td>de9a9ca6-ecd4-428c-9336-788323b96f39</td
+><td></td
+><td>2049</td
+><td></td
+><td>75</td
+><td>SliceOp[137]</td
+><td>offset=0, limit=1000</td
+><td></td
+><td></td
+><td>0</td
+><td>62</td
+><td>62</td
+><td>0</td
+><td>1.0</td
+></tr
+><tr
+><th>queryId</th><th>deadline</th><th>elapsed</th><th>cause</th><th>evalOrder</th><th>bopSummary</th><th>predSummary</th><th>nvars</th><th>fastRangeCount</th><th>sumMillis</th><th>unitsIn</th><th>unitsOut</th><th>typeErrors</th><th>joinRatio</th></tr
+><tr
+><td>d89468ea-2f93-4807-bb40-b04bcae6a28a</td
+><td></td
+><td>29</td
+><td></td
+><td>total</td
+><td>total</td
+><td></td
+><td></td
+><td></td
+><td>26</td
+><td>47</td
+><td>67</td
+><td>0</td
+><td>1.425531914893617</td
+></tr
+><tr
+><td>d89468ea-2f93-4807-bb40-b04bcae6a28a</td
+><td></td
+><td>29</td
+><td></td
+><td>0</td
+><td>JVMDistinctBindingSetsOp[1]</td
+><td></td
+><td></td
+><td></td
+><td>0</td
+><td>14</td
+><td>1</td
+><td>0</td
+><td>0.07142857142857142</td
+></tr
+><tr
+><td>d89468ea-2f93-4807-bb40-b04bcae6a28a</td
+><td></td
+><td>29</td
+><td></td
+><td>1</td
+><td>ServiceCallJoin[2]</td
+><td></td
+><td></td
+><td></td
+><td>26</td
+><td>0</td
+><td>33</td
+><td>0</td
+><td>N&#47;A</td
+></tr
+><tr
+><td>d89468ea-2f93-4807-bb40-b04bcae6a28a</td
+><td></td
+><td>29</td
+><td></td
+><td>2</td
+><td>ProjectionOp[3]</td
+><td>[lit, score1]</td
+><td></td
+><td></td
+><td>0</td
+><td>33</td
+><td>33</td
+><td>0</td
+><td>1.0</td
+></tr
+></table
+></html
+>
