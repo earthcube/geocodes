@@ -5,8 +5,24 @@
 
 
 ## Minio
+### what servers exist in the minio configuraiton
+
+`mc alias ls`
+
+### minio add configuration for a server
+Note the single quotes around the password... some passwords are   not command line friendly
+```shell
+set +o history
+mc config host add dev https://oss.geocodes.earthcube.org  {miniouser} '{miniopassword}'
+
+set -o history
+```
+
 ### test
 mc ls dev
+
+### Mino sync between servers
+mc cp --recursive dev/ecrr/ gc1/ecrr/
 
 ### copy log files to minio
 
