@@ -20,6 +20,7 @@ SPARQL_YASGUI: https://geocodes.{your host}/sparqlgui?
 #API_URL: "${window_location_origin}/ec/api"
 #TRIPLESTORE_URL: https://graph.geodex.org/blazegraph/namespace/earthcube/sparql
 TRIPLESTORE_URL: https://{your host}/blazegraph/namespace/earthcube/sparql
+BLAZEGRAPH_TIMEOUT: 20
 ECRR_TRIPLESTORE_URL: http://{your host}blazegraph/namespace/ecrr/sparql
 ECRR_GRAPH: http://earthcube.org/gleaner-summoned
 THROUGHPUTDB_URL: https://throughputdb.com/api/ccdrs/annotations
