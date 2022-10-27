@@ -43,6 +43,15 @@ mc rm dev/gleaner/milled --recursive --older-than 365d00h00m00s
 ```
 
 ## BLAZEGRAPH
+### CLEANING UP THE JOURNAL
+Blazegraph (and fuseki) will grow as data is added, its a journaled file system so it's not 
+cleaned up.
+
+The steps  are originally from (Medium.com)[https://medium.com/@nvbach91/how-to-reclaim-disk-space-in-blazegraph-95a47575f8a8]
+
+(MIKE WILL INSERT INSTRUCTIONS HERE)
+
+
 
 ## deleting:
 https://www.w3.org/TR/sparql11-update/#clear
