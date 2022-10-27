@@ -82,7 +82,8 @@ Regnerate nabu
 ```
 
 * flightest
-  * ``` ubuntu@geocodes-dev:~/indexing$ ./glcon gleaner setup --cfgName ci
+ ```shell
+ubuntu@geocodes-dev:~/indexing$ ./glcon gleaner setup --cfgName ci
     2022/07/21 23:42:54 EarthCube Gleaner
     Using gleaner config file: /home/ubuntu/indexing/configs/ci/gleaner
     Using nabu config file: /home/ubuntu/indexing/configs/ci/nabu
@@ -93,8 +94,10 @@ Regnerate nabu
     ```
     
 * run batch
-  * `./glcon gleaner batch --cfgName ci`
-```ubuntu@geocodes-dev:~/indexing$ ./glcon gleaner batch --cfgName ci
+`./glcon gleaner batch --cfgName ci`
+
+```shell
+ubuntu@geocodes-dev:~/indexing$ ./glcon gleaner batch --cfgName ci
     INFO[0000] EarthCube Gleaner                            
     Using gleaner config file: /home/ubuntu/indexing/configs/ci/gleaner
     Using nabu config file: /home/ubuntu/indexing/configs/ci/nabu
@@ -232,10 +235,11 @@ OFFSET 0
 
 ```
 * test in client
-  * `https://geocodes.geocodes-dev.earthcube.org`
-  * terms
-    * amgeo
-    * bcodmo
+
+`https://geocodes.geocodes-dev.earthcube.org`
+* terms
+  * amgeo
+  * bcodmo
     
 ## Detailed Testing
-* Need to ses the datavalidaton story: https://github.com/earthcube/geocodes_documentation/wiki/DataLoadingValidationStory
+TODO **[Need to ses the datavalidaton story:](https://github.com/earthcube/geocodes_documentation/wiki/DataLoadingValidationStory)**

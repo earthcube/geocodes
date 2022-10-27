@@ -5,9 +5,11 @@ It also has features to create and manage configurations for gleaner and nabu.
 * create a directory
     * `cd ~ ; mkdir indexing`
 * download and install:
+We will try to keep this updated, but for the [latest release](https://github.com/gleanerio/gleaner/releases).
     * `wget https://github.com/gleanerio/gleaner/releases/download/v3.0.7_badsitemap/glcon-v3.0.7_badsitemap-linux-amd64.tar.gz`
-    *
-```    3.0.4-dev/glcon-v3.0.4-dev-linux-amd64.tar.gz
+
+```shell
+    3.0.4-dev/glcon-v3.0.4-dev-linux-amd64.tar.gz
     --2022-07-21 23:04:55--  https://github.com/gleanerio/gleaner/releases/download/v3.0.4-dev/glcon-v3.0.4-dev-linux-amd64.tar.gz
     Resolving github.com (github.com)... 140.82.113.4
     Connecting to github.com (github.com)|140.82.113.4|:443... connected.
@@ -22,16 +24,21 @@ It also has features to create and manage configurations for gleaner and nabu.
 
 glcon-v3.0.4-dev-linux- 100%[=============================>]  13.19M  12.6MB/s    in 1.0s
 ```
-* `tar xf glcon-v3.0.4-dev-linux-amd64.tar.gz`
-```
+
+  * `tar xf glcon-v3.0.4-dev-linux-amd64.tar.gz`
+
+```shell
 ubuntu@geocodes-dev:~/indexing$ tar xf glcon-v3.0.4-dev-linux-amd64.tar.gz
 ubuntu@geocodes-dev:~/indexing$ ls
 README.md  docs   glcon-v3.0.4-dev-linux-amd64.tar.gz  scripts
 configs    glcon  schemaorg-current-https.jsonld
 ```
 
-* test
-```
+  * test
+
+     * `  ./glcon --help`
+
+```shell
 ubuntu@geocodes-dev:~/indexing$ ./glcon --help
 INFO[0000] EarthCube Gleaner                            
 The gleaner.io stack harvests JSON-LD from webpages using sitemaps and other tools
