@@ -21,6 +21,21 @@ WHERE     {     GRAPH ?g {?s ?p ?o}}
 LIMIT 100
 ```
 
+## what types are in the system
+```sparql
+prefix schema: <https://schema.org/>
+SELECT  ?type  (count(distinct ?s ) as ?scount)
+WHERE {
+{
+
+       ?s a ?type .
+
+       }
+}
+
+GROUP By ?type
+ORDER By DESC(?scount)```
+
 ## Dataset 
 ### count
 subject is a rdf:type schema.org/Dataset
@@ -29,6 +44,7 @@ SELECT (count(?g ) as ?count)
 WHERE     {     GRAPH ?g {?s a <https://schema.org/Dataset>}}
 
 ```
+
 ### triples
 ```sparql
 SELECT *  
