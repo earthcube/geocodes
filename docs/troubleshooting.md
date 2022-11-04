@@ -26,6 +26,18 @@ rebuild the base containers with the dev line commented out
   * docker ps
   * portainer stack 
 
+### Minoadmin/Graph/etc seem to be there, but do not connect
+If minioadmin complains that it cannot connect with a 10.0.0.x message, then there 
+may be two
+
+* open portainer
+* select containers
+* sort by name
+* look and see if two of the s3 stack are running.
+* if yes, delete both, and one should restart.
+
+have also seen something similar for graph.
+
 # glcon
 ## setup failure 
 `./glcon gleaner setup --cfgName {name}`
