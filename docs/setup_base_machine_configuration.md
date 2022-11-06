@@ -92,8 +92,9 @@ local ports for services that cannot be proxied
     *   **use these docker install** [instruction](https://docs.docker.com/engine/install/ubuntu/)
   * git clone https://github.com/earthcube/geocodes.git
   * cd geocodes/deployment
-  * copy portainer.env or env.example, to .env
+  * copy  base_machine.example.env, to .env
      * modify the file
+     * note: you can also copy the full portainer.env. 
   * modify the treafik-data/traefik.yml
      *  [lets encrypt](https://doc.traefik.io/traefik/https/acme/), 
         * (developers) set to use [staging environment](https://letsencrypt.org/docs/staging-environment/) server while testing

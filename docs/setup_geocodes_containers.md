@@ -1,16 +1,19 @@
 ##  Setup Geocodes Containers:
   * create a new env file
     * cd deployment
-    * copy portainer.env to new file.` cp portainer.env {myhost}.env`
-    * edit {myhost}.env
-      * change 
-        * HOST
-        * domains (aka GLEANER_)
-        *  Object store keys
-        * SPARQL GUI
-        *  api
+    * Edit files containing env variables
+      * copy portainer.services.env to new file.` cp portainer.env {myhost}.services.env`
+      * copy portainer.geocodes.env to new file.` cp portainer.geocodes.env {myhost}.geocodes.env`
+      * (option) use single file copy portainer.env to new file.` cp portainer.env {myhost}.env`
+      * edit {myhost}.{geocodes|services}.env
+        * change 
+          * HOST
+          * domains (aka GLEANER_)
+          *  Object store keys
+          * SPARQL GUI
+          *  api
   * Modify the Facet Search Configuration
-     * edit in deployemet/facets/config.yaml
+     * edit in deployment/facets/config.yaml
      * this file is mounted on the container as a docker config file
        * run the run_add_configs.sh
 ```yaml
@@ -42,7 +45,7 @@ JSONLD_PROXY: "https://geocodes.{your host}/ec/api/${o}"
           * reference: refs/heads/main
           * Compose path: deployment/services-compose.yaml
           * Environment variables: click 'load variables from .env file'
-            * load {myhost}.env
+            * load {myhost}.services.env
           * Actions: 
             * Click: Deploy This Stack 
   ![Create Services Stack](./images/create_services.png)
@@ -54,7 +57,7 @@ JSONLD_PROXY: "https://geocodes.{your host}/ec/api/${o}"
         * reference: refs/heads/main
         * Compose path: deployment/geocodes-compose.yaml
         * Environment variables: click 'load variables from .env file'
-          * load {myhost}.env
+          * load {myhost}.geocodes.env
         * Actions:
           * Click: Deploy This Stack
     ![Create Geocodes Stack](./images/create_geocodes_stack.png)
