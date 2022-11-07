@@ -77,6 +77,8 @@ services:
     configs:
       - source:   facets_config
         target: /usr/src/app/dist/public/config/config.yaml
+      - source:   facets_config
+        target: /usr/src/app/dist/config/config.yaml
   #      uid: '103'
   #      gid: '103'
   #      mode: 0440
