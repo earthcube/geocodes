@@ -16,7 +16,7 @@ Table of Contents here
     * The run_local.sh works. There is no portainer for these. all command line.
     * minio (and maybe others) use ports. [See "-local path " at this page](./stack_machines.md)
 ### Creating and managing CONTAINERS
-  * [configure a base server](./machine_configuration.md)
+  * [configure a base server](./setup_base_machine_configuration.md)
       * docker
       * git clone https://github.com/earthcube/geocodes.git
       * cd geocodes/deployment

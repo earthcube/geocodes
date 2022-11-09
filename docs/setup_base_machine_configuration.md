@@ -42,16 +42,18 @@ This is what will be needed to create a production server
 ---
 ## create a machine in openstack
 #### Suggested size:
+
 SDSC Openstack:
 - ubuntu 22
-- 500 gig
+- 100 gig
   - m1.2xlarge (8 CPU, 32 gig)
   - network: earthcube
 -  Security groups:
-  - remote ssh
-  - geocodes
-  - portainer
-- Keypair: earthcube
+  - remote ssh (22)
+  - geocodes (http/https; 80:443)
+  - portainer (temporary need: 9443)
+  - minio (optional: 9000/9001)
+- Keypair: earthcube (or any)
 
 
  **Notes:**
@@ -92,8 +94,9 @@ local ports for services that cannot be proxied
     *   **use these docker install** [instruction](https://docs.docker.com/engine/install/ubuntu/)
   * git clone https://github.com/earthcube/geocodes.git
   * cd geocodes/deployment
-  * copy portainer.env or env.example, to .env
+  * copy  base_machine.example.env, to .env
      * modify the file
+     * note: you can also copy the full portainer.env. 
   * modify the treafik-data/traefik.yml
      *  [lets encrypt](https://doc.traefik.io/traefik/https/acme/), 
         * (developers) set to use [staging environment](https://letsencrypt.org/docs/staging-environment/) server while testing
