@@ -42,16 +42,18 @@ This is what will be needed to create a production server
 ---
 ## create a machine in openstack
 #### Suggested size:
+
 SDSC Openstack:
 - ubuntu 22
-- 500 gig
+- 100 gig
   - m1.2xlarge (8 CPU, 32 gig)
   - network: earthcube
 -  Security groups:
-  - remote ssh
-  - geocodes
-  - portainer
-- Keypair: earthcube
+  - remote ssh (22)
+  - geocodes (http/https; 80:443)
+  - portainer (temporary need: 9443)
+  - minio (optional: 9000/9001)
+- Keypair: earthcube (or any)
 
 
  **Notes:**
