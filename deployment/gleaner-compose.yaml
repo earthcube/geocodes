@@ -25,9 +25,9 @@ services:
 
   headless:
     image: chromedp/headless-shell:latest
-    build:
-      context: .
-      shm_size: "2gb"
+#    build:
+#      context: .
+#      shm_size: "2gb"
     restart: unless-stopped
     shm_size: "2gb"
     labels:

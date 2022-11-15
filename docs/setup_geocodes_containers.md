@@ -62,4 +62,15 @@ JSONLD_PROXY: "https://geocodes.{your host}/ec/api/${o}"
           * Click: Deploy This Stack
     ![Create Geocodes Stack](./images/create_geocodes_stack.png)
 
-    
+#### Modifying a Configuration
+
+You can modify the facets_config config, in order to do this, stop the stack,
+delete the config and recreate the config.
+
+1. go to portainer, 
+1. select geocodes_geocodes, stop
+2. select config, facets_config, copy content, select delete
+3. create a new config with name 'facets_config', paste in conten
+4. modify content, save
+5. restart stack
+
