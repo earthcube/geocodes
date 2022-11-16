@@ -74,3 +74,19 @@ delete the config and recreate the config.
 4. modify content, save
 5. restart stack
 
+#### Troubleshooting
+
+##### seems like  the container is not getting updated
+occassionally, a branch is being used for a stack. This will  be true of alpha/beta/tennant
+containers.
+
+* open stack
+* user Redeploy from Git: select advanced configuration
+* change the branch information
+
+Occassionaly, the latest will not be pulled, Seen  when I  change a branch,
+
+* open services, 
+* select a service, 
+* go down to Change container image
+* set to the appropriate container path.
