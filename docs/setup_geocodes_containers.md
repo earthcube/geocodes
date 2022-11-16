@@ -118,6 +118,7 @@ containers.
 * open stack
 * user Redeploy from Git: select advanced configuration
 * change the branch information
+![](images/portainer_branch_deployment.png)
 
 Occassionaly, the latest will not be pulled, Seen  when I  change a branch,
 
@@ -125,3 +126,4 @@ Occassionaly, the latest will not be pulled, Seen  when I  change a branch,
 * select a service, 
 * go down to Change container image
 * set to the appropriate container path.
+![](images/service_change_container.png)
