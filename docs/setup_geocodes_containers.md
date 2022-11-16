@@ -70,9 +70,44 @@ delete the config and recreate the config.
 1. go to portainer, 
 1. select geocodes_geocodes, stop
 2. select config, facets_config, copy content, select delete
-3. create a new config with name 'facets_config', paste in conten
+3. create a new config with name 'facets_config', paste in content
 4. modify content, save
 5. restart stack
+
+#### Testing a UI Branch
+To do this we will need to do two branches, one on the facet search, and one on the geocodes.
+
+ **Facetsearch** 
+* create a branch
+  * on that branch edit the github workflows/docker_xxx add your branch
+```yaml
+on:
+  push:
+    branches:
+    - master
+    - feat_summary
+```
+* make changes and push
+
+**geocodes**
+* create a branch
+* modify   deployment/geocodes-compose.yaml 
+```yaml
+vue-services:
+  image: nsfearthcube/ec_facets_api_nodejs:{{BRANCH NAME}}
+  ```
+
+```yaml
+vue-client:
+  image: nsfearthcube/ec_facets_client:{{BRANCH NAME}}
+  ```
+
+in portainer
+* create a new stack
+* under advanced configuration
+![](images/portainer_branch_deployment.png)
+* save
+* pull and deploy
 
 #### Troubleshooting
 
