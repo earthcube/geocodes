@@ -189,3 +189,12 @@ ubuntu@geocodes-dev:~$ docker volume ls
   * If user has a local name server they control, that might work.
 * setup a new password for traefik
 * lets encrypt
+
+## updating Portainer, or treafik
+
+the latest image needs to bb pulled
+
+`docker pull portainer/portainer-ce:latest`
+
+then 
+`./run_base.sh`
