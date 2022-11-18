@@ -72,8 +72,14 @@ delete the config and recreate the config.
 2. select config, facets_config, copy content, select delete
 3. create a new config with name 'facets_config', paste in content
 4. modify content, save
-5. restart stack
-
+5. restart stack 
+6. 6. update the service 
+   7. services, geocodes_vue-client or geocodes_xxx_vue-client
+   8. udate the service
+*** NOTE: TRY A SECOND BROWSER... and/or Clear browser cache ****
+   9. If that does not work, check to see in services if the correct container image is being pulled.
+9. Then go to containers, geocodes_vue-client or geocodes_xxx_vue-client
+   10. remove container. It will rebuild if it is not stopped 
 #### Testing a UI Branch
 To do this we will need to do two branches, one on the facet search, and one on the geocodes.
 
