@@ -75,9 +75,9 @@ services:
       - NODE_ENV=geocodestest
       - DOMAIN=https://${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}/
     configs:
-      - source:   facets_config
+      - source:   facets_config_${GC_BASE}
         target: /usr/src/app/dist/public/config/config.yaml
-      - source:   facets_config
+      - source:   facets_config_${GC_BASE}
         target: /usr/src/app/dist/config/config.yaml
   #      uid: '103'
   #      gid: '103'
