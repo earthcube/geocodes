@@ -3,7 +3,7 @@ networks:
   traefik_proxy:
     external: true
 configs:
-  facets_config:
+  facets_config_${GC_BASE}:
     external: true
 
 services:
