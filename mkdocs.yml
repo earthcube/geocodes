@@ -19,4 +19,5 @@ nav:
   - Tooling:
       - Install Glcon: install_glcon.md
   - Production: production
+  - Creating a Tennant: tennant
   - Troubleshooting: troubleshooting.md
