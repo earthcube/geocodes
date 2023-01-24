@@ -1,11 +1,12 @@
 ##  Setup Machine:
 
-# services:
+# Services:
 This is what will be needed to create a production server
+
 * base virtual machine for containers
 * ability to request DNS,
 
-## MACHINE REQUIREMENTS
+## DOCKER REQUIREMENT
 If you are running on Ubuntu, you need to remove the provided docker.com version. [Official docker package](https://docs.docker.com/engine/install/ubuntu/)
 
 We suggest that for others, confirm that you can run 
@@ -37,7 +38,7 @@ Client: Docker Engine - Community
     * `sudo apt upgrade`
 
   * install docker
-    *   **use these docker install** [instruction](https://docs.docker.com/engine/install/ubuntu/)
+    *   **use these docker install** [instructions](https://docs.docker.com/engine/install/ubuntu/)
   * add ubuntu to docker group
     * `sudo groupadd docker`
     * `sudo usermod -aG docker ubuntu`
@@ -63,15 +64,16 @@ Client: Docker Engine - Community
 #### Suggested size:
 
 SDSC Openstack:
+
 - ubuntu 22
 - 100 gig
-  - m1.2xlarge (8 CPU, 32 gig)
-  - network: earthcube
+    - m1.2xlarge (8 CPU, 32 gig)
+    - network: earthcube
 -  Security groups:
-  - remote ssh (22)
-  - geocodes (http/https; 80:443)
-  - portainer (temporary need: 9443)
-  - minio (optional: 9000/9001)
+    - remote ssh (22)
+    - geocodes (http/https; 80:443)
+    - portainer (temporary need: 9443)
+    - minio (optional: 9000/9001)
 - Keypair: earthcube (or any)
 
 
