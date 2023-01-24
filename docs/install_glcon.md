@@ -6,7 +6,17 @@ It also has features to create and manage configurations for gleaner and nabu.
     * `cd ~ ; mkdir indexing`
 * download and install:
 We will try to keep this updated, but for the [latest release](https://github.com/gleanerio/gleaner/releases).
-    * `wget https://github.com/gleanerio/gleaner/releases/download/v3.0.7_badsitemap/glcon-v3.0.7_badsitemap-linux-amd64.tar.gz`
+    * `wget https://github.com/gleanerio/gleaner/releases/download/{{RELASE}}}}`
+
+| OS              | download                                |  
+|-----------------|-----------------------------------------|
+| linux intel     | glcon-{{VERSION}}-linux-amd64.tar.gz    |
+| linux arm       | glcon-{{VERSION}}-linux-arm64.tar.gz    |
+| mac             | glcon-{{VERSION}}-darwin-arm64.tar.gz   |
+| windows  intel  | glcon-{{VERSION}}-windows-amd64.zip     |
+
+
+
 
 ```shell
     3.0.4-dev/glcon-v3.0.4-dev-linux-amd64.tar.gz
