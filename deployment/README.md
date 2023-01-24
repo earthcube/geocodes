@@ -17,10 +17,22 @@ The stack consists of several stacks, each with their own container.
   * features - serve out of site
 
 ### requirements:
-* docker
-* docker-compose
-Local Developement:
-DNS at present is important. We route on using Treafik using DNS names.
+* docker 
+   * _docker compose_  we have had issues with older versions of docker and docker-compose. If you cannot run `docker compose` then update
+   * this is what we are running, at present.
+```    
+Client: Docker Engine - Community
+     Version:           20.10.21
+     API version:       1.41
+```
+  
+If you are running on Ubuntu, you need to remove the provided docker.com version. instruction](https://docs.docker.com/engine/install/ubuntu/)
+We suggest that for others, also. 
+ 
+
+**Local Developement:**
+DNS at present is important. We route on using Treafik using DNS names, so we develop on container hosted, and not local developers.
+
 * add lines for hosts.geocodes to /etc/hosts
 * mac
   * sudo dscacheutil -flushcache

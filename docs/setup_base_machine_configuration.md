@@ -5,6 +5,25 @@ This is what will be needed to create a production server
 * base virtual machine for containers
 * ability to request DNS,
 
+## MACHINE REQUIREMENTS
+If you are running on Ubuntu, you need to remove the provided docker.com version. [instruction](https://docs.docker.com/engine/install/ubuntu/)
+
+We suggest that for others, confirm that you can run 
+```shell
+docker compose version
+Docker Compose version v2.13.0
+```
+If you cannot run `docker compose` then update to the docker.com version
+
+This is the version we are presently running.
+```    
+Client: Docker Engine - Community
+     Version:           20.10.21
+     API version:       1.41
+```
+
+
+
 ### Steps:
 
 * create a machine in openstack (if production)
