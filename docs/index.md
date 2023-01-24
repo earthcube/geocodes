@@ -6,9 +6,13 @@ Table of Contents here
 ## Overview:
 ### Needs prior to starting
   * ALL
-    * Docker, v2+ `docker compose --help` needs to show the -p --project flag
+    * Docker, v2+ `docker compose version` needs to show the -p --project flag
       * **Known issue** with (at least) Ubuntu default docker package. Install the [official docker package](https://docs.docker.com/engine/install/ubuntu/)
-  * Production
+```shell
+docker compose version
+Docker Compose version v2.13.0
+```
+* Production
     * YOU NEED SETUP DNS.  setup [DNS names for the aliases](https://raw.githubusercontent.com/earthcube/geocodes/main/deployment/hosts.geocodes) 
       * so the treafik routing will work
   * Local(Tutorial)/Development

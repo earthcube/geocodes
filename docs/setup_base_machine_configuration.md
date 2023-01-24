@@ -6,7 +6,7 @@ This is what will be needed to create a production server
 * ability to request DNS,
 
 ## MACHINE REQUIREMENTS
-If you are running on Ubuntu, you need to remove the provided docker.com version. [instruction](https://docs.docker.com/engine/install/ubuntu/)
+If you are running on Ubuntu, you need to remove the provided docker.com version. [Official docker package](https://docs.docker.com/engine/install/ubuntu/)
 
 We suggest that for others, confirm that you can run 
 ```shell
