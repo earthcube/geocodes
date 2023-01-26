@@ -63,29 +63,28 @@ This is what will be needed to create a production server
 
 ---
 ## create a machine in openstack
-#### Suggested size:
 
-SDSC Openstack:
+!!! info "Suggested size:"
+    SDSC Openstack:
 
-- ubuntu 22
-- 100 gig
-    - m1.2xlarge (8 CPU, 32 gig)
-    - network: earthcube
--  Security groups:
-    - remote ssh (22)
-    - geocodes (http/https; 80:443)
-    - portainer (temporary need: 9443)
-    - minio (optional: 9000/9001)
-- Keypair: earthcube (or any)
+    - ubuntu 22
+    - 100 gig
+        - m1.2xlarge (8 CPU, 32 gig)
+        - network: earthcube
+    -  Security groups:
+        - remote ssh (22)
+        - geocodes (http/https; 80:443)
+        - portainer (temporary need: 9443)
+        - minio (optional: 9000/9001)
+    - Keypair: earthcube (or any)
 
 
-!!! note "Minio"
- minio ports do not need to be open, we are proxying on 80 and 443
- Portainer port (9443)  can be opended temporarily if you want to play a bit pre-DNS.
+!!! tip "Ports Pre-DNS"
+   minio ports do not need to be open, we are proxying on 80 and 443
+   Portainer port (9443)  can be opended temporarily if you want to play a bit pre-DNS.
 
-**Associate a Public IP.**
-
-After the machine is created, we can change the IP to the one associated with geocodes.earthcube.org
+!!! success "Associate a Public IP"
+    After the machine is created, we can change the IP to the one associated with geocodes.earthcube.org
 
 ---
 # setup domain names
@@ -128,41 +127,43 @@ local ports for services that cannot be proxied
 If you are doing development, then leave the caServer uncommented.
  
 If production, comment the line as shown 
-???  EXAMPLE:
-```yaml    
-   acme:
- # using staging for testing/development
- #     caServer: https://acme-staging-v02.api.letsencrypt.org/directory
-      email: example@earthcube.org
-      storage: acme.json
-      httpChallenge:
-        entryPoint: http
- ```
-     
-  * start the base containers 
-    * new machine or developer
-      * `./run_base.sh -e {your environment file}`
-    * **production**: this uses the default .env (cp  portainer.env .env)
-      * `./run_base.sh` 
 
-```shell     
-      ubuntu@geocodes-dev:~/geocodes/deployment$ ./run_base.sh -e geocodes-1.env
-      Error response from daemon: network with name traefik_proxy already exists
-      NETWORK ID     NAME              DRIVER    SCOPE
-      ad6cbce4ec60   bridge            bridge    local
-      2f618fa7da6d   docker_gwbridge   bridge    local
-      f8048bc7a3d9   host              host      local
-      kibdi510bt0x   ingress           overlay   swarm
-      12c01a2186b0   none              null      local
-      u4d4oxfy7olc   traefik_proxy     overlay   swarm
-      Verify that the traefik_proxy network SCOPE is swarm
-      traefik_data
-      portainer_data
-      true
-      [+] Running 2/2
-      ⠿ Container portainer  Started                                           13.7s
-      ⠿ Container traefik    Started
-```
+??? example "treafik-data/traefik.yml"
+    ```yaml    
+       acme:
+     # using staging for testing/development
+     #     caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+          email: example@earthcube.org
+          storage: acme.json
+          httpChallenge:
+            entryPoint: http
+     ```
+     
+* start the base containers 
+  * new machine or developer
+    * `./run_base.sh -e {your environment file}`
+  * **production**: this uses the default .env (cp  portainer.env .env)
+    * `./run_base.sh`
+
+??? example
+    ```shell     
+          ubuntu@geocodes-dev:~/geocodes/deployment$ ./run_base.sh -e geocodes-1.env
+          Error response from daemon: network with name traefik_proxy already exists
+          NETWORK ID     NAME              DRIVER    SCOPE
+          ad6cbce4ec60   bridge            bridge    local
+          2f618fa7da6d   docker_gwbridge   bridge    local
+          f8048bc7a3d9   host              host      local
+          kibdi510bt0x   ingress           overlay   swarm
+          12c01a2186b0   none              null      local
+          u4d4oxfy7olc   traefik_proxy     overlay   swarm
+          Verify that the traefik_proxy network SCOPE is swarm
+          traefik_data
+          portainer_data
+          true
+          [+] Running 2/2
+          ⠿ Container portainer  Started                                           13.7s
+          ⠿ Container traefik    Started
+    ```
       
   * Are containers running
     * `docker ps`
