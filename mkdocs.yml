@@ -11,11 +11,6 @@ markdown_extensions:
   - pymdownx.snippets
   - pymdownx.superfences
 
-  - mdx_gh_links:
-      user: mkdocs
-      repo: mkdocs
-  - mkdocs-click
-
 plugins:
   - search
   # literate_nav must load after multirepo for the features to be available.
