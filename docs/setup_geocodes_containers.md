@@ -1,10 +1,7 @@
 #  Setup Geocodes Services and Geocodes Client Containers:
 
-[TOC]
+# Services Stack
 
-
-
-# Details
 
 ## create a new env file
 
@@ -16,39 +13,36 @@
   * edit {myhost}.{geocodes|services}.env
     * change
 ???+ example "env"
-    ```
+    ```{ .copy }
     HOST=geocodes-dev.mydomain.org
     PRODUCTION=geocodes.mydomain.org
     GC_CLIENT_DOMAIN=geoccodes.geocodes-dev.mydomain.org
     S3ADDRESS=oss.geocodes-dev.mydomain.org
     ```
 
-
-
-----
 ## Setup and start services using portainer ui
-
-Steps:
-* create a services stack
-* create a geocodes client stack
 
 ### Create Services Stack
 
 * log into portainer
-  * if this is a first login, it will ask you for a password.
-  * Select **stack** tab
-  * click **add stack** button
-      * Name: services
-      * Build method: git repository
-      * Repository URL: https://github.com/earthcube/geocodes
-      * reference: refs/heads/main
-      * Compose path: deployment/services-compose.yaml
-      * Environment variables: click 'load variables from .env file'
+    * if this is a first login, it will ask you for a password.
+    * Select **stack** tab
+    * click **add stack** button
+```
+Name: services
+Build method: git repository
+Repository URL: https://github.com/earthcube/geocodes
+Reference: refs/heads/main
+Compose path: deployment/services-compose.yaml
+```
+    * Environment variables: click 'load variables from .env file'
         * load {myhost}.services.env
-      * Actions: 
+    * Actions: 
         * Click: Deploy This Stack 
-??? example 
+??? example "Services Stack"
     ![Create Services Stack](./images/create_services.png)
+
+### Testing Services Stack
 
 ----
 
@@ -58,7 +52,7 @@ Steps:
 * create stack in portainer
 * test
 * instructions for Updating a GEOCODES CLIENT Configuration if things do not work
-  * or delete stack and reload
+    * or delete stack and reload
 
 
 ###  Modify the Facet Search Configuration
@@ -69,7 +63,7 @@ Steps:
 
 Portions of deployment/facets/config.yaml that might be changed.
 ??? example "section of deployment/facets/config.yaml"
-    ```yaml
+    ```{.yaml .copy}
     API_URL: https://geocodes.{your host}/ec/api/
     SPARQL_NB: https:/geocodes.{your host}/notebook/mkQ?q=${q}
     SPARQL_YASGUI: https://geocodes.{your host}/sparqlgui?
@@ -95,18 +89,22 @@ Portions of deployment/facets/config.yaml that might be changed.
 ### Create Geocodes Stack
 
 * log into portainer
-  * if this is a first login, it will ask you for a password.
-  * click **add stack** button
-    * Name: geocodes
-    * Build method: git repository
-    * Repository URL: https://github.com/earthcube/geocodes
-    * reference: refs/heads/main
-    * Compose path: deployment/geocodes-compose.yaml
+    * if this is a first login, it will ask you for a password.
+    * click **add stack** button
+```text
+Name: geocodes
+Build method: git repository
+Repository URL: https://github.com/earthcube/geocodes
+reference: refs/heads/main
+Compose path: deployment/geocodes-compose.yaml
+```
     * Environment variables: click 'load variables from .env file'
-      * load {myhost}.geocodes.env
+        * load {myhost}.geocodes.env
     * Actions:
-      * Click: Deploy This Stack
+        * Click: Deploy This Stack
+??? note "Geocodes Stack "
     ![Create Geocodes Stack](./images/create_geocodes_stack.png)
+
 ### Test Geocodes Client
 There will be no data initially, so queries will not work but
 
@@ -125,13 +123,13 @@ delete the config and recreate the config.
 3. create a new config with name 'facets_config', paste in content
 4. modify content, save
 5. restart stack 
-6. 6. update the service 
-   7. services, geocodes_vue-client or geocodes_xxx_vue-client
-   8. udate the service
+6. update the service 
+    7. services, geocodes_vue-client or geocodes_xxx_vue-client
+    8. udate the service
 *** NOTE: TRY A SECOND BROWSER... and/or Clear browser cache ****
-   9. If that does not work, check to see in services if the correct container image is being pulled.
+    9. If that does not work, check to see in services if the correct container image is being pulled.
 9. Then go to containers, geocodes_vue-client or geocodes_xxx_vue-client
-   10. remove container. It will rebuild if it is not stopped 
+    10. remove container. It will rebuild if it is not stopped 
 
 
 ---
@@ -179,7 +177,8 @@ vue-client:
 
 * create a new stack
 * under advanced configuration
-![](images/portainer_branch_deployment.png)
+??? example "stack deploy from a branch"
+    ![](images/portainer_branch_deployment.png)
 * save
 * pull and deploy
 
@@ -195,12 +194,14 @@ containers.
 * open stack
 * user Redeploy from Git: select advanced configuration
 * change the branch information
-![](images/portainer_branch_deployment.png)
+??? example "stack deploy from a branch"
+    ![](images/portainer_branch_deployment.png)
 
-Occassionaly, the latest will not be pulled, Seen  when I  change a branch,
+Occasionally, the latest will not be pulled, Seen  when I  change a branch,
 
 * open services, 
 * select a service, 
 * go down to Change container image
 * set to the appropriate container path.
-![](images/service_change_container.png)
+??? example "stack deploy from a branch"
+    ![](images/service_change_container.png)

@@ -1,6 +1,6 @@
 ##  Setup Machine:
 
-[TOC]
+
 
 # Services:
 This is what will be needed to create a production server
@@ -32,35 +32,36 @@ This is what will be needed to create a production server
 ### Steps:
 
 * create a machine in openstack (if production)
-  * select size
-  * associate floating IP
-    * ask for DNS for that ip to be configured with needed names
+    * select size
+    * associate floating IP
+        * ask for DNS for that ip to be configured with needed names
 * ssh to machine. You do not need to have the DNS's to install the software. But it will be needed.
-  * update apt
-    * `sudo apt update`
-  * update base software
-    * `sudo apt upgrade`
+    * update apt
+        * `sudo apt update`
+    * update base software
+        * `sudo apt upgrade`
 
-  * install docker
-    *   **use these docker install** [instructions](https://docs.docker.com/engine/install/ubuntu/)
-  * add ubuntu to docker group
-    * `sudo groupadd docker`
-    * `sudo usermod -aG docker ubuntu`
-  * reboot
+    * install docker
+??? danger "Use Official Docker for Ubuntu"
+    * **use these docker install** [instructions](https://docs.docker.com/engine/install/ubuntu/)
+        * add ubuntu (or other users) to docker group
+        * `sudo groupadd docker`
+        * `sudo usermod -aG docker ubuntu`
+    * reboot
     * `sudo reboot now`
-  * init docker swarm
-    * `docker swarm init`
-  * verify proper base configuration
-    * docker compose --help shows a -p flag
+    * init docker swarm
+        * `docker swarm init`
+    * verify proper base configuration
+        * docker compose --help shows a -p flag
 * SNAPSHOT and creaate an image
-  * 
+    * 
 * clone geocodes
-* `git clone https://github.com/earthcube/geocodes.git`
+    * `git clone https://github.com/earthcube/geocodes.git`
 * configure a base server
 * take a break and wait for the DNS entries.
-  * if you cant wait you can go to the no cert port 
-    * https://{HOST}}:9443/
-    * use chrome, click advanced, and go to the port.
+    * if you cannot wait for the DNS, you can go to the no cert port 
+        * https://{HOST}}:9443/
+        * use chrome, click advanced, and go to the port.
 
 
 ---
@@ -150,7 +151,8 @@ local ports for services that cannot be proxied
 # configure a base server
 
 * add docker, git
-    *   **use these docker install** [instruction](https://docs.docker.com/engine/install/ubuntu/)
+??? note "Offical Docker for Ubuntu"
+    **use these docker install** [instruction](https://docs.docker.com/engine/install/ubuntu/)
 * git clone https://github.com/earthcube/geocodes.git
 * cd geocodes/deployment
 * copy  base_machine.example.env, to .env
@@ -226,7 +228,7 @@ local ports for services that cannot be proxied
           u4d4oxfy7olc   traefik_proxy     overlay   swarm
     ```
     ??? note
-       NAME:traefik_proxy needs to exist, and be DRIVER:overlay, SCOPE:swarm
+        NAME:traefik_proxy needs to exist, and be DRIVER:overlay, SCOPE:swarm
 
 **Are volumes available**
 ??? example "`docker volumes`"

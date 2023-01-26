@@ -1,8 +1,5 @@
 # Documentation for the Geocodes Container Stack
 
-Table of Contents 
-
-[TOC]
 
 ## Overview:
 
@@ -63,30 +60,31 @@ Three sections to know prior to installing
 ### NOTES
 * [Troubleshooting](troubleshooting.md)
 
-~~~mermaid
-flowchart TB
-    services-- deployed by -->portainer
-    geocodes-- deployed by  --> portainer
-    gleaner-- deployed by  --> portainer
-    facetsearch-- routes --> traefik
-    facetsearchservices-- routes-->traefik
-    oss-- routes-->traefik
-    triplestore-- routes --> traefik
-    sparqlgui-- routes --> traefik
-    subgraph gleaner
-       headless
-    end
-    subgraph geocodes
-       facetsearch-->facetsearchservices
-    end
-    subgraph services
-       oss["oss s3"]
-       sparqlgui
-       triplestore["graph -- triplestore"]
-    end
-
-    subgraph base
-       traefik<-- routes -->portainer
-    end
-
-~~~
+??? info "system image"
+    ~~~mermaid
+    flowchart TB
+        services-- deployed by -->portainer
+        geocodes-- deployed by  --> portainer
+        gleaner-- deployed by  --> portainer
+        facetsearch-- routes --> traefik
+        facetsearchservices-- routes-->traefik
+        oss-- routes-->traefik
+        triplestore-- routes --> traefik
+        sparqlgui-- routes --> traefik
+        subgraph gleaner
+           headless
+        end
+        subgraph geocodes
+           facetsearch-->facetsearchservices
+        end
+        subgraph services
+           oss["oss s3"]
+           sparqlgui
+           triplestore["graph -- triplestore"]
+        end
+    
+        subgraph base
+           traefik<-- routes -->portainer
+        end
+    
+    ~~~
