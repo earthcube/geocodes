@@ -9,6 +9,8 @@ plugins:
   -  mermaid2
   - literate-nav
   - admonition
+  #https://pypi.org/project/mkdocs-jupyter/
+  -  mkdocs-jupyter
 nav:
   - Home: index.md
   - List of services: stack_machines.md
