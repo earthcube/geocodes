@@ -1,6 +1,7 @@
 site_name: Geocodes Documentation
 theme:
-  name: 'readthedocs'
+#  name: 'readthedocs'
+  name: material
   features:
     - content.code.copy
 markdown_extensions:
