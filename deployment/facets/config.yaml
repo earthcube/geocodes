@@ -1,10 +1,13 @@
 ---
-API_URL: http://localhost:3000
+# https://geocodes.earthcube.org
+API_URL: https://geocodes.earthcube.org/ec/api
+# local development
+# API_URL: http://localhost:3000
 #API_URL: "${window_location_origin}/ec/api"
 #TRIPLESTORE_URL: https://graph.geodex.org/blazegraph/namespace/earthcube/sparql
 TRIPLESTORE_URL: https://graph.geocodes-1.earthcube.org/blazegraph/namespace/earthcube/sparql
 SUMMARYSTORE_URL: https://graph.geocodes-1.earthcube.org/blazegraph/namespace/summary/sparql
-#SUMMARYSTORE_URL: https://graph.geodex.org/blazegraph/namespace/summary/sparql
+## ECRR need to use fuseki source, for now.
 ECRR_TRIPLESTORE_URL: http://132.249.238.169:8080/fuseki/ecrr/query
 ECRR_GRAPH: http://earthcube.org/gleaner-summoned
 THROUGHPUTDB_URL: https://throughputdb.com/api/ccdrs/annotations
@@ -12,6 +15,7 @@ SPARQL_QUERY: queries/sparql_query.txt
 SPARQL_HASTOOLS: queries/sparql_hastools.txt
 SPARQL_TOOLS_WEBSERVICE: queries/sparql_gettools_webservice.txt
 SPARQL_TOOLS_DOWNLOAD: queries/sparql_gettools_download.txt
+# JSONLD_PROXY needs qoutes... since it has a $
 JSONLD_PROXY: "${window.location.origin}/ec/api/${o}"
 # oauth issues. need to add another auth app for additional 'proxies'
 # This is the one that will work: SPARQL_NB: https://geocodes.earthcube.org/notebook/mkQ?q=${q}

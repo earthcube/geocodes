@@ -7,15 +7,15 @@ This is what will be needed to create a production server
 * ability to request DNS,
 
 ## DOCKER REQUIREMENT
-If you are running on Ubuntu, you need to remove the provided docker.com version. [Official docker package](https://docs.docker.com/engine/install/ubuntu/)
 
+NOTE:
+**Warning** If you are running on Ubuntu, you need to remove the provided docker.com version. [Official docker package](https://docs.docker.com/engine/install/ubuntu/)
 We suggest that for others, confirm that you can run 
 ```shell
 docker compose version
 Docker Compose version v2.13.0
 ```
 If you cannot run `docker compose` then update to the docker.com version
-
 This is the version we are presently running.
 ```    
 Client: Docker Engine - Community
@@ -24,7 +24,7 @@ Client: Docker Engine - Community
 ```
 
 
-
+--- 
 ### Steps:
 
 * create a machine in openstack (if production)
@@ -125,16 +125,16 @@ local ports for services that cannot be proxied
 If you are doing development, then leave the caServer uncommented.
  
 If production, comment the line as shown 
-
-```yaml    
-   acme:
-      # using staging for testing/development
- #     caServer: https://acme-staging-v02.api.letsencrypt.org/directory
-      email: example@earthcube.org
-      storage: acme.json
-      httpChallenge:
-        entryPoint: http
-```
+>! EXAMPLE:
+> ```yaml    
+>   acme:
+> # using staging for testing/development
+> #     caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+>      email: example@earthcube.org
+>      storage: acme.json
+>      httpChallenge:
+>        entryPoint: http
+> ```
      
   * start the base containers 
     * new machine or developer
@@ -219,3 +219,35 @@ the latest image needs to bb pulled
 
 then 
 `./run_base.sh`
+
+----
+## SSH 
+
+for production, we recccomend that you use a group account/main account
+
+to do this you will need to create and copy a public/private key
+
+Generate an ssh-key:
+
+```
+ssh-keygen -t rsa -b 4096 -C "comment"
+```
+
+copy it to your remote server:
+
+```
+ssh-copy-id user@ip
+```
+
+or you can manually copy the 
+```~/.ssh/id_rsa.pub to ~/.ssh/authorized_keys.```
+
+Edit
+
+It can be done through ssh command as mentioned @chepner:
+
+```
+ssh user@ip 'mkdir ~/.ssh'
+ssh user@ip 'cat >> ~/.ssh/authorized_keys' < ~/.ssh/id_rsa.pub
+```
+(Above based on: [stackexchange](https://unix.stackexchange.com/questions/630186/how-to-add-ssh-keys-to-a-specific-user-in-linux))
