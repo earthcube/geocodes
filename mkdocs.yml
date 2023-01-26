@@ -1,5 +1,21 @@
 site_name: Geocodes Documentation
 theme: 'readthedocs'
+markdown_extensions:
+  - toc:
+      permalink: 
+  - attr_list
+  - def_list
+  - tables
+  - pymdownx.highlight:
+      use_pygments: false
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - callouts
+  - mdx_gh_links:
+      user: mkdocs
+      repo: mkdocs
+  - mkdocs-click
+
 plugins:
   - search
   # literate_nav must load after multirepo for the features to be available.
@@ -8,8 +24,6 @@ plugins:
       cleanup: true
   -  mermaid2
   - literate-nav
-  - pymdownx.snippets
-  - pymdownx.admonition
   #https://pypi.org/project/mkdocs-jupyter/
   -  mkdocs-jupyter
 nav:
