@@ -10,7 +10,7 @@ markdown_extensions:
       use_pygments: false
   - pymdownx.snippets
   - pymdownx.superfences
-  - callouts
+
   - mdx_gh_links:
       user: mkdocs
       repo: mkdocs
@@ -26,6 +26,7 @@ plugins:
   - literate-nav
   #https://pypi.org/project/mkdocs-jupyter/
   -  mkdocs-jupyter
+  - callouts
 nav:
   - Home: index.md
   - List of services: stack_machines.md
