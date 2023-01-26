@@ -111,6 +111,39 @@ local ports for services that cannot be proxied
 
 `ssh -i ~/.ssh/earthcube.pem ubuntu@{public IP}`
 
+??? info "add your ssh key so you can log in as main user (eg. ubuntu)"
+    SSH Keys
+    
+    for production, we recommend that you use a group account/main account
+    
+    to do this you will need to create and copy a public/private key
+    
+    Generate an ssh-key:
+    
+    ```{.copy}
+    ssh-keygen -t rsa -b 4096 -C "comment"
+    ```
+    
+    copy it to your remote server:
+    
+    ```{.copy}
+    ssh-copy-id user@ip
+    ```
+    
+    or you can manually copy the
+    ```
+    ~/.ssh/id_rsa.pub to ~/.ssh/authorized_keys.
+    ```
+    
+    Edit
+    
+    It can be done through ssh command as mentioned @chepner:
+    
+    ```
+    ssh user@ip 'mkdir ~/.ssh'
+    ssh user@ip 'cat >> ~/.ssh/authorized_keys' < ~/.ssh/id_rsa.pub
+    ```
+    (Above based on: [stackexchange](https://unix.stackexchange.com/questions/630186/how-to-add-ssh-keys-to-a-specific-user-in-linux))
 
 ---
 
@@ -210,58 +243,29 @@ local ports for services that cannot be proxied
 
 * **Treafik** https://admin.{host}
     * login is admin:iforget
-??? info
+??? info "image"
     ![Traefik_admin](./images/traefik_admin.png)
 
 * **Portainer** https://portainer.{host}/
     * this will ask you to setup and admin password
-??? info
+??? info "image"
     ![Portainer](./images/portainer_home.png)
+    * 
+# updating Portainer, or treafik
 
-## How tos needed:
+the latest image needs to be pulled
+
+`docker pull portainer/portainer-ce:latest`
+
+then
+`./run_base.sh`
+
+# How tos needed:
 * LOCAL DNS SETUP
   * editing your local machine /etc/hosts file does not work with letsencrypt. 
   * If user has a local name server they control, that might work.
 * setup a new password for traefik
 * lets encrypt
 
-## updating Portainer, or treafik
-
-the latest image needs to bb pulled
-
-`docker pull portainer/portainer-ce:latest`
-
-then 
-`./run_base.sh`
 
 ----
-## SSH 
-
-for production, we recccomend that you use a group account/main account
-
-to do this you will need to create and copy a public/private key
-
-Generate an ssh-key:
-
-```
-ssh-keygen -t rsa -b 4096 -C "comment"
-```
-
-copy it to your remote server:
-
-```
-ssh-copy-id user@ip
-```
-
-or you can manually copy the 
-```~/.ssh/id_rsa.pub to ~/.ssh/authorized_keys.```
-
-Edit
-
-It can be done through ssh command as mentioned @chepner:
-
-```
-ssh user@ip 'mkdir ~/.ssh'
-ssh user@ip 'cat >> ~/.ssh/authorized_keys' < ~/.ssh/id_rsa.pub
-```
-(Above based on: [stackexchange](https://unix.stackexchange.com/questions/630186/how-to-add-ssh-keys-to-a-specific-user-in-linux))
