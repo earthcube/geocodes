@@ -113,31 +113,33 @@ local ports for services that cannot be proxied
 ---
 
 # configure a base server
-  * add docker, git
-    *   **use these docker install** [instruction](https://docs.docker.com/engine/install/ubuntu/)
-  * git clone https://github.com/earthcube/geocodes.git
-  * cd geocodes/deployment
-  * copy  base_machine.example.env, to .env
-     * modify the file
-     * note: you can also copy the full portainer.env. 
-  * modify the treafik-data/traefik.yml
-     *  [lets encrypt](https://doc.traefik.io/traefik/https/acme/), 
-        * (developers) set to use [staging environment](https://letsencrypt.org/docs/staging-environment/) server while testing
 
-If you are doing development, then leave the caServer uncommented.
- 
-If production, comment the line as shown 
-
-??? example "treafik-data/traefik.yml"
-    ```yaml    
-       acme:
-     # using staging for testing/development
-     #     caServer: https://acme-staging-v02.api.letsencrypt.org/directory
-          email: example@earthcube.org
-          storage: acme.json
-          httpChallenge:
+    * add docker, git
+        *   **use these docker install** [instruction](https://docs.docker.com/engine/install/ubuntu/)
+    * git clone https://github.com/earthcube/geocodes.git
+    * cd geocodes/deployment
+    * copy  base_machine.example.env, to .env
+        * modify the file
+        * note: you can also copy the full portainer.env. 
+    * modify the treafik-data/traefik.yml
+        ??? example "treafik-data/traefik.yml"
+            ```yaml    
+            acme:
+            # using staging for testing/development
+            #     caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+            email: example@earthcube.org
+            storage: acme.json
+            httpChallenge:
             entryPoint: http
-     ```
+            ```
+!!! note 'Let Encrypt'
+   [lets encrypt](https://doc.traefik.io/traefik/https/acme/), 
+   
+   (developers) set to use [staging environment](https://letsencrypt.org/docs/staging-environment/) server while testing
+   If you are doing development, then leave the caServer uncommented.
+ 
+   If production, comment the line as shown 
+
      
 * start the base containers 
   * new machine or developer
