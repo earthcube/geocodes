@@ -126,7 +126,7 @@ local ports for services that cannot be proxied
 * modify the treafik-data/traefik.yml
 
 ??? example "treafik-data/traefik.yml"
-    ```yaml    
+    ```{ .yaml .copy }    
     acme:
     # using staging for testing/development
     #     caServer: https://acme-staging-v02.api.letsencrypt.org/directory
@@ -135,14 +135,15 @@ local ports for services that cannot be proxied
         httpChallenge:
             entryPoint: http
     ```
+    If production, comment the line as shown. Developers see Lets Encypt Notes 
 
-!!! note "Let Encrypt Notes"
+??? note "Let Encrypt Notes"
     [lets encrypt](https://doc.traefik.io/traefik/https/acme/), 
    
     (developers) set to use [staging environment](https://letsencrypt.org/docs/staging-environment/) server while testing
     If you are doing development, then leave the caServer uncommented.
  
-    If production, comment the line as shown 
+
 
      
 # start the base containers 
