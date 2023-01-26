@@ -82,25 +82,25 @@ This is what will be needed to create a production server
 
 
 !!! tip "Ports Pre-DNS"
-   minio ports do not need to be open, we are proxying on 80 and 443
-   Portainer port (9443)  can be opended temporarily if you want to play a bit pre-DNS.
+    minio ports do not need to be open, we are proxying on 80 and 443
+    Portainer port (9443)  can be opended temporarily if you want to play a bit pre-DNS.
 
 !!! success "Associate a Public IP"
     After the machine is created, we can change the IP to the one associated with geocodes.earthcube.org
 
 ---
 # setup domain names
-!!! warning "ESSENTIAL for PRODUCTION"
-    It is ESSENTIAL for PRODUCTION that the names are defined in a DNS. This allows for https for all services
-    and some services (aka s3/minio) do not play well with a proxy. (Fuseki unknown)
-
 * [Machines]( stack_machines.md )
 *   [Name for remote DNS](https://raw.githubusercontent.com/earthcube/geocodes/main/deployment/hosts.geocodess)
 
+!!! warning "ESSENTIAL for PRODUCTION"
+    It is ESSENTIAL for PRODUCTION that the names are defined in a DNS. This allows for https for all services
+    and some services (aka s3/minio) do not play well with a proxy.
+
+
 You might be able to run production stack using localhost, with these DNS...
 but that mucks with the lets encrypt HTTPS certs... if you control your own DNS, these are the 
-entries needed.
-* [Name for local DNS](https://raw.githubusercontent.com/earthcube/geocodes/main/deployment/hosts.geocodes-local)
+entries needed.  [Name for local DNS](https://raw.githubusercontent.com/earthcube/geocodes/main/deployment/hosts.geocodes-local)
 
 [Local testing and development](local_developer/index.md) can be using  the local compose configuration. This use http, and 
 local ports for services that cannot be proxied
@@ -124,7 +124,7 @@ local ports for services that cannot be proxied
     * modify the file
     * note: you can also copy the full portainer.env. 
 * modify the treafik-data/traefik.yml
-* 
+
 ??? example "treafik-data/traefik.yml"
     ```yaml    
     acme:
@@ -136,13 +136,13 @@ local ports for services that cannot be proxied
             entryPoint: http
     ```
 
-!!! note "Let Encrypt"
-   [lets encrypt](https://doc.traefik.io/traefik/https/acme/), 
+!!! note "Let Encrypt Notes"
+    [lets encrypt](https://doc.traefik.io/traefik/https/acme/), 
    
-   (developers) set to use [staging environment](https://letsencrypt.org/docs/staging-environment/) server while testing
-   If you are doing development, then leave the caServer uncommented.
+    (developers) set to use [staging environment](https://letsencrypt.org/docs/staging-environment/) server while testing
+    If you are doing development, then leave the caServer uncommented.
  
-   If production, comment the line as shown 
+    If production, comment the line as shown 
 
      
 # start the base containers 
@@ -150,9 +150,7 @@ local ports for services that cannot be proxied
 * new machine or developer
   * `./run_base.sh -e {your environment file}`
 * **production**: this uses the default .env (cp  portainer.env .env)
-  * `./run_base.sh`
-
-??? example "./run_base.sh"
+??? example "`./run_base.sh`"
     ```shell     
           ubuntu@geocodes-dev:~/geocodes/deployment$ ./run_base.sh -e geocodes-1.env
           Error response from daemon: network with name traefik_proxy already exists
@@ -172,8 +170,8 @@ local ports for services that cannot be proxied
           ⠿ Container traefik    Started
     ```
       
-* Are containers running
-  * `docker ps`
+* Are containers running 
+ 
 ??? example "`docker ps`" 
     ```shell
         * ubuntu@geocodes-dev:~/geocodes/deployment$ docker ps
@@ -183,8 +181,8 @@ local ports for services that cannot be proxied
     ```
 
 * Is network setup correctly?
-  * `docker network ls`
-??? example "`docker ps`"
+ 
+??? example "`docker network ls`"
     ```shell
     docker network ls
           NETWORK ID     NAME              DRIVER    SCOPE
@@ -199,8 +197,8 @@ local ports for services that cannot be proxied
        NAME:traefik_proxy needs to exist, and be DRIVER:overlay, SCOPE:swarm
 
 * Are volumes available
-  * `docker volumes`
-??? example "`docker ps`"
+
+??? example "`docker volumes`"
     ```shell
     ubuntu@geocodes-dev:~$ docker volume ls
           DRIVER    VOLUME NAME
