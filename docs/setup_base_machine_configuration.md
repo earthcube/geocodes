@@ -6,22 +6,24 @@ This is what will be needed to create a production server
 * base virtual machine for containers
 * ability to request DNS,
 
-## DOCKER REQUIREMENT
 
-NOTE:
-**Warning** If you are running on Ubuntu, you need to remove the provided docker.com version. [Official docker package](https://docs.docker.com/engine/install/ubuntu/)
-We suggest that for others, confirm that you can run 
-```shell
-docker compose version
-Docker Compose version v2.13.0
-```
-If you cannot run `docker compose` then update to the docker.com version
-This is the version we are presently running.
-```    
-Client: Docker Engine - Community
-     Version:           20.10.21
-     API version:       1.41
-```
+!!! warning "DOCKER REQUIREMENT"
+    If you are running on Ubuntu, you need to remove the provided docker.com version. [Official docker package](https://docs.docker.com/engine/install/ubuntu/)
+    We suggest that for others, confirm that you can run 
+
+    ```shell
+    docker compose version
+    Docker Compose version v2.13.0
+    ```
+
+    If you cannot run `docker compose` then update to the docker.com version
+    This is the version we are presently running.
+
+    ```    
+    Client: Docker Engine - Community
+         Version:           20.10.21
+         API version:       1.41
+    ```
 
 
 --- 
@@ -77,7 +79,7 @@ SDSC Openstack:
 - Keypair: earthcube (or any)
 
 
- **Notes:**
+!!! note "Minio"
  minio ports do not need to be open, we are proxying on 80 and 443
  Portainer port (9443)  can be opended temporarily if you want to play a bit pre-DNS.
 
@@ -87,8 +89,9 @@ After the machine is created, we can change the IP to the one associated with ge
 
 ---
 # setup domain names
-It is ESSENTIAL for PRODUCTION that the names are defined in a DNS. This allows for https for all services
-and some services (aka s3/minio) do not play well with a proxy. (Fuseki unknown)
+!!! warning "ESSENTIAL for PRODUCTION"
+    It is ESSENTIAL for PRODUCTION that the names are defined in a DNS. This allows for https for all services
+    and some services (aka s3/minio) do not play well with a proxy. (Fuseki unknown)
 
 * [Machines]( stack_machines.md )
 *   [Name for remote DNS](https://raw.githubusercontent.com/earthcube/geocodes/main/deployment/hosts.geocodess)
@@ -125,16 +128,16 @@ local ports for services that cannot be proxied
 If you are doing development, then leave the caServer uncommented.
  
 If production, comment the line as shown 
->! EXAMPLE:
-> ```yaml    
->   acme:
-> # using staging for testing/development
-> #     caServer: https://acme-staging-v02.api.letsencrypt.org/directory
->      email: example@earthcube.org
->      storage: acme.json
->      httpChallenge:
->        entryPoint: http
-> ```
+???  EXAMPLE:
+```yaml    
+   acme:
+ # using staging for testing/development
+ #     caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      email: example@earthcube.org
+      storage: acme.json
+      httpChallenge:
+        entryPoint: http
+ ```
      
   * start the base containers 
     * new machine or developer
