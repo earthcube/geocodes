@@ -3,7 +3,7 @@ theme:
 #  name: 'readthedocs'
   name: material
   features:
-    - content.code.copy
+#    - content.code.copy
     - navigation.sections
 markdown_extensions:
   - toc:
