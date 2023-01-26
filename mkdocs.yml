@@ -8,8 +8,11 @@ markdown_extensions:
   - tables
   - pymdownx.highlight:
       use_pygments: false
+  - admonition
   - pymdownx.snippets
+  - pymdownx.details
   - pymdownx.superfences
+
 
 plugins:
   - search

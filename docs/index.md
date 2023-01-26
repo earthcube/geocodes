@@ -14,7 +14,7 @@ Three sections to know prior to installing
 
 ####  ALL
     * Docker, v2+ `docker compose version` needs to show the -p --project flag
-!!! important     "**Known issue**" 
+!!! warning     "**Known issue**" 
     with (at least) Ubuntu default docker package. Install the [official docker package](https://docs.docker.com/engine/install/ubuntu/)
 
     ```shell
@@ -23,7 +23,7 @@ Three sections to know prior to installing
     ```
 ####  Production
 
-!!! important   "YOU NEED SETUP DNS."  
+!!! warning   "YOU NEED SETUP DNS."  
     Setup [DNS names for the aliases](https://raw.githubusercontent.com/earthcube/geocodes/main/deployment/hosts.geocodes) 
     so the treafik routing will work
 
