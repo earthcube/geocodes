@@ -1,5 +1,8 @@
 site_name: Geocodes Documentation
-theme: 'readthedocs'
+theme:
+  name: 'readthedocs'
+  features:
+    - content.code.copy
 markdown_extensions:
   - toc:
       permalink: 

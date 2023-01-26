@@ -124,8 +124,7 @@ local ports for services that cannot be proxied
     * modify the file
     * note: you can also copy the full portainer.env. 
 * modify the treafik-data/traefik.yml
-
-??? example "treafik-data/traefik.yml"
+???+ example "treafik-data/traefik.yml"
     ```{ .yaml .copy }    
     acme:
     # using staging for testing/development
@@ -136,6 +135,7 @@ local ports for services that cannot be proxied
             entryPoint: http
     ```
     If production, comment the line as shown. Developers see Lets Encypt Notes 
+
 
 ??? note "Let Encrypt Notes"
     [lets encrypt](https://doc.traefik.io/traefik/https/acme/), 
@@ -209,14 +209,17 @@ local ports for services that cannot be proxied
           local     traefik_data
     ```
 
-## is the base running?
-  * are Traefik and Portainer available via the web?
-    * **Treafik** https://admin.{host}
-      * login is admin:iforget
-  ![Traefik_admin](./images/traefik_admin.png)
-    * **Portainer** https://portainer.{host}/
-      * this will ask you to setup and admin password
-![Portainer](./images/portainer_home.png)
+* Is the base running?
+    * are Traefik and Portainer available via the web?
+        * **Treafik** https://admin.{host}
+            * login is admin:iforget
+                ??? info
+                    ![Traefik_admin](./images/traefik_admin.png)
+
+        * **Portainer** https://portainer.{host}/
+            * this will ask you to setup and admin password
+                ??? info
+                    ![Portainer](./images/portainer_home.png)
 
 ## How tos needed:
 * LOCAL DNS SETUP
