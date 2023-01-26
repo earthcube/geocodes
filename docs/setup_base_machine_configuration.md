@@ -1,5 +1,7 @@
 ##  Setup Machine:
 
+[TOC]
+
 # Services:
 This is what will be needed to create a production server
 
@@ -114,25 +116,27 @@ local ports for services that cannot be proxied
 
 # configure a base server
 
-    * add docker, git
-        *   **use these docker install** [instruction](https://docs.docker.com/engine/install/ubuntu/)
-    * git clone https://github.com/earthcube/geocodes.git
-    * cd geocodes/deployment
-    * copy  base_machine.example.env, to .env
-        * modify the file
-        * note: you can also copy the full portainer.env. 
-    * modify the treafik-data/traefik.yml
-        ??? example "treafik-data/traefik.yml"
-            ```yaml    
-            acme:
-            # using staging for testing/development
-            #     caServer: https://acme-staging-v02.api.letsencrypt.org/directory
-            email: example@earthcube.org
-            storage: acme.json
-            httpChallenge:
+* add docker, git
+    *   **use these docker install** [instruction](https://docs.docker.com/engine/install/ubuntu/)
+* git clone https://github.com/earthcube/geocodes.git
+* cd geocodes/deployment
+* copy  base_machine.example.env, to .env
+    * modify the file
+    * note: you can also copy the full portainer.env. 
+* modify the treafik-data/traefik.yml
+* 
+??? example "treafik-data/traefik.yml"
+    ```yaml    
+    acme:
+    # using staging for testing/development
+    #     caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+        email: example@earthcube.org
+        storage: acme.json
+        httpChallenge:
             entryPoint: http
-            ```
-!!! note 'Let Encrypt'
+    ```
+
+!!! note "Let Encrypt"
    [lets encrypt](https://doc.traefik.io/traefik/https/acme/), 
    
    (developers) set to use [staging environment](https://letsencrypt.org/docs/staging-environment/) server while testing
@@ -141,13 +145,14 @@ local ports for services that cannot be proxied
    If production, comment the line as shown 
 
      
-* start the base containers 
-  * new machine or developer
-    * `./run_base.sh -e {your environment file}`
-  * **production**: this uses the default .env (cp  portainer.env .env)
-    * `./run_base.sh`
+# start the base containers 
 
-??? example
+* new machine or developer
+  * `./run_base.sh -e {your environment file}`
+* **production**: this uses the default .env (cp  portainer.env .env)
+  * `./run_base.sh`
+
+??? example "./run_base.sh"
     ```shell     
           ubuntu@geocodes-dev:~/geocodes/deployment$ ./run_base.sh -e geocodes-1.env
           Error response from daemon: network with name traefik_proxy already exists
@@ -167,41 +172,45 @@ local ports for services that cannot be proxied
           ⠿ Container traefik    Started
     ```
       
-  * Are containers running
-    * `docker ps`
-```shell
-    * ubuntu@geocodes-dev:~/geocodes/deployment$ docker ps
-      CONTAINER ID   IMAGE                           COMMAND                  CREATED         STATUS         PORTS                                                                      NAMES
-      09a5d8683cce   traefik:v2.4                    "/entrypoint.sh trae…"   2 minutes ago   Up 2 minutes   0.0.0.0:80->80/tcp, :::80->80/tcp, 0.0.0.0:443->443/tcp, :::443->443/tcp   traefik
-      d3e2333ade6f   portainer/portainer-ce:latest   "/portainer"             2 minutes ago   Up 2 minutes   8000/tcp, 9000/tcp, 9443/tcp                                               portainer
-```
-  * Is network setup correctly?
-    * `docker network ls`
-```shell
-docker network ls
-      NETWORK ID     NAME              DRIVER    SCOPE
-      ad6cbce4ec60   bridge            bridge    local
-      2f618fa7da6d   docker_gwbridge   bridge    local
-      f8048bc7a3d9   host              host      local
-      kibdi510bt0x   ingress           overlay   swarm
-      12c01a2186b0   none              null      local
-      u4d4oxfy7olc   traefik_proxy     overlay   swarm
-```
-NAME:traefik_proxy needs to exist, and be DRIVER:overlay, SCOPE:swarm
+* Are containers running
+  * `docker ps`
+??? example "`docker ps`" 
+    ```shell
+        * ubuntu@geocodes-dev:~/geocodes/deployment$ docker ps
+          CONTAINER ID   IMAGE                           COMMAND                  CREATED         STATUS         PORTS                                                                      NAMES
+          09a5d8683cce   traefik:v2.4                    "/entrypoint.sh trae…"   2 minutes ago   Up 2 minutes   0.0.0.0:80->80/tcp, :::80->80/tcp, 0.0.0.0:443->443/tcp, :::443->443/tcp   traefik
+          d3e2333ade6f   portainer/portainer-ce:latest   "/portainer"             2 minutes ago   Up 2 minutes   8000/tcp, 9000/tcp, 9443/tcp                                               portainer
+    ```
 
-  * Are volumes available
-    * `docker volumes`
+* Is network setup correctly?
+  * `docker network ls`
+??? example "`docker ps`"
+    ```shell
+    docker network ls
+          NETWORK ID     NAME              DRIVER    SCOPE
+          ad6cbce4ec60   bridge            bridge    local
+          2f618fa7da6d   docker_gwbridge   bridge    local
+          f8048bc7a3d9   host              host      local
+          kibdi510bt0x   ingress           overlay   swarm
+          12c01a2186b0   none              null      local
+          u4d4oxfy7olc   traefik_proxy     overlay   swarm
+    ```
+    ???? note
+       NAME:traefik_proxy needs to exist, and be DRIVER:overlay, SCOPE:swarm
 
-```shell
-ubuntu@geocodes-dev:~$ docker volume ls
-      DRIVER    VOLUME NAME
-      local     graph
-      local     minio
-      local     portainer_data
-      local     traefik_data
-```
+* Are volumes available
+  * `docker volumes`
+??? example "`docker ps`"
+    ```shell
+    ubuntu@geocodes-dev:~$ docker volume ls
+          DRIVER    VOLUME NAME
+          local     graph
+          local     minio
+          local     portainer_data
+          local     traefik_data
+    ```
 
-### is the base running?
+## is the base running?
   * are Traefik and Portainer available via the web?
     * **Treafik** https://admin.{host}
       * login is admin:iforget
