@@ -2,7 +2,7 @@
 
 Env variables
 
-```
+```{.shell .copy}
 AUTH_MODE=server
 GITHUB_SECRET={KEY}
 GITHUB_CLIENTID=b5a5494cf21096a99e37
