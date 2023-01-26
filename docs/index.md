@@ -10,7 +10,9 @@ Three sections to know prior to installing
 * Local Development
 
 ####  ALL
-    * Docker, v2+ `docker compose version` needs to show the -p --project flag
+You need to be able to run `docker compose version`
+
+Should be > v2.13 `docker compose  --help` needs to show the -p --project flag
 !!! warning     "**Known issue**" 
     with (at least) Ubuntu default docker package. Install the [official docker package](https://docs.docker.com/engine/install/ubuntu/)
 

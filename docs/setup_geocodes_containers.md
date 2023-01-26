@@ -48,6 +48,7 @@ Compose path: deployment/services-compose.yaml
 
 ## Setup and start GeoCodes Client using portainer ui
 Steps:
+
 * modify the configuration file
 * create stack in portainer
 * test

@@ -5,13 +5,13 @@
 
 
 ## Minio
-### what servers exist in the minio configuraiton
+### what servers exist in the minio configuration
 
 `mc alias ls`
 
 ### minio add configuration for a server
 Note the single quotes around the password... some passwords are   not command line friendly
-```shell
+```{ .shell .copy }
 set +o history
 mc config host add dev https://oss.geocodes.earthcube.org  {miniouser} '{miniopassword}'
 
@@ -19,10 +19,14 @@ set -o history
 ```
 
 ### test
+```{ .shell .copy }
 mc ls dev
+```
 
 ### Mino sync between servers
+```{ .shell .copy }
 mc cp --recursive dev/ecrr/ gc1/ecrr/
+```
 
 ### copy log files to minio
 
@@ -36,15 +40,19 @@ mc share download --recursive dev/gleaner/logs/{date}
 
 (IGNORE: only works for top level of bucket... may need a better policy)
 
+```{ .shell .copy }
 mc anonymous links --recursive dev/gleaner/summoned/amgeo
+```
 
 ### statistics for a bucket
+```
 mc ls dev/gleaner/summoned/{repo} --summarize --recursive
 
 mc ls dev/gleaner/summoned/amgeo --summarize --recursiv
 
 
 mc stat --recursive  dev/gleaner/summoned/{repo}
+```
 
 eg
 
@@ -71,7 +79,8 @@ The steps  are originally from (Medium.com)[https://medium.com/@nvbach91/how-to-
 
 ## deleting:
 https://www.w3.org/TR/sparql11-update/#clear
-* clear all triples
+``` { .text .copy }
 `CLEAR ALL`
-* Clear a graph
+## Clear a graph
 `CLEAR GRAPH earthcube:{iri}`
+```
