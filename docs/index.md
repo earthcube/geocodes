@@ -14,7 +14,8 @@ Three sections to know prior to installing
 
 ####  ALL
     * Docker, v2+ `docker compose version` needs to show the -p --project flag
-> :warning:     * **Known issue** with (at least) Ubuntu default docker package. Install the [official docker package](https://docs.docker.com/engine/install/ubuntu/)
+!!! important     "**Known issue**" 
+    with (at least) Ubuntu default docker package. Install the [official docker package](https://docs.docker.com/engine/install/ubuntu/)
 
     ```shell
     docker compose version
@@ -22,12 +23,14 @@ Three sections to know prior to installing
     ```
 ####  Production
 
-> :warning:  YOU NEED SETUP DNS.  setup [DNS names for the aliases](https://raw.githubusercontent.com/earthcube/geocodes/main/deployment/hosts.geocodes) 
- > so the treafik routing will work
+!!! important   "YOU NEED SETUP DNS."  
+    Setup [DNS names for the aliases](https://raw.githubusercontent.com/earthcube/geocodes/main/deployment/hosts.geocodes) 
+    so the treafik routing will work
 
 ####  Local(Tutorial)/Development
 
-> :memo: **TODO:** there are compose-local.yaml configurations. 
+!!! note 
+    **TODO:** there are compose-local.yaml configurations. 
 
 * The run_local.sh works. There is no portainer for these. all command line.
 * minio (and maybe others) use ports. [See "-local path " at this page](./stack_machines.md)
