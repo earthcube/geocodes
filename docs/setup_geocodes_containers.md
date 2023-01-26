@@ -1,32 +1,27 @@
 #  Setup Geocodes Services and Geocodes Client Containers:
 
-# Summary
+[TOC]
 
-* create  env file
-* create a services stack
-* create a configuration for the
-* create a geocodes stack
-* test
 
 
 # Details
 
 ## create a new env file
 
-    * cd deployment
-    * Edit files containing env variables
-      * copy portainer.services.env to new file.` cp portainer.env {myhost}.services.env`
-      * copy portainer.geocodes.env to new file.` cp portainer.geocodes.env {myhost}.geocodes.env`
-      * (option) use single file copy portainer.env to new file.` cp portainer.env {myhost}.env`
-      * edit {myhost}.{geocodes|services}.env
-        * change 
-
- ```
-HOST=geocodes-dev.mydomain.org
-PRODUCTION=geocodes.mydomain.org
-GC_CLIENT_DOMAIN=geoccodes.geocodes-dev.mydomain.org
-S3ADDRESS=oss.geocodes-dev.mydomain.org
-```
+* cd deployment
+* Edit files containing env variables
+  * copy portainer.services.env to new file.` cp portainer.env {myhost}.services.env`
+  * copy portainer.geocodes.env to new file.` cp portainer.geocodes.env {myhost}.geocodes.env`
+  * (option) use single file copy portainer.env to new file.` cp portainer.env {myhost}.env`
+  * edit {myhost}.{geocodes|services}.env
+    * change
+???+ example "env"
+    ```
+    HOST=geocodes-dev.mydomain.org
+    PRODUCTION=geocodes.mydomain.org
+    GC_CLIENT_DOMAIN=geoccodes.geocodes-dev.mydomain.org
+    S3ADDRESS=oss.geocodes-dev.mydomain.org
+    ```
 
 
 
@@ -39,20 +34,21 @@ Steps:
 
 ### Create Services Stack
 
-    * log into portainer
-      * if this is a first login, it will ask you for a password.
-      * Select **stack** tab
-      * click **add stack** button
-          * Name: services
-          * Build method: git repository
-          * Repository URL: https://github.com/earthcube/geocodes
-          * reference: refs/heads/main
-          * Compose path: deployment/services-compose.yaml
-          * Environment variables: click 'load variables from .env file'
-            * load {myhost}.services.env
-          * Actions: 
-            * Click: Deploy This Stack 
-  ![Create Services Stack](./images/create_services.png)
+* log into portainer
+  * if this is a first login, it will ask you for a password.
+  * Select **stack** tab
+  * click **add stack** button
+      * Name: services
+      * Build method: git repository
+      * Repository URL: https://github.com/earthcube/geocodes
+      * reference: refs/heads/main
+      * Compose path: deployment/services-compose.yaml
+      * Environment variables: click 'load variables from .env file'
+        * load {myhost}.services.env
+      * Actions: 
+        * Click: Deploy This Stack 
+??? example 
+    ![Create Services Stack](./images/create_services.png)
 
 ----
 
@@ -61,53 +57,55 @@ Steps:
 * modify the configuration file
 * create stack in portainer
 * test
-* instuctions for Updating a GEOCODES CLIENT Configuration if things do not work
+* instructions for Updating a GEOCODES CLIENT Configuration if things do not work
   * or delete stack and reload
 
 
 ###  Modify the Facet Search Configuration
-    * edit in deployment/facets/config.yaml
-    * this file is mounted on the container as a docker config file
-        * **run** the run_add_configs.sh
+
+* edit in deployment/facets/config.yaml
+* this file is mounted on the container as a docker config file
+    * **run** the run_add_configs.sh
 
 Portions of deployment/facets/config.yaml that might be changed.
-```yaml
-API_URL: https://geocodes.{your host}/ec/api/
-SPARQL_NB: https:/geocodes.{your host}/notebook/mkQ?q=${q}
-SPARQL_YASGUI: https://geocodes.{your host}/sparqlgui?
-#API_URL: "${window_location_origin}/ec/api"
-#TRIPLESTORE_URL: https://graph.geocodes-1.earthcube.org/blazegraph/namespace/earthcube/sparql
-TRIPLESTORE_URL: https://graph.{your host}/blazegraph/namespace/earthcube/sparql
-BLAZEGRAPH_TIMEOUT: 20
-## ECRR need to use fuseki source, for now.
-ECRR_TRIPLESTORE_URL: http://132.249.238.169:8080/fuseki/ecrr/query 
-# ECRR_TRIPLESTORE_URL:   http://{your host}/blazegraph/namespace/ecrr/sparql 
-ECRR_GRAPH: http://earthcube.org/gleaner-summoned
-THROUGHPUTDB_URL: https://throughputdb.com/api/ccdrs/annotations
-SPARQL_QUERY: queries/sparql_query.txt
-SPARQL_HASTOOLS: queries/sparql_hastools.txt
-SPARQL_TOOLS_WEBSERVICE: queries/sparql_gettools_webservice.txt
-SPARQL_TOOLS_DOWNLOAD: queries/sparql_gettools_download.txt
-# JSONLD_PROXY needs qoutes... since it has a $
-JSONLD_PROXY: "https://geocodes.{your host}/ec/api/${o}"
-
-SPARQL_YASGUI: https://sparqlui.{your host}/?
-```
+??? example "section of deployment/facets/config.yaml"
+    ```yaml
+    API_URL: https://geocodes.{your host}/ec/api/
+    SPARQL_NB: https:/geocodes.{your host}/notebook/mkQ?q=${q}
+    SPARQL_YASGUI: https://geocodes.{your host}/sparqlgui?
+    #API_URL: "${window_location_origin}/ec/api"
+    #TRIPLESTORE_URL: https://graph.geocodes-1.earthcube.org/blazegraph/namespace/earthcube/sparql
+    TRIPLESTORE_URL: https://graph.{your host}/blazegraph/namespace/earthcube/sparql
+    BLAZEGRAPH_TIMEOUT: 20
+    ## ECRR need to use fuseki source, for now.
+    ECRR_TRIPLESTORE_URL: http://132.249.238.169:8080/fuseki/ecrr/query 
+    # ECRR_TRIPLESTORE_URL:   http://{your host}/blazegraph/namespace/ecrr/sparql 
+    ECRR_GRAPH: http://earthcube.org/gleaner-summoned
+    THROUGHPUTDB_URL: https://throughputdb.com/api/ccdrs/annotations
+    SPARQL_QUERY: queries/sparql_query.txt
+    SPARQL_HASTOOLS: queries/sparql_hastools.txt
+    SPARQL_TOOLS_WEBSERVICE: queries/sparql_gettools_webservice.txt
+    SPARQL_TOOLS_DOWNLOAD: queries/sparql_gettools_download.txt
+    # JSONLD_PROXY needs qoutes... since it has a $
+    JSONLD_PROXY: "https://geocodes.{your host}/ec/api/${o}"
+    
+    SPARQL_YASGUI: https://sparqlui.{your host}/?
+    ```
 
 ### Create Geocodes Stack
 
-    * log into portainer
-      * if this is a first login, it will ask you for a password.
-      * click **add stack** button
-        * Name: geocodes
-        * Build method: git repository
-        * Repository URL: https://github.com/earthcube/geocodes
-        * reference: refs/heads/main
-        * Compose path: deployment/geocodes-compose.yaml
-        * Environment variables: click 'load variables from .env file'
-          * load {myhost}.geocodes.env
-        * Actions:
-          * Click: Deploy This Stack
+* log into portainer
+  * if this is a first login, it will ask you for a password.
+  * click **add stack** button
+    * Name: geocodes
+    * Build method: git repository
+    * Repository URL: https://github.com/earthcube/geocodes
+    * reference: refs/heads/main
+    * Compose path: deployment/geocodes-compose.yaml
+    * Environment variables: click 'load variables from .env file'
+      * load {myhost}.geocodes.env
+    * Actions:
+      * Click: Deploy This Stack
     ![Create Geocodes Stack](./images/create_geocodes_stack.png)
 ### Test Geocodes Client
 There will be no data initially, so queries will not work but

@@ -171,8 +171,7 @@ local ports for services that cannot be proxied
           ⠿ Container traefik    Started
     ```
       
-* Are containers running 
- 
+**Are containers running**
 ??? example "`docker ps`" 
     ```shell
         * ubuntu@geocodes-dev:~/geocodes/deployment$ docker ps
@@ -181,8 +180,7 @@ local ports for services that cannot be proxied
           d3e2333ade6f   portainer/portainer-ce:latest   "/portainer"             2 minutes ago   Up 2 minutes   8000/tcp, 9000/tcp, 9443/tcp                                               portainer
     ```
 
-* Is network setup correctly?
- 
+**Is network setup correctly?**
 ??? example "`docker network ls`"
     ```shell
     docker network ls
@@ -194,11 +192,10 @@ local ports for services that cannot be proxied
           12c01a2186b0   none              null      local
           u4d4oxfy7olc   traefik_proxy     overlay   swarm
     ```
-    ???? note
+    ??? note
        NAME:traefik_proxy needs to exist, and be DRIVER:overlay, SCOPE:swarm
 
-* Are volumes available
-
+**Are volumes available**
 ??? example "`docker volumes`"
     ```shell
     ubuntu@geocodes-dev:~$ docker volume ls
@@ -209,17 +206,17 @@ local ports for services that cannot be proxied
           local     traefik_data
     ```
 
-* Is the base running?
-    * are Traefik and Portainer available via the web?
-        * **Treafik** https://admin.{host}
-            * login is admin:iforget
-                ??? info
-                    ![Traefik_admin](./images/traefik_admin.png)
+## are Traefik and Portainer available via the web?
 
-        * **Portainer** https://portainer.{host}/
-            * this will ask you to setup and admin password
-                ??? info
-                    ![Portainer](./images/portainer_home.png)
+* **Treafik** https://admin.{host}
+    * login is admin:iforget
+??? info
+    ![Traefik_admin](./images/traefik_admin.png)
+
+* **Portainer** https://portainer.{host}/
+    * this will ask you to setup and admin password
+??? info
+    ![Portainer](./images/portainer_home.png)
 
 ## How tos needed:
 * LOCAL DNS SETUP
