@@ -58,7 +58,7 @@ Should be > v2.13 `docker compose  --help` needs to show the -p --project flag
     Setup [DNS names for the aliases](https://raw.githubusercontent.com/earthcube/geocodes/main/deployment/hosts.geocodes) 
     so the treafik routing will work
 
-??? note   Local(Tutorial)/Development
+??? note   "Local(Tutorial)/Development"
     **TODO:** there are compose-local.yaml configurations. NOT WELL TESTED
 
     * The run_local.sh works. There is no portainer for these. Managed by command line.
