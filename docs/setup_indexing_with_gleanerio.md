@@ -1,0 +1,309 @@
+
+# Loading Data for The Initial Installation
+
+This is step 4 of 4 major steps:
+
+1. Install base containers on a server
+2. Setup services containers
+3. Initial setup of services and loading of data
+4. Setup Geocodes UI using datastores defined in Initial Setup
+
+Steps:
+2. create data stores in minioadmin and graph
+2.  install glcon, if not installed
+3. create a configuration file to install a small set of data
+    4. `./glcon config init --cfgName gctest`
+    5.  edit
+    6. `./glcon config generate --cfgName gctest`
+4. setup and summon data using 'gleaner' 
+    5. `./glcon gleaner setup --cfgName gctest`
+    7. `./glcon config generate --cfgName gctest`
+5. load data to graph using 'nabu' 
+    6. `./glcon nabu prefix --cfgName gctest`
+    7. `./glcon nabu prune --cfgName gctest`
+6. Run Summarize task. This is performance related.
+---
+
+## Setup Datastores
+
+There are several datastores required to enable data summoning(harvesting), converting to a graph.
+While the production presently uses the earthcube repository convention, we suggest that 
+tutorial and communities setting up an instance to use the geocodes repository pattern.
+Earthcube/Decoder staff should use the A Community pattern when setting up an instance for a community.
+
+
+| Repository             | config            | s3 Bucket | graph namespaces           | notes                           |
+|------------------------|-------------------|-----------|----------------------------|---------------------------------|
+| GeocodesTest           | gctest            | gctest      | gctest, gctest_summary         | samples of actual datasets      |
+| geocodes               | geocodes          | geocodes  | geocodes, geocodes_summary | suggested standalone repository |
+| earthcube              | geocodes          | gleaner   | earthcube, summary         | DEFAULT PRODUCTION NAME         |
+| A COMMUNITY eg {acomm} | {acomm}           | {acomm}   | {acomm}, {acomm}_summary   | A communities tenant repository |
+
+!!! note "Initial Setup"
+    we will be setting up both the gctest and gecodes repositories.
+
+### Setup Minio buckets
+Gleaner extracts JSONLD from a web apge, and stores it in an s3 system (Minio)
+in 
+
+go to https://minioadmin.{youhost}/
+ 
+create buckets gctest, and geocodes
+
+go to settings for the bucket and make  public.
+
+### Setup Graph stores.
+Nabu pulls from the s3 system, converts to RDF quads, and uploads to a graph store.
+
+go to https://graph.{your host}
+
+namespace tab, create  a mode **'quads'** namespace with full text index, 
+"gctest", and "geocodes"
+
+namespace tab, create mode **'triples'** namespace with full text index,
+"gctest_summary", and "geocodes_summary"
+
+## Install Indexing Software
+`glcon` is a console application that combines the functionality of Gleaner and Nabu into a single application.
+It also has features to create and manage configurations for gleaner and nabu.
+
+[Install glcon](install_glcon.md)
+
+## Harvest and load data 
+
+Goal is to create a configuration file to load gctest data.
+The sitemap is here:
+
+### Create a configuration and load sample data
+
+#### Create a configuration for Continuous Integration 
+
+??? example "`./glcon config init --cfgName gctest`"
+    ```shell
+       ubuntu@geocodes-dev:~/indexing$ ./glcon config init --cfgName gctest
+        2022/07/21 23:27:31 EarthCube Gleaner
+        init called
+        make a config template is there isn't already one
+        ubuntu@geocodes-dev:~/indexing$ ls configs/gctest
+        README_Configure_Template.md  localConfig.yaml  sources.csv
+        gleaner_base.yaml             nabu_base.yaml
+        ubuntu@geocodes-dev:~/indexing$ 
+    ```
+#### Copy sources list to configs/gctest
+!!! note
+    asssumes you are in indexing, and have put the gecodes at ~/geocodes aka your home directory
+
+`cp ~/gecodes/deployment/ingestconfig/gctest.csv configs/gctest/`
+
+#### edit files: 
+You will need to change the localConfig.yaml
+
+??? example "`nano configs/gctest/localConfig.yaml`"
+    ```{ .yaml .copy }
+    ---
+    minio:
+      address: oss.{YOU HOST}
+      port: 433
+      accessKey: worldsbestaccesskey
+      secretKey: worldsbestaccesskey
+      ssl: true
+      bucket: gctest # can be overridden with MINIO_BUCKET
+    sparql:
+      endpoint: https://graph.{YOU HOST}/blazegraph/namespace/earthcube/sparql
+    s3:
+      bucket: gctest # sync with above... can be overridden with MINIO_BUCKET... get's zapped if it's not here.
+      domain: us-east-1 
+    #headless field in gleaner.summoner
+    headless: http://127.0.0.1:9222
+    sourcesSource:
+      type: csv
+      location: gctest.csv 
+    # this can be a remote csv
+    #  type: csv
+    #  location: https://docs.google.com/spreadsheets/d/1G7Wylo9dLlq3tmXe8E8lZDFNKFDuoIEeEZd3epS0ggQ/gviz/tq?tqx=out:csv&sheet=TestDatasetSources
+
+    ```
+
+####  Generate configs 
+??? example "`./glcon config generate --cfgName gctest`"
+    ```shell
+    ./glcon config generate --cfgName gctest
+    2022/07/21 23:37:46 EarthCube Gleaner
+    generate called
+    {SourceType:sitemap Name:geocodes_demo_datasets Logo:https://github.com/earthcube/GeoCODES-Metadata/metadata/OtherResources URL:https://raw.githubusercontent.com/earthcube/GeoCODES-Metadata/gh-pages/metadata/Dataset/sitemap.xml Headless:false PID:https://www.earthcube.org/datasets/ ProperName:Geocodes Demo Datasets Domain:0 Active:true CredentialsFile: Other:map[] HeadlessWait:0}
+    make copy of servers.yaml
+    Regnerate gleaner
+    Regnerate nabu
+    ```
+
+####  flightest
+Run setup to see if you can connect to the minio store
+
+??? example "`./glcon gleaner setup --cfgName gctest"
+     ```shell
+        ubuntu@geocodes-dev:~/indexing$ ./glcon gleaner setup --cfgName gctest
+        2022/07/21 23:42:54 EarthCube Gleaner
+        Using gleaner config file: /home/ubuntu/indexing/configs/gctest/gleaner
+        Using nabu config file: /home/ubuntu/indexing/configs/gctest/nabu
+        setup called
+        2022/07/21 23:42:54 Validating access to object store
+        2022/07/21 23:42:54 Connection issue, make sure the minio server is running and accessible. The specified bucket does not exist.
+        ubuntu@geocodes-dev:~/indexing$ 
+     ```
+
+* Load Data
+ 
+Gleaner will harvest jsonld from the URL's listed in the sitemap.
+
+??? example "`./glcon gleaner batch --cfgName gctest`"
+    ```shell
+    ubuntu@geocodes-dev:~/indexing$ ./glcon gleaner batch --cfgName gctest
+    INFO[0000] EarthCube Gleaner                            
+    Using gleaner config file: /home/ubuntu/indexing/configs/gctest/gleaner
+    Using nabu config file: /home/ubuntu/indexing/configs/gctest/nabu
+    batch called
+    {"file":"/github/workspace/internal/organizations/org.go:55","func":"github.com/gleanerio/gleaner/internal/organizations.BuildGraph","level":"info","msg":"Building organization graph.","time":"2022-07-22T19:16:53Z"}
+    {"file":"/github/workspace/pkg/gleaner.go:35","func":"github.com/gleanerio/gleaner/pkg.Cli","level":"info","msg":"Sitegraph(s) processed","time":"2022-07-22T19:16:53Z"}
+    {"file":"/github/workspace/internal/summoner/summoner.go:17","func":"github.com/gleanerio/gleaner/internal/summoner.Summoner","level":"info","msg":"Summoner start time:2022-07-22 19:16:53.451745139 +0000 UTC m=+0.182100234","time":"2022-07-22T19:16:53Z"}
+    {"file":"/github/workspace/internal/summoner/acquire/resources.go:189","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.getRobotsForDomain","level":"info","msg":"Getting robots.txt from 0/robots.txt","time":"2022-07-22T19:16:53Z"}
+    {"file":"/github/workspace/internal/summoner/acquire/utils.go:23","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.getRobotsTxt","level":"error","msg":"error fetching robots.txt at 0/robots.txtGet \"0/robots.txt\": unsupported protocol scheme \"\"","time":"2022-07-22T19:16:53Z"}
+    {"file":"/github/workspace/internal/summoner/acquire/resources.go:192","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.getRobotsForDomain","level":"error","msg":"error getting robots.txt for 0:Get \"0/robots.txt\": unsupported protocol scheme \"\"","time":"2022-07-22T19:16:53Z"}
+    {"file":"/github/workspace/internal/summoner/acquire/resources.go:63","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.ResourceURLs","level":"error","msg":"Error getting robots.txt for geocodes_demo_datasetscontinuing without it.","time":"2022-07-22T19:16:53Z"}
+    {"file":"/github/workspace/internal/summoner/acquire/resources.go:127","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.getSitemapURLList","level":"info","msg":"https://raw.githubusercontent.com/earthcube/GeoCODES-Metadata/gh-pages/metadata/Dataset/sitemap.xml is not a sitemap index, checking to see if it is a sitemap","time":"2022-07-22T19:16:53Z"}
+    {"file":"/github/workspace/internal/summoner/acquire/acquire.go:32","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.ResRetrieve","level":"info","msg":"Queuing URLs for geocodes_demo_datasets","time":"2022-07-22T19:16:53Z"}
+    {"file":"/github/workspace/internal/summoner/acquire/acquire.go:74","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.getConfig","level":"info","msg":"Thread count 5 delay 0","time":"2022-07-22T19:16:53Z"}
+    {"file":"/github/workspace/internal/summoner/acquire/jsonutils.go:89","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.Upload","level":"info","msg":"context.strict is not set to true; doing json-ld fixups.","time":"2022-07-22T19:16:53Z"}
+    {"file":"/github/workspace/internal/summoner/acquire/jsonutils.go:89","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.Upload","level":"info","msg":"context.strict is not set to true; doing json-ld fixups.","time":"2022-07-22T19:16:53Z"}
+    {"file":"/github/workspace/internal/summoner/acquire/jsonutils.go:89","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.Upload","level":"info","msg":"context.strict is not set to true; doing json-ld fixups.","time":"2022-07-22T19:16:53Z"}
+    {"file":"/github/workspace/internal/summoner/acquire/jsonutils.go:89","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.Upload","level":"info","msg":"context.strict is not set to true; doing json-ld fixups.","time":"2022-07-22T19:16:54Z"}
+    {"file":"/github/workspace/internal/summoner/acquire/jsonutils.go:89","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.Upload","level":"info","msg":"context.strict is not set to true; doing json-ld fixups.","time":"2022-07-22T19:16:54Z"}
+    12% |██████                                                 | (2/16, 2 it/s) [0s:7s]{"file":"/github/workspace/internal/summoner/acquire/jsonutils.go:89","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.Upload","level":"info","msg":"context.strict is not set to true; doing json-ld fixups.","time":"2022-07-22T19:16:54Z"}
+    {"file":"/github/workspace/internal/summoner/acquire/jsonutils.go:89","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.Upload","level":"info","msg":"context.strict is not set to true; doing json-ld fixups.","time":"2022-07-22T19:16:54Z"}
+    {"file":"/github/workspace/internal/summoner/acquire/jsonutils.go:89","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.Upload","level":"info","msg":"context.strict is not set to true; doing json-ld fixups.","time":"2022-07-22T19:16:54Z"}
+    {"file":"/github/workspace/internal/summoner/acquire/jsonutils.go:89","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.Upload","level":"info","msg":"context.strict is not set to true; doing json-ld fixups.","time":"2022-07-22T19:16:54Z"}
+    {"file":"/github/workspace/internal/summoner/acquire/jsonutils.go:89","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.Upload","level":"info","msg":"context.strict is not set to true; doing json-ld fixups.","time":"2022-07-22T19:16:54Z"}
+    43% |███████████████████████                                | (7/16, 6 it/s) [1s:1s]{"file":"/github/workspace/internal/summoner/acquire/jsonutils.go:89","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.Upload","level":"info","msg":"context.strict is not set to true; doing json-ld fixups.","time":"2022-07-22T19:16:54Z"}
+    68% |████████████████████████████████████                  | (11/16, 6 it/s) [1s:0s]{"file":"/github/workspace/internal/summoner/acquire/jsonutils.go:89","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.Upload","level":"info","msg":"context.strict is not set to true; doing json-ld fixups.","time":"2022-07-22T19:16:55Z"}
+    {"file":"/github/workspace/internal/summoner/acquire/jsonutils.go:89","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.Upload","level":"info","msg":"context.strict is not set to true; doing json-ld fixups.","time":"2022-07-22T19:16:55Z"}
+    {"file":"/github/workspace/internal/summoner/acquire/jsonutils.go:89","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.Upload","level":"info","msg":"context.strict is not set to true; doing json-ld fixups.","time":"2022-07-22T19:16:55Z"}
+    75% |████████████████████████████████████████              | (12/16, 6 it/s) [1s:0s]{"file":"/github/workspace/internal/summoner/acquire/jsonutils.go:89","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.Upload","level":"info","msg":"context.strict is not set to true; doing json-ld fixups.","time":"2022-07-22T19:16:55Z"}
+    {"file":"/github/workspace/internal/summoner/acquire/jsonutils.go:89","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.Upload","level":"info","msg":"context.strict is not set to true; doing json-ld fixups.","time":"2022-07-22T19:16:55Z"}
+    100% |██████████████████████████████████████████████████████| (16/16, 9 it/s)        
+    {"file":"/github/workspace/internal/summoner/summoner.go:37","func":"github.com/gleanerio/gleaner/internal/summoner.Summoner","level":"info","msg":"Summoner end time:2022-07-22 19:16:55.660367672 +0000 UTC m=+2.390721648","time":"2022-07-22T19:16:55Z"}
+    {"file":"/github/workspace/internal/summoner/summoner.go:38","func":"github.com/gleanerio/gleaner/internal/summoner.Summoner","level":"info","msg":"Summoner run time:0.0368103569","time":"2022-07-22T19:16:55Z"}
+    {"file":"/github/workspace/internal/millers/millers.go:27","func":"github.com/gleanerio/gleaner/internal/millers.Millers","level":"info","msg":"Miller start time2022-07-22 19:16:55.661434567 +0000 UTC m=+2.391819553","time":"2022-07-22T19:16:55Z"}
+    {"file":"/github/workspace/internal/millers/millers.go:44","func":"github.com/gleanerio/gleaner/internal/millers.Millers","level":"info","msg":"Adding bucket to milling list:summoned/geocodes_demo_datasets","time":"2022-07-22T19:16:55Z"}
+    {"file":"/github/workspace/internal/millers/millers.go:55","func":"github.com/gleanerio/gleaner/internal/millers.Millers","level":"info","msg":"Adding bucket to prov building list:prov/geocodes_demo_datasets","time":"2022-07-22T19:16:55Z"}
+    100% |█████████████████████████████████████████████████████| (15/15, 51 it/s)        
+    {"file":"/github/workspace/internal/millers/graph/graphng.go:82","func":"github.com/gleanerio/gleaner/internal/millers/graph.GraphNG","level":"info","msg":"Assembling result graph for prefix:summoned/geocodes_demo_datasetsto:milled/geocodes_demo_datasets","time":"2022-07-22T19:16:56Z"}
+    {"file":"/github/workspace/internal/millers/graph/graphng.go:83","func":"github.com/gleanerio/gleaner/internal/millers/graph.GraphNG","level":"info","msg":"Result graph will be at:results/runX/geocodes_demo_datasets_graph.nq","time":"2022-07-22T19:16:56Z"}
+    {"file":"/github/workspace/internal/millers/graph/graphng.go:89","func":"github.com/gleanerio/gleaner/internal/millers/graph.GraphNG","level":"info","msg":"Pipe copy for graph done","time":"2022-07-22T19:16:56Z"}
+    {"file":"/github/workspace/internal/millers/millers.go:84","func":"github.com/gleanerio/gleaner/internal/millers.Millers","level":"info","msg":"Miller end time:2022-07-22 19:16:56.387639969 +0000 UTC m=+3.117994225","time":"2022-07-22T19:16:56Z"}
+    {"file":"/github/workspace/internal/millers/millers.go:85","func":"github.com/gleanerio/gleaner/internal/millers.Millers","level":"info","msg":"Miller run time:0.0121029112","time":"2022-07-22T19:16:56Z"}
+    ```
+!!! note "See files in Minio"
+    You can open the minioadmin console (https://minioadmin.{your host}/) and look to see that file are
+    uploaded into the bucket, in this case gctest.. summon/gecodes_demo_data
+
+(NEED IMAGE HERE)
+
+####  push to graph
+Nabu will read files from the bucket, and push them to the graph store.
+
+??? example "`./glcon nabu prefix --cfgName gctest`" 
+    ```json lines
+    ./glcon nabu prefix --cfgName gctest
+    INFO[0000] EarthCube Gleaner                            
+    Using gleaner config file: /home/ubuntu/indexing/configs/gctest/gleaner
+    Using nabu config file: /home/ubuntu/indexing/configs/gctest/nabu
+    check called
+    2022/07/22 19:23:16 Load graphs from prefix to triplestore
+    {"file":"/go/pkg/mod/github.com/gleanerio/nabu@v0.0.0-20220223141452-a01fa9352430/internal/sparqlapi/pipeload.go:41","func":"github.com/gleanerio/nabu/internal/sparqlapi.ObjectAssembly","level":"info","msg":"[milled/geocodes_demo_datasets prov/geocodes_demo_datasets org]","time":"2022-07-22T19:23:16Z"}
+    {"file":"/go/pkg/mod/github.com/gleanerio/nabu@v0.0.0-20220223141452-a01fa9352430/internal/sparqlapi/pipeload.go:61","func":"github.com/gleanerio/nabu/internal/sparqlapi.ObjectAssembly","level":"info","msg":"gleaner:milled/geocodes_demo_datasets object count: 15\n","time":"2022-07-22T19:23:16Z"}
+    {"file":"/go/pkg/mod/github.com/gleanerio/nabu@v0.0.0-20220223141452-a01fa9352430/internal/sparqlapi/pipeload.go:79","func":"github.com/gleanerio/nabu/internal/sparqlapi.PipeLoad","level":"info","msg":"Loading milled/geocodes_demo_datasets/11316929f925029101493e8a05d043b0ae829559.rdf \n","time":"2022-07-22T19:23:16Z"}
+    [snip]
+    {"file":"/go/pkg/mod/github.com/gleanerio/nabu@v0.0.0-20220223141452-a01fa9352430/internal/sparqlapi/pipeload.go:197","func":"github.com/gleanerio/nabu/internal/sparqlapi.Insert","level":"info","msg":"response Status: 200 OK","time":"2022-07-22T19:23:21Z"}
+    {"file":"/go/pkg/mod/github.com/gleanerio/nabu@v0.0.0-20220223141452-a01fa9352430/internal/sparqlapi/pipeload.go:198","func":"github.com/gleanerio/nabu/internal/sparqlapi.Insert","level":"info","msg":"response Headers: map[Access-Control-Allow-Credentials:[true] Access-Control-Allow-Headers:[Authorization,Origin,Content-Type,Accept] Access-Control-Allow-Origin:[*] Content-Length:[449] Content-Type:[text/html;charset=utf-8] Date:[Fri, 22 Jul 2022 19:23:21 GMT] Server:[Jetty(9.4.z-SNAPSHOT)] Vary:[Origin] X-Frame-Options:[SAMEORIGIN]]","time":"2022-07-22T19:23:21Z"}
+    100% |███████████████████████████████████████████████████████| (1/1, 15 it/s)
+    
+    ```
+
+####  Test in Graph
+
+One the data is loaded into the graph store
+`https://graph.{your host}/blazegraph/#query`
+
+1. go to namespace tab, select gctest, 
+1. go to query tab, input the 
+
+??? example "returns all triples" 
+    ```sparql
+    select * 
+    where {
+    ?s ?p ?o
+     }
+    limit 1000
+    ```
+A more complex query can be ran:
+??? example "returns all triples"
+    ```{.sparql .copy}
+    PREFIX bds: <http://www.bigdata.com/rdf/search#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    prefix schema: <http://schema.org/>
+    prefix sschema: <https://schema.org/>
+    SELECT distinct ?subj ?g ?resourceType ?name ?description  ?pubname
+    (GROUP_CONCAT(DISTINCT ?placename; SEPARATOR=", ") AS ?placenames)
+    (GROUP_CONCAT(DISTINCT ?kwu; SEPARATOR=", ") AS ?kw)
+    ?datep  (GROUP_CONCAT(DISTINCT ?url; SEPARATOR=", ") AS ?disurl) (MAX(?score1) as ?score)
+    (MAX(?lat) as ?maxlat) (Min(?lat) as ?minlat) (MAX(?lon) as ?maxlon) (Min(?lon) as ?minlon)
+    WHERE {
+    ?lit bds:search "amgeo" .
+    ?lit bds:matchAllTerms false .
+    ?lit bds:relevance ?score1 .
+    ?lit bds:minRelevance 0.14 .
+    ?subj ?p ?lit .
+    #filter( ?score1 > 0.14).
+    graph ?g {
+    ?subj schema:name|sschema:name ?name .
+    ?subj schema:description|sschema:description ?description .
+    #Minus {?subj a sschema:ResearchProject } .
+    # Minus {?subj a schema:ResearchProject } .
+    # Minus {?subj a schema:Person } .
+    # Minus {?subj a sschema:Person } .
+    }
+    #BIND (IF (exists {?subj a schema:Dataset .} ||exists{?subj a sschema:Dataset .} , "data", "tool" ) AS ?resourceType).
+    values (?type ?resourceType) {
+    (schema:Dataset "data")
+    (sschema:Dataset "data")
+    (schema:ResearchProject "Research Project") #BCODMO- project
+    (sschema:ResearchProject  "Research Project")
+    (schema:SoftwareApplication  "tool")
+    (sschema:SoftwareApplication  "tool")
+    (schema:Person  "Person") #BCODMO- Person
+    (sschema:Person  "Person")
+    (schema:Event  "Event") #BCODMO- deployment
+    (sschema:Event  "Event")
+    (schema:Award  "Award") #BCODMO- Award
+    (sschema:Award  "Award")
+    (schema:DataCatalog  "DataCatalog")
+    (sschema:DataCatalog  "DataCatalog")
+    #(UNDEF "other")  # assume it's data. At least we should get  name.
+    } ?subj a ?type .
+    optional {?subj schema:distribution/schema:url|sschema:subjectOf/sschema:url ?url .}
+    OPTIONAL {?subj schema:datePublished|sschema:datePublished ?datep .}
+    OPTIONAL {?subj schema:publisher/schema:name|sschema:publisher/sschema:name|sschema:sdPublisher|sschema:provider/schema:name ?pubname .}
+    OPTIONAL {?subj schema:spatialCoverage/schema:name|sschema:spatialCoverage/sschema:name ?placename .}
+    OPTIONAL {?subj schema:keywords|sschema:keywords ?kwu .} 
+    }
+    GROUP BY ?subj ?pubname ?placenames ?kw ?datep ?disurl ?score ?name ?description  ?resourceType ?g ?minlat ?maxlat ?minlon ?maxlon
+    ORDER BY DESC(?score)
+    LIMIT 100
+    OFFSET 0
+    ```
+
+
+#### Create the Summarize namespace
+  
+
+## [Go to step 4.](./setup_geocodes_ui_containers.md)

@@ -35,10 +35,12 @@ nav:
   - List of services: stack_machines.md
   - Setup:
       - Base Machine: setup_base_machine_configuration.md
-      - Services and Geocodes UI: setup_geocodes_containers.md
+      - Load Data: setup_indexing_with_gleanerio.md
+      - Services and Geocodes UI: setup_geocodes_services_containers.md
+      - Creating a Community Instance (Tenant): tenant
+  - Load and Manage Production Data:
+      - Production: production
   - Testing and Validation: indexing_with_gleanerio_for_testing.md
   - Tooling:
       - Install Glcon: install_glcon.md
-  - Production: production
-  - Creating a Tennant: tenant
   - Troubleshooting: troubleshooting.md
