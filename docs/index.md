@@ -75,7 +75,7 @@ Should be > v2.13 `docker compose  --help` needs to show the -p --project flag
     * add  (traefik and portainer ) build-machine-compose.yaml
     * (add headless with larger shared memory) ./run_gleaner.sh   
 
-2. [Use portainer to setup geocodes services and geocodes user interface (and services )](./setup_geocodes_services_containers.md)
+2. [Use portainer to setup geocodes services ](./setup_geocodes_services_containers.md)
     * setup and configure services
         * create env variables file for the services
         * add stack services-compose.yaml to portainer
