@@ -2,10 +2,10 @@
 
 This is step 1 of 4 major steps:
 
-1. Install base containers on a server
-2. Setup services containers
-3. Initial setup of services and loading of data
-4. Setup Geocodes UI using datastores defined in Initial Setup
+1. [Install base containers on a server](./stack_machines.md)
+2. [Setup services containers](./setup_geocodes_services_containers.md)
+3. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
+4. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
 
 # Base Machine to run Docker Containers Treafik and Portainer:
 This is what will be needed to create a production server
@@ -267,9 +267,14 @@ the latest image needs to be pulled
 then
 `./run_base.sh`
 
-## [Go to step 2.](./setup_geocodes_services_containers.md)
+## Go to step 2.
+1. [Install base containers on a server](./stack_machines.md)
+2. [Setup services containers](./setup_geocodes_services_containers.md)
+3. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
+4. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
 
-# How tos needed:
+
+## How tos needed:
 * LOCAL DNS SETUP
   * editing your local machine /etc/hosts file does not work with letsencrypt. 
   * If user has a local name server they control, that might work.
