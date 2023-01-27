@@ -1,5 +1,6 @@
 #/bin/bash
-
+### Note need to add how to stop a service in a  stack so we can easily update the config
+#
 # the goal of this is to add configuration files.
 helpFunction()
 {
