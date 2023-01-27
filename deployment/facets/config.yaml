@@ -6,7 +6,7 @@ API_URL: https://geocodes.earthcube.org/ec/api
 #API_URL: "${window_location_origin}/ec/api"
 #TRIPLESTORE_URL: https://graph.geodex.org/blazegraph/namespace/earthcube/sparql
 TRIPLESTORE_URL: https://graph.geocodes-1.earthcube.org/blazegraph/namespace/earthcube/sparql
-SUMMARYSTORE_URL: https://graph.geocodes-1.earthcube.org/blazegraph/namespace/summary/sparql
+SUMMARYSTORE_URL: https://graph.geocodes-1.earthcube.org/blazegraph/namespace/earthcube_summary/sparql
 ## ECRR need to use fuseki source, for now.
 ECRR_TRIPLESTORE_URL: http://132.249.238.169:8080/fuseki/ecrr/query
 ECRR_GRAPH: http://earthcube.org/gleaner-summoned

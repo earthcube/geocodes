@@ -1,4 +1,12 @@
-#  Setup Geocodes Services and Geocodes Client Containers:
+#  Setup Geocodes Services Containers:
+
+This is step 4 of 4 major steps:
+
+1. Install base containers on a server
+2. Setup services containers
+3. Initial setup of services and loading of data
+4. Setup Geocodes UI using datastores defined in Initial Setup
+
 
 ## Services Stack
 The services stack includes the graph, storage (s3) and sparql gui containers.

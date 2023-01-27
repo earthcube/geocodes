@@ -1,0 +1,3 @@
+hack,SourceType,Active,Name,ProperName,URL,Headless,HeadlessWait,IdentifierType,IdentifierPath,Domain,PID,Logo,validator link,NOTE
+58,sitemap,TRUE,geocodes_demo_datasets,Geocodes Demo Datasets,https://earthcube.github.io/GeoCODES-Metadata/metadata/Dataset/allgood/sitemap.xml,FALSE,0,identifiersha,,https://www.earthcube.org/datasets/allgood,https://github.com/earthcube/GeoCODES-Metadata/metadata/OtherResources,,,
+59,sitemap,FALSE,geocodes_actual_datasets,Geocodes Actual Datasets,https://earthcube.github.io/GeoCODES-Metadata/metadata/Dataset/actualdata/sitemap.xml,FALSE,0,identifiersha,,https://www.earthcube.org/datasets/actual,https://github.com/earthcube/GeoCODES-Metadata/metadata/,,,
