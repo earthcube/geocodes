@@ -1,6 +1,11 @@
 #  Setup Geocodes Services and Geocodes Client Containers:
 
 ## Services Stack
+The services stack includes the graph, storage (s3) and sparql gui containers.
+JSON-LD files are 'summoned' by gleaner to the s3 storage, and nabu convert jsonld to rdf quads
+and pushes the results to the graph. 
+After uploading, a step to produce a materialized view is required to improve performance
+The summarize step is undocoumented at present.
 
 
 ### create a new env file
