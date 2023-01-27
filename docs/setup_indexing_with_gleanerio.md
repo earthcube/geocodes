@@ -3,12 +3,13 @@
 
 This is step 4 of 4 major steps:
 
-1. Install base containers on a server
-2. Setup services containers
-3. Initial setup of services and loading of data
-4. Setup Geocodes UI using datastores defined in Initial Setup
+1. [Install base containers on a server](./stack_machines.md)
+2. [Setup services containers](./setup_geocodes_services_containers.md)
+3. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
+4. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
 
 Steps:
+
 2. create data stores in minioadmin and graph
 2.  install glcon, if not installed
 3. create a configuration file to install a small set of data
@@ -151,7 +152,7 @@ Run setup to see if you can connect to the minio store
         ubuntu@geocodes-dev:~/indexing$ 
      ```
 
-* Load Data
+#### Load Data
  
 Gleaner will harvest jsonld from the URL's listed in the sitemap.
 
@@ -207,7 +208,7 @@ Gleaner will harvest jsonld from the URL's listed in the sitemap.
 
 (NEED IMAGE HERE)
 
-####  push to graph
+####  Push to graph
 Nabu will read files from the bucket, and push them to the graph store.
 
 ??? example "`./glcon nabu prefix --cfgName gctest`" 
@@ -245,65 +246,35 @@ One the data is loaded into the graph store
     limit 1000
     ```
 A more complex query can be ran:
-??? example "returns all triples"
+??? example "what types are in the system"
     ```{.sparql .copy}
-    PREFIX bds: <http://www.bigdata.com/rdf/search#>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    prefix schema: <http://schema.org/>
-    prefix sschema: <https://schema.org/>
-    SELECT distinct ?subj ?g ?resourceType ?name ?description  ?pubname
-    (GROUP_CONCAT(DISTINCT ?placename; SEPARATOR=", ") AS ?placenames)
-    (GROUP_CONCAT(DISTINCT ?kwu; SEPARATOR=", ") AS ?kw)
-    ?datep  (GROUP_CONCAT(DISTINCT ?url; SEPARATOR=", ") AS ?disurl) (MAX(?score1) as ?score)
-    (MAX(?lat) as ?maxlat) (Min(?lat) as ?minlat) (MAX(?lon) as ?maxlon) (Min(?lon) as ?minlon)
+    prefix schema: <https://schema.org/>
+    SELECT  ?type  (count(distinct ?s ) as ?scount)
     WHERE {
-    ?lit bds:search "amgeo" .
-    ?lit bds:matchAllTerms false .
-    ?lit bds:relevance ?score1 .
-    ?lit bds:minRelevance 0.14 .
-    ?subj ?p ?lit .
-    #filter( ?score1 > 0.14).
-    graph ?g {
-    ?subj schema:name|sschema:name ?name .
-    ?subj schema:description|sschema:description ?description .
-    #Minus {?subj a sschema:ResearchProject } .
-    # Minus {?subj a schema:ResearchProject } .
-    # Minus {?subj a schema:Person } .
-    # Minus {?subj a sschema:Person } .
-    }
-    #BIND (IF (exists {?subj a schema:Dataset .} ||exists{?subj a sschema:Dataset .} , "data", "tool" ) AS ?resourceType).
-    values (?type ?resourceType) {
-    (schema:Dataset "data")
-    (sschema:Dataset "data")
-    (schema:ResearchProject "Research Project") #BCODMO- project
-    (sschema:ResearchProject  "Research Project")
-    (schema:SoftwareApplication  "tool")
-    (sschema:SoftwareApplication  "tool")
-    (schema:Person  "Person") #BCODMO- Person
-    (sschema:Person  "Person")
-    (schema:Event  "Event") #BCODMO- deployment
-    (sschema:Event  "Event")
-    (schema:Award  "Award") #BCODMO- Award
-    (sschema:Award  "Award")
-    (schema:DataCatalog  "DataCatalog")
-    (sschema:DataCatalog  "DataCatalog")
-    #(UNDEF "other")  # assume it's data. At least we should get  name.
-    } ?subj a ?type .
-    optional {?subj schema:distribution/schema:url|sschema:subjectOf/sschema:url ?url .}
-    OPTIONAL {?subj schema:datePublished|sschema:datePublished ?datep .}
-    OPTIONAL {?subj schema:publisher/schema:name|sschema:publisher/sschema:name|sschema:sdPublisher|sschema:provider/schema:name ?pubname .}
-    OPTIONAL {?subj schema:spatialCoverage/schema:name|sschema:spatialCoverage/sschema:name ?placename .}
-    OPTIONAL {?subj schema:keywords|sschema:keywords ?kwu .} 
-    }
-    GROUP BY ?subj ?pubname ?placenames ?kw ?datep ?disurl ?score ?name ?description  ?resourceType ?g ?minlat ?maxlat ?minlon ?maxlon
-    ORDER BY DESC(?score)
-    LIMIT 100
-    OFFSET 0
+    {
+           ?s a ?type .
+           }
+    } 
+    GROUP By ?type
+    ORDER By DESC(?scount)
     ```
+A more complex query can be ran:
+??? example "Show me just datasets"
+    ```{.sparql .copy}
+    SELECT (count(?g ) as ?count) 
+    WHERE     {     GRAPH ?g {?s a <https://schema.org/Dataset>}}
+    ```
+More [SPARQL Examples](production/sparql.md)
+
+## Create reate a materilized view of the data using summarize to the  repo_summary namespace
+
+!!! warning "DOCUMENTATION NEEDED " 
+    (TBD assinged to Mike Bobak)
 
 
-#### Create the Summarize namespace
-  
+## Go to step 4.
 
-## [Go to step 4.](./setup_geocodes_ui_containers.md)
+1. [Install base containers on a server](./stack_machines.md)
+2. [Setup services containers](./setup_geocodes_services_containers.md)
+3. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
+4. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)

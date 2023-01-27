@@ -3,8 +3,9 @@
 
 ## Overview:
 1. Configure a base server
-2. Intial setup and load data
-3. Bring up
+2. Setup services containers
+3. Intial setup of services and load data
+3. Setup Gepcodes UI containers,
 
 ### Requirements prior to starting
 Three sections to know prior to installing
@@ -52,11 +53,25 @@ Should be > v2.13 `docker compose  --help` needs to show the -p --project flag
     * setup and configure services
         * create env variables file for the services
         * add stack services-compose.yaml to portainer
+
+1. [Initial Setup of datastores and loading of sample data](./setup_indexing_with_gleanerio.md)
+    * Setup datastores for s3 and graph
+    * Install software glcon
+      * create configuration gctest `./glcon config init --cfgName gctest`
+    * copy file with repository information (sitemap location and name)
+    * edit file tell ingest what services to utilize 
+    * generate a configuration updated with the source and configuration `./glcon config generate --cfgName gctest`
+    * run ingest `./glcon gleaner batch --cfgName gctest`
+        * check minioadmin to see that bucket gctest was populated
+    * convert to triples and upload: `./glcon nabu prefix --cfgName gctest`
+        * run sparql query at graph service to see that triples got converted and uploaded
+    * create a materilized view of the data using summarize (TB DOCUMENTED BY MBCODE)
+
+1. [Use portainer to setup geocodes user interface (and services )](./setup_geocodes_ui_containers.md)
     * setup and configure user infertace and it's services
         * create a facets config
         * upload facets config to portainer/docker
         * add  stack gecodes-compose.yaml to portainer
-1. [Initial Setup of datastores and loading of sample data](./setup_indexing_with_gleanerio.md)
 1. [Creating a community instance (aka tennant)](./tenant/)
 
 ### Data Loading

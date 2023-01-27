@@ -2,10 +2,10 @@
 
 This is step 4 of 4 major steps:
 
-1. Install base containers on a server
-2. Setup services containers
-3. Initial setup of services and loading of data
-4. Setup Geocodes UI using datastores defined in Initial Setup
+1. [Install base containers on a server](./stack_machines.md)
+2. [Setup services containers](./setup_geocodes_services_containers.md)
+3. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
+4. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
 
 
 ## Services Stack
