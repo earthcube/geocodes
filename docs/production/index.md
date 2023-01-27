@@ -28,7 +28,6 @@
 * [Managing Services](managing_services.md)
 * [Maanging Geocodes UI Containers](managing_geocodes_ui_containers.md)
 * [Some Sparql queries](sparql.md)
-* [DNS](geocodes_notebook_proxy_notes.md)
 * [Notebook Proxy Container](geocodes_notebook_proxy_notes.md)
 
 ## Machines:
