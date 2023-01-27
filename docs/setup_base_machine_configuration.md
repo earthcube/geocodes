@@ -44,15 +44,16 @@ This is what will be needed to create a production server
     * install docker
 ??? danger "Use Official Docker for Ubuntu"
     * **use these docker install** [instructions](https://docs.docker.com/engine/install/ubuntu/)
-        * add ubuntu (or other users) to docker group
+ 
+    * add ubuntu (or other users) to docker group
         * `sudo groupadd docker`
         * `sudo usermod -aG docker ubuntu`
     * reboot
     * `sudo reboot now`
-    * init docker swarm
-        * `docker swarm init`
-    * verify proper base configuration
-        * docker compose --help shows a -p flag
+* init docker swarm
+    * `docker swarm init`
+* verify proper base configuration
+    * docker compose --help shows a -p flag
 * SNAPSHOT and creaate an image
     * 
 * clone geocodes
