@@ -1,9 +1,9 @@
 #  Setup Geocodes Services and Geocodes Client Containers:
 
-# Services Stack
+## Services Stack
 
 
-## create a new env file
+### create a new env file
 
 * cd deployment
 * Edit files containing env variables
@@ -20,9 +20,9 @@
     S3ADDRESS=oss.geocodes-dev.mydomain.org
     ```
 
-## Setup and start services using portainer ui
+### Setup and start services using portainer ui
 
-### Create Services Stack
+#### Create Services Stack
 
 * log into portainer
     * if this is a first login, it will ask you for a password.
@@ -42,7 +42,7 @@ Compose path: deployment/services-compose.yaml
 ??? example "Services Stack"
     ![Create Services Stack](./images/create_services.png)
 
-### Testing Services Stack
+#### Testing Services Stack
 
 ----
 

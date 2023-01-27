@@ -2,7 +2,7 @@
 
 
 
-# Services:
+# Base Machine to run Docker Containers Treafik and Portainer:
 This is what will be needed to create a production server
 
 * base virtual machine for containers
