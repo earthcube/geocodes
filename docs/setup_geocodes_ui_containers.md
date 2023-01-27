@@ -7,58 +7,6 @@ This is step 4 of 4 major steps:
 3. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
 4. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
 
-
-## Services Stack
-The services stack includes the graph, storage (s3) and sparql gui containers.
-JSON-LD files are 'summoned' by gleaner to the s3 storage, and nabu convert jsonld to rdf quads
-and pushes the results to the graph. 
-After uploading, a step to produce a materialized view is required to improve performance
-The summarize step is undocoumented at present.
-
-
-### create a new env file
-
-* cd deployment
-* Edit files containing env variables
-  * copy portainer.services.env to new file.` cp portainer.env {myhost}.services.env`
-  * copy portainer.geocodes.env to new file.` cp portainer.geocodes.env {myhost}.geocodes.env`
-  * (option) use single file copy portainer.env to new file.` cp portainer.env {myhost}.env`
-  * edit {myhost}.{geocodes|services}.env
-    * change
-???+ example "env"
-    ```{ .copy }
-    HOST=geocodes-dev.mydomain.org
-    PRODUCTION=geocodes.mydomain.org
-    GC_CLIENT_DOMAIN=geoccodes.geocodes-dev.mydomain.org
-    S3ADDRESS=oss.geocodes-dev.mydomain.org
-    ```
-
-### Setup and start services using portainer ui
-
-#### Create Services Stack
-
-* log into portainer
-    * if this is a first login, it will ask you for a password.
-    * Select **stack** tab
-    * click **add stack** button
-```
-Name: services
-Build method: git repository
-Repository URL: https://github.com/earthcube/geocodes
-Reference: refs/heads/main
-Compose path: deployment/services-compose.yaml
-```
-    * Environment variables: click 'load variables from .env file'
-        * load {myhost}.services.env
-    * Actions: 
-        * Click: Deploy This Stack 
-??? example "Services Stack"
-    ![Create Services Stack](./images/create_services.png)
-
-#### Testing Services Stack
-
-----
-
 ## Setup and start GeoCodes Client using portainer ui
 Steps:
 
@@ -119,102 +67,16 @@ Compose path: deployment/geocodes-compose.yaml
     ![Create Geocodes Stack](./images/create_geocodes_stack.png)
 
 ### Test Geocodes Client
-There will be no data initially, so queries will not work but
+
+!!! important "Issues"
+IF things are not working in the UI, it is probably the facet search configuration
+You can take down the geocodes stack, and delete the config/facets_search or you can
+possibly just stop the gecodes_vue_ui service, and edit the facets_search config as
+noted here: [See Managing Geocodes UI Containers](production/managing_geocodes_ui_containers.md)
 
 1.  Got to https://geocodes.{your host}/
 1. Got to configuration: https://geocodes.{your host}/#/config
    * Two sections, one is the facests/config.yaml and the second is the API configuration (sanitized, we hope)
 
-### Updating a GEOCODES CLIENT Configuration
-
-You can modify the facets_config config, in order to do this, stop the stack,
-delete the config and recreate the config.
-
-1. go to portainer, 
-1. select geocodes_geocodes, stop
-2. select config, facets_config, copy content, select delete
-3. create a new config with name 'facets_config', paste in content
-4. modify content, save
-5. restart stack 
-6. update the service 
-    7. services, geocodes_vue-client or geocodes_xxx_vue-client
-    8. udate the service
-*** NOTE: TRY A SECOND BROWSER... and/or Clear browser cache ****
-    9. If that does not work, check to see in services if the correct container image is being pulled.
-9. Then go to containers, geocodes_vue-client or geocodes_xxx_vue-client
-    10. remove container. It will rebuild if it is not stopped 
-
-
----
-
-## DEVELOPERS: Testing a UI Branch in Portainer/Docker
-
-> :memo: An Update May be needed. You can now deploy a tennant configuration, which many mean that geocodes repo changes 
-> may not be needed 
-
-> :memo: you should do local development before deployment testing
-
-To do this we will need to do two branches, one on the facet search, and one on the services stack geocodes.
-Or, you can disconnect your development services 
-
-### Facetsearch repository changes
-
-* create a branch
-  * on that branch edit the github workflows/docker_xxx add your branch
- 
-```yaml
-on:
-  push:
-    branches:
-    - master
-    - feat_summary
-```
-
-* make changes and push
-
-### geocodes repository changes
-
-* create a branch
-* modify   deployment/geocodes-compose.yaml 
-```yaml
-vue-services:
-  image: nsfearthcube/ec_facets_api_nodejs:{{BRANCH NAME}}
-  ```
-
-```yaml
-vue-client:
-  image: nsfearthcube/ec_facets_client:{{BRANCH NAME}}
-  ```
-
-### Deployment in in portainer
-
-* create a new stack
-* under advanced configuration
-??? example "stack deploy from a branch"
-    ![](images/portainer_branch_deployment.png)
-* save
-* pull and deploy
-
-
-----
-
-## Troubleshooting
-
-### seems like  the container is not getting updated
-occasionally, a branch is being used for a stack. This will  be true of alpha/beta/tennant
-containers.
-
-* open stack
-* user Redeploy from Git: select advanced configuration
-* change the branch information
-??? example "stack deploy from a branch"
-    ![](images/portainer_branch_deployment.png)
-
-Occasionally, the latest will not be pulled, Seen  when I  change a branch,
-
-* open services, 
-* select a service, 
-* go down to Change container image
-* set to the appropriate container path.
-??? example "stack deploy from a branch"
-    ![](images/service_change_container.png)
+!!! note "Done"
+This is the end of the deployment steps.

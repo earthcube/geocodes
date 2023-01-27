@@ -1,7 +1,7 @@
 
 # Loading Data for The Initial Installation
 
-This is step 4 of 4 major steps:
+This is step 3 of 4 major steps:
 
 1. [Install base containers on a server](./stack_machines.md)
 2. [Setup services containers](./setup_geocodes_services_containers.md)
