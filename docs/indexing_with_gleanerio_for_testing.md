@@ -3,9 +3,10 @@
 Goal: Load data from GeocodesMetadata Repository for testing
 
 The stories should be on the Geocodes Documentation Wiki.
-https://github.com/earthcube/geocodes_documentation/wiki/DataLoadingValidationStory
+[data validation and loading story](https://github.com/earthcube/geocodes_documentation/wiki/DataLoadingValidationStory)
 
 This will load data into  buckets that is for testing. Aka not in gleaner
+
 let's use:
 * ci
 * ci2 

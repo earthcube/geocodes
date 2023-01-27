@@ -2,13 +2,19 @@
 
 ## can't seem to connect;
 are containers running
-docker ps
+`docker ps`
 
 can you connect to portainer and traefik
 
-traefik: https://admin.{HOST}
+traefik: 
+```
+https://admin.{HOST}
+```
 
-portainer: https://portainer.{host}
+portainer: 
+```
+https://portainer.{host}
+```
 
 In traefik, are there errors.
 
@@ -18,13 +24,13 @@ rebuild the base containers with the dev line commented out
 
 ### cannot connect to (minioadmin,graph,sparqlui)
 * is the traefik proxy a SCOPE swarm
-  * `docker network ls`
+`docker network ls`
   * portainerui, networks
 * is the DNS correct?
   * need a dig example, since editing host and NS looku
 * are they running?
-  * docker ps
-  * portainer stack 
+  * `docker ps`
+      * do you see portainer stack 
 
 ### Minoadmin/Graph/etc seem to be there, but do not connect
 If minioadmin complains that it cannot connect with a 10.0.0.x message, then there 
@@ -56,7 +62,7 @@ ubuntu@geocodes-dev:~/indexing$ unset MINIO_ACCESS_KEY
 ```
 
 
-# Blazegraph jounral truncation:
+# Blazegraph journal truncation:
 
 
 ## for a container
@@ -71,4 +77,7 @@ cd /var/lib/blazegraph ;java -jar /usr/bin/blazegraph.jar com.bigdata.journal.Co
 
 
 ## count quads 
+```text
 SELECT (COUNT(*) as ?Triples) WHERE {graph ?g {?s ?p ?o}}
+```
+

@@ -1,8 +1,8 @@
 ##  Setup Machine:
 
-[TOC]
 
-# Services:
+
+# Base Machine to run Docker Containers Treafik and Portainer:
 This is what will be needed to create a production server
 
 * base virtual machine for containers
@@ -32,35 +32,36 @@ This is what will be needed to create a production server
 ### Steps:
 
 * create a machine in openstack (if production)
-  * select size
-  * associate floating IP
-    * ask for DNS for that ip to be configured with needed names
+    * select size
+    * associate floating IP
+        * ask for DNS for that ip to be configured with needed names
 * ssh to machine. You do not need to have the DNS's to install the software. But it will be needed.
-  * update apt
-    * `sudo apt update`
-  * update base software
-    * `sudo apt upgrade`
+    * update apt
+        * `sudo apt update`
+    * update base software
+        * `sudo apt upgrade`
 
-  * install docker
-    *   **use these docker install** [instructions](https://docs.docker.com/engine/install/ubuntu/)
-  * add ubuntu to docker group
-    * `sudo groupadd docker`
-    * `sudo usermod -aG docker ubuntu`
-  * reboot
+    * install docker
+??? danger "Use Official Docker for Ubuntu"
+    * **use these docker install** [instructions](https://docs.docker.com/engine/install/ubuntu/)
+        * add ubuntu (or other users) to docker group
+        * `sudo groupadd docker`
+        * `sudo usermod -aG docker ubuntu`
+    * reboot
     * `sudo reboot now`
-  * init docker swarm
-    * `docker swarm init`
-  * verify proper base configuration
-    * docker compose --help shows a -p flag
+    * init docker swarm
+        * `docker swarm init`
+    * verify proper base configuration
+        * docker compose --help shows a -p flag
 * SNAPSHOT and creaate an image
-  * 
+    * 
 * clone geocodes
-* `git clone https://github.com/earthcube/geocodes.git`
+    * `git clone https://github.com/earthcube/geocodes.git`
 * configure a base server
 * take a break and wait for the DNS entries.
-  * if you cant wait you can go to the no cert port 
-    * https://{HOST}}:9443/
-    * use chrome, click advanced, and go to the port.
+    * if you cannot wait for the DNS, you can go to the no cert port 
+        * https://{HOST}}:9443/
+        * use chrome, click advanced, and go to the port.
 
 
 ---
@@ -82,25 +83,25 @@ This is what will be needed to create a production server
 
 
 !!! tip "Ports Pre-DNS"
-   minio ports do not need to be open, we are proxying on 80 and 443
-   Portainer port (9443)  can be opended temporarily if you want to play a bit pre-DNS.
+    minio ports do not need to be open, we are proxying on 80 and 443
+    Portainer port (9443)  can be opended temporarily if you want to play a bit pre-DNS.
 
 !!! success "Associate a Public IP"
     After the machine is created, we can change the IP to the one associated with geocodes.earthcube.org
 
 ---
 # setup domain names
-!!! warning "ESSENTIAL for PRODUCTION"
-    It is ESSENTIAL for PRODUCTION that the names are defined in a DNS. This allows for https for all services
-    and some services (aka s3/minio) do not play well with a proxy. (Fuseki unknown)
-
 * [Machines]( stack_machines.md )
 *   [Name for remote DNS](https://raw.githubusercontent.com/earthcube/geocodes/main/deployment/hosts.geocodess)
 
+!!! warning "ESSENTIAL for PRODUCTION"
+    It is ESSENTIAL for PRODUCTION that the names are defined in a DNS. This allows for https for all services
+    and some services (aka s3/minio) do not play well with a proxy.
+
+
 You might be able to run production stack using localhost, with these DNS...
 but that mucks with the lets encrypt HTTPS certs... if you control your own DNS, these are the 
-entries needed.
-* [Name for local DNS](https://raw.githubusercontent.com/earthcube/geocodes/main/deployment/hosts.geocodes-local)
+entries needed.  [Name for local DNS](https://raw.githubusercontent.com/earthcube/geocodes/main/deployment/hosts.geocodes-local)
 
 [Local testing and development](local_developer/index.md) can be using  the local compose configuration. This use http, and 
 local ports for services that cannot be proxied
@@ -111,22 +112,55 @@ local ports for services that cannot be proxied
 
 `ssh -i ~/.ssh/earthcube.pem ubuntu@{public IP}`
 
+??? info "add your ssh key so you can log in as main user (eg. ubuntu)"
+    SSH Keys
+    
+    for production, we recommend that you use a group account/main account
+    
+    to do this you will need to create and copy a public/private key
+    
+    Generate an ssh-key:
+    
+    ```{.copy}
+    ssh-keygen -t rsa -b 4096 -C "comment"
+    ```
+    
+    copy it to your remote server:
+    
+    ```{.copy}
+    ssh-copy-id user@ip
+    ```
+    
+    or you can manually copy the
+    ```
+    ~/.ssh/id_rsa.pub to ~/.ssh/authorized_keys.
+    ```
+    
+    Edit
+    
+    It can be done through ssh command as mentioned @chepner:
+    
+    ```
+    ssh user@ip 'mkdir ~/.ssh'
+    ssh user@ip 'cat >> ~/.ssh/authorized_keys' < ~/.ssh/id_rsa.pub
+    ```
+    (Above based on: [stackexchange](https://unix.stackexchange.com/questions/630186/how-to-add-ssh-keys-to-a-specific-user-in-linux))
 
 ---
 
 # configure a base server
 
 * add docker, git
-    *   **use these docker install** [instruction](https://docs.docker.com/engine/install/ubuntu/)
+??? note "Offical Docker for Ubuntu"
+    **use these docker install** [instruction](https://docs.docker.com/engine/install/ubuntu/)
 * git clone https://github.com/earthcube/geocodes.git
 * cd geocodes/deployment
 * copy  base_machine.example.env, to .env
     * modify the file
     * note: you can also copy the full portainer.env. 
 * modify the treafik-data/traefik.yml
-* 
-??? example "treafik-data/traefik.yml"
-    ```yaml    
+???+ example "treafik-data/traefik.yml"
+    ```{ .yaml .copy }    
     acme:
     # using staging for testing/development
     #     caServer: https://acme-staging-v02.api.letsencrypt.org/directory
@@ -135,14 +169,16 @@ local ports for services that cannot be proxied
         httpChallenge:
             entryPoint: http
     ```
+    If production, comment the line as shown. Developers see Lets Encypt Notes 
 
-!!! note "Let Encrypt"
-   [lets encrypt](https://doc.traefik.io/traefik/https/acme/), 
+
+??? note "Let Encrypt Notes"
+    [lets encrypt](https://doc.traefik.io/traefik/https/acme/), 
    
-   (developers) set to use [staging environment](https://letsencrypt.org/docs/staging-environment/) server while testing
-   If you are doing development, then leave the caServer uncommented.
+    (developers) set to use [staging environment](https://letsencrypt.org/docs/staging-environment/) server while testing
+    If you are doing development, then leave the caServer uncommented.
  
-   If production, comment the line as shown 
+
 
      
 # start the base containers 
@@ -150,9 +186,7 @@ local ports for services that cannot be proxied
 * new machine or developer
   * `./run_base.sh -e {your environment file}`
 * **production**: this uses the default .env (cp  portainer.env .env)
-  * `./run_base.sh`
-
-??? example "./run_base.sh"
+??? example "`./run_base.sh`"
     ```shell     
           ubuntu@geocodes-dev:~/geocodes/deployment$ ./run_base.sh -e geocodes-1.env
           Error response from daemon: network with name traefik_proxy already exists
@@ -172,8 +206,7 @@ local ports for services that cannot be proxied
           ⠿ Container traefik    Started
     ```
       
-* Are containers running
-  * `docker ps`
+**Are containers running**
 ??? example "`docker ps`" 
     ```shell
         * ubuntu@geocodes-dev:~/geocodes/deployment$ docker ps
@@ -182,9 +215,8 @@ local ports for services that cannot be proxied
           d3e2333ade6f   portainer/portainer-ce:latest   "/portainer"             2 minutes ago   Up 2 minutes   8000/tcp, 9000/tcp, 9443/tcp                                               portainer
     ```
 
-* Is network setup correctly?
-  * `docker network ls`
-??? example "`docker ps`"
+**Is network setup correctly?**
+??? example "`docker network ls`"
     ```shell
     docker network ls
           NETWORK ID     NAME              DRIVER    SCOPE
@@ -195,12 +227,11 @@ local ports for services that cannot be proxied
           12c01a2186b0   none              null      local
           u4d4oxfy7olc   traefik_proxy     overlay   swarm
     ```
-    ???? note
-       NAME:traefik_proxy needs to exist, and be DRIVER:overlay, SCOPE:swarm
+    ??? note
+        NAME:traefik_proxy needs to exist, and be DRIVER:overlay, SCOPE:swarm
 
-* Are volumes available
-  * `docker volumes`
-??? example "`docker ps`"
+**Are volumes available**
+??? example "`docker volumes`"
     ```shell
     ubuntu@geocodes-dev:~$ docker volume ls
           DRIVER    VOLUME NAME
@@ -210,59 +241,33 @@ local ports for services that cannot be proxied
           local     traefik_data
     ```
 
-## is the base running?
-  * are Traefik and Portainer available via the web?
-    * **Treafik** https://admin.{host}
-      * login is admin:iforget
-  ![Traefik_admin](./images/traefik_admin.png)
-    * **Portainer** https://portainer.{host}/
-      * this will ask you to setup and admin password
-![Portainer](./images/portainer_home.png)
+## are Traefik and Portainer available via the web?
 
-## How tos needed:
+* **Treafik** https://admin.{host}
+    * login is admin:iforget
+??? info "image"
+    ![Traefik_admin](./images/traefik_admin.png)
+
+* **Portainer** https://portainer.{host}/
+    * this will ask you to setup and admin password
+??? info "image"
+    ![Portainer](./images/portainer_home.png)
+    * 
+# updating Portainer, or treafik
+
+the latest image needs to be pulled
+
+`docker pull portainer/portainer-ce:latest`
+
+then
+`./run_base.sh`
+
+# How tos needed:
 * LOCAL DNS SETUP
   * editing your local machine /etc/hosts file does not work with letsencrypt. 
   * If user has a local name server they control, that might work.
 * setup a new password for traefik
 * lets encrypt
 
-## updating Portainer, or treafik
-
-the latest image needs to bb pulled
-
-`docker pull portainer/portainer-ce:latest`
-
-then 
-`./run_base.sh`
 
 ----
-## SSH 
-
-for production, we recccomend that you use a group account/main account
-
-to do this you will need to create and copy a public/private key
-
-Generate an ssh-key:
-
-```
-ssh-keygen -t rsa -b 4096 -C "comment"
-```
-
-copy it to your remote server:
-
-```
-ssh-copy-id user@ip
-```
-
-or you can manually copy the 
-```~/.ssh/id_rsa.pub to ~/.ssh/authorized_keys.```
-
-Edit
-
-It can be done through ssh command as mentioned @chepner:
-
-```
-ssh user@ip 'mkdir ~/.ssh'
-ssh user@ip 'cat >> ~/.ssh/authorized_keys' < ~/.ssh/id_rsa.pub
-```
-(Above based on: [stackexchange](https://unix.stackexchange.com/questions/630186/how-to-add-ssh-keys-to-a-specific-user-in-linux))

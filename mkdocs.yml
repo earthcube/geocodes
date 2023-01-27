@@ -1,5 +1,10 @@
 site_name: Geocodes Documentation
-theme: 'readthedocs'
+theme:
+#  name: 'readthedocs'
+  name: material
+  features:
+#    - content.code.copy
+    - navigation.sections
 markdown_extensions:
   - toc:
       permalink: 
@@ -35,5 +40,5 @@ nav:
   - Tooling:
       - Install Glcon: install_glcon.md
   - Production: production
-  - Creating a Tennant: tennant
+  - Creating a Tennant: tenant
   - Troubleshooting: troubleshooting.md

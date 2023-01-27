@@ -1,5 +1,5 @@
 # Setting up tennant
-A 'tennant' will allow us to host a project with a separate UI, using common services
+A 'tenant' will allow us to host a project with a separate UI, using common services
 
 * a namepace for the graph and oss in the geocodes.services
 * a client at thier DNS, eg. geoocdes.project.org

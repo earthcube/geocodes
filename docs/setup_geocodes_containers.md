@@ -1,114 +1,116 @@
 #  Setup Geocodes Services and Geocodes Client Containers:
 
-# Summary
+## Services Stack
+The services stack includes the graph, storage (s3) and sparql gui containers.
+JSON-LD files are 'summoned' by gleaner to the s3 storage, and nabu convert jsonld to rdf quads
+and pushes the results to the graph. 
+After uploading, a step to produce a materialized view is required to improve performance
+The summarize step is undocoumented at present.
 
-* create  env file
-* create a services stack
-* create a configuration for the
-* create a geocodes stack
-* test
 
+### create a new env file
 
-# Details
+* cd deployment
+* Edit files containing env variables
+  * copy portainer.services.env to new file.` cp portainer.env {myhost}.services.env`
+  * copy portainer.geocodes.env to new file.` cp portainer.geocodes.env {myhost}.geocodes.env`
+  * (option) use single file copy portainer.env to new file.` cp portainer.env {myhost}.env`
+  * edit {myhost}.{geocodes|services}.env
+    * change
+???+ example "env"
+    ```{ .copy }
+    HOST=geocodes-dev.mydomain.org
+    PRODUCTION=geocodes.mydomain.org
+    GC_CLIENT_DOMAIN=geoccodes.geocodes-dev.mydomain.org
+    S3ADDRESS=oss.geocodes-dev.mydomain.org
+    ```
 
-## create a new env file
+### Setup and start services using portainer ui
 
-    * cd deployment
-    * Edit files containing env variables
-      * copy portainer.services.env to new file.` cp portainer.env {myhost}.services.env`
-      * copy portainer.geocodes.env to new file.` cp portainer.geocodes.env {myhost}.geocodes.env`
-      * (option) use single file copy portainer.env to new file.` cp portainer.env {myhost}.env`
-      * edit {myhost}.{geocodes|services}.env
-        * change 
+#### Create Services Stack
 
- ```
-HOST=geocodes-dev.mydomain.org
-PRODUCTION=geocodes.mydomain.org
-GC_CLIENT_DOMAIN=geoccodes.geocodes-dev.mydomain.org
-S3ADDRESS=oss.geocodes-dev.mydomain.org
+* log into portainer
+    * if this is a first login, it will ask you for a password.
+    * Select **stack** tab
+    * click **add stack** button
 ```
+Name: services
+Build method: git repository
+Repository URL: https://github.com/earthcube/geocodes
+Reference: refs/heads/main
+Compose path: deployment/services-compose.yaml
+```
+    * Environment variables: click 'load variables from .env file'
+        * load {myhost}.services.env
+    * Actions: 
+        * Click: Deploy This Stack 
+??? example "Services Stack"
+    ![Create Services Stack](./images/create_services.png)
 
-
-
-----
-## Setup and start services using portainer ui
-
-Steps:
-* create a services stack
-* create a geocodes client stack
-
-### Create Services Stack
-
-    * log into portainer
-      * if this is a first login, it will ask you for a password.
-      * Select **stack** tab
-      * click **add stack** button
-          * Name: services
-          * Build method: git repository
-          * Repository URL: https://github.com/earthcube/geocodes
-          * reference: refs/heads/main
-          * Compose path: deployment/services-compose.yaml
-          * Environment variables: click 'load variables from .env file'
-            * load {myhost}.services.env
-          * Actions: 
-            * Click: Deploy This Stack 
-  ![Create Services Stack](./images/create_services.png)
+#### Testing Services Stack
 
 ----
 
 ## Setup and start GeoCodes Client using portainer ui
 Steps:
+
 * modify the configuration file
 * create stack in portainer
 * test
-* instuctions for Updating a GEOCODES CLIENT Configuration if things do not work
-  * or delete stack and reload
+* instructions for Updating a GEOCODES CLIENT Configuration if things do not work
+    * or delete stack and reload
 
 
 ###  Modify the Facet Search Configuration
-    * edit in deployment/facets/config.yaml
-    * this file is mounted on the container as a docker config file
-        * **run** the run_add_configs.sh
+
+* edit in deployment/facets/config.yaml
+* this file is mounted on the container as a docker config file
+    * **run** the run_add_configs.sh
 
 Portions of deployment/facets/config.yaml that might be changed.
-```yaml
-API_URL: https://geocodes.{your host}/ec/api/
-SPARQL_NB: https:/geocodes.{your host}/notebook/mkQ?q=${q}
-SPARQL_YASGUI: https://geocodes.{your host}/sparqlgui?
-#API_URL: "${window_location_origin}/ec/api"
-#TRIPLESTORE_URL: https://graph.geocodes-1.earthcube.org/blazegraph/namespace/earthcube/sparql
-TRIPLESTORE_URL: https://graph.{your host}/blazegraph/namespace/earthcube/sparql
-BLAZEGRAPH_TIMEOUT: 20
-## ECRR need to use fuseki source, for now.
-ECRR_TRIPLESTORE_URL: http://132.249.238.169:8080/fuseki/ecrr/query 
-# ECRR_TRIPLESTORE_URL:   http://{your host}/blazegraph/namespace/ecrr/sparql 
-ECRR_GRAPH: http://earthcube.org/gleaner-summoned
-THROUGHPUTDB_URL: https://throughputdb.com/api/ccdrs/annotations
-SPARQL_QUERY: queries/sparql_query.txt
-SPARQL_HASTOOLS: queries/sparql_hastools.txt
-SPARQL_TOOLS_WEBSERVICE: queries/sparql_gettools_webservice.txt
-SPARQL_TOOLS_DOWNLOAD: queries/sparql_gettools_download.txt
-# JSONLD_PROXY needs qoutes... since it has a $
-JSONLD_PROXY: "https://geocodes.{your host}/ec/api/${o}"
-
-SPARQL_YASGUI: https://sparqlui.{your host}/?
-```
+??? example "section of deployment/facets/config.yaml"
+    ```{.yaml .copy}
+    API_URL: https://geocodes.{your host}/ec/api/
+    SPARQL_NB: https:/geocodes.{your host}/notebook/mkQ?q=${q}
+    SPARQL_YASGUI: https://geocodes.{your host}/sparqlgui?
+    #API_URL: "${window_location_origin}/ec/api"
+    #TRIPLESTORE_URL: https://graph.geocodes-1.earthcube.org/blazegraph/namespace/earthcube/sparql
+    TRIPLESTORE_URL: https://graph.{your host}/blazegraph/namespace/earthcube/sparql
+    BLAZEGRAPH_TIMEOUT: 20
+    ## ECRR need to use fuseki source, for now.
+    ECRR_TRIPLESTORE_URL: http://132.249.238.169:8080/fuseki/ecrr/query 
+    # ECRR_TRIPLESTORE_URL:   http://{your host}/blazegraph/namespace/ecrr/sparql 
+    ECRR_GRAPH: http://earthcube.org/gleaner-summoned
+    THROUGHPUTDB_URL: https://throughputdb.com/api/ccdrs/annotations
+    SPARQL_QUERY: queries/sparql_query.txt
+    SPARQL_HASTOOLS: queries/sparql_hastools.txt
+    SPARQL_TOOLS_WEBSERVICE: queries/sparql_gettools_webservice.txt
+    SPARQL_TOOLS_DOWNLOAD: queries/sparql_gettools_download.txt
+    # JSONLD_PROXY needs qoutes... since it has a $
+    JSONLD_PROXY: "https://geocodes.{your host}/ec/api/${o}"
+    
+    SPARQL_YASGUI: https://sparqlui.{your host}/?
+    ```
 
 ### Create Geocodes Stack
 
-    * log into portainer
-      * if this is a first login, it will ask you for a password.
-      * click **add stack** button
-        * Name: geocodes
-        * Build method: git repository
-        * Repository URL: https://github.com/earthcube/geocodes
-        * reference: refs/heads/main
-        * Compose path: deployment/geocodes-compose.yaml
-        * Environment variables: click 'load variables from .env file'
-          * load {myhost}.geocodes.env
-        * Actions:
-          * Click: Deploy This Stack
+* log into portainer
+    * if this is a first login, it will ask you for a password.
+    * click **add stack** button
+```text
+Name: geocodes
+Build method: git repository
+Repository URL: https://github.com/earthcube/geocodes
+reference: refs/heads/main
+Compose path: deployment/geocodes-compose.yaml
+```
+    * Environment variables: click 'load variables from .env file'
+        * load {myhost}.geocodes.env
+    * Actions:
+        * Click: Deploy This Stack
+??? note "Geocodes Stack "
     ![Create Geocodes Stack](./images/create_geocodes_stack.png)
+
 ### Test Geocodes Client
 There will be no data initially, so queries will not work but
 
@@ -127,13 +129,13 @@ delete the config and recreate the config.
 3. create a new config with name 'facets_config', paste in content
 4. modify content, save
 5. restart stack 
-6. 6. update the service 
-   7. services, geocodes_vue-client or geocodes_xxx_vue-client
-   8. udate the service
+6. update the service 
+    7. services, geocodes_vue-client or geocodes_xxx_vue-client
+    8. udate the service
 *** NOTE: TRY A SECOND BROWSER... and/or Clear browser cache ****
-   9. If that does not work, check to see in services if the correct container image is being pulled.
+    9. If that does not work, check to see in services if the correct container image is being pulled.
 9. Then go to containers, geocodes_vue-client or geocodes_xxx_vue-client
-   10. remove container. It will rebuild if it is not stopped 
+    10. remove container. It will rebuild if it is not stopped 
 
 
 ---
@@ -181,7 +183,8 @@ vue-client:
 
 * create a new stack
 * under advanced configuration
-![](images/portainer_branch_deployment.png)
+??? example "stack deploy from a branch"
+    ![](images/portainer_branch_deployment.png)
 * save
 * pull and deploy
 
@@ -197,12 +200,14 @@ containers.
 * open stack
 * user Redeploy from Git: select advanced configuration
 * change the branch information
-![](images/portainer_branch_deployment.png)
+??? example "stack deploy from a branch"
+    ![](images/portainer_branch_deployment.png)
 
-Occassionaly, the latest will not be pulled, Seen  when I  change a branch,
+Occasionally, the latest will not be pulled, Seen  when I  change a branch,
 
 * open services, 
 * select a service, 
 * go down to Change container image
 * set to the appropriate container path.
-![](images/service_change_container.png)
+??? example "stack deploy from a branch"
+    ![](images/service_change_container.png)
