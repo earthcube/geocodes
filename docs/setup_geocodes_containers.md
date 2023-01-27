@@ -71,25 +71,24 @@ Portions of deployment/facets/config.yaml that might be changed.
 ??? example "section of deployment/facets/config.yaml"
     ```{.yaml .copy}
     API_URL: https://geocodes.{your host}/ec/api/
-    SPARQL_NB: https:/geocodes.{your host}/notebook/mkQ?q=${q}
-    SPARQL_YASGUI: https://geocodes.{your host}/sparqlgui?
     #API_URL: "${window_location_origin}/ec/api"
     #TRIPLESTORE_URL: https://graph.geocodes-1.earthcube.org/blazegraph/namespace/earthcube/sparql
+    #SUMMARYSTORE_URL: https://graph.geocodes-1.earthcube.org/blazegraph/namespace/summary/sparql
     TRIPLESTORE_URL: https://graph.{your host}/blazegraph/namespace/earthcube/sparql
-    BLAZEGRAPH_TIMEOUT: 20
-    ## ECRR need to use fuseki source, for now.
-    ECRR_TRIPLESTORE_URL: http://132.249.238.169:8080/fuseki/ecrr/query 
-    # ECRR_TRIPLESTORE_URL:   http://{your host}/blazegraph/namespace/ecrr/sparql 
-    ECRR_GRAPH: http://earthcube.org/gleaner-summoned
-    THROUGHPUTDB_URL: https://throughputdb.com/api/ccdrs/annotations
-    SPARQL_QUERY: queries/sparql_query.txt
-    SPARQL_HASTOOLS: queries/sparql_hastools.txt
-    SPARQL_TOOLS_WEBSERVICE: queries/sparql_gettools_webservice.txt
-    SPARQL_TOOLS_DOWNLOAD: queries/sparql_gettools_download.txt
+    SUMMARYSTORE_URL: https://graph.{your host}/blazegraph/namespace/summary/sparql
+
     # JSONLD_PROXY needs qoutes... since it has a $
     JSONLD_PROXY: "https://geocodes.{your host}/ec/api/${o}"
-    
-    SPARQL_YASGUI: https://sparqlui.{your host}/?
+
+    SPARQL_NB: https:/geocodes.{your host}/notebook/mkQ?q=${q}
+    SPARQL_YASGUI: https://geocodes.{your host}/sparqlgui?
+
+    BLAZEGRAPH_TIMEOUT: 20
+    ## ECRR need to use fuseki source, for now.
+    ECRR_TRIPLESTORE_URL: http://132.249.238.169:8080/fuseki/ecrr/query
+    # ECRR_TRIPLESTORE_URL:   http://{your host}/blazegraph/namespace/ecrr/sparql
+    ECRR_GRAPH: http://earthcube.org/gleaner-summoned
+t
     ```
 
 ### Create Geocodes Stack
