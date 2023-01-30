@@ -53,46 +53,40 @@ See that it is created.
 note there a only a few files.
 
 ### edit the local config for the configuration
-`nano configs/geocodes/localConfig.yaml`
+
+You will need to change the localConfig.yaml
+??? note `nano configs/ci/localConfig.yaml`
+    ```yaml
+    ---
+    minio:
+      address: oss.{HOST}
+      port: 433
+      accessKey: worldsbestaccesskey
+      secretKey: worldsbestaccesskey
+      ssl: true
+      bucket: gleaner # can be overridden with MINIO_BUCKET
+    sparql:
+      endpoint: https://graph.{HOST}/blazegraph/namespace/earthcube/sparql
+    s3:
+      bucket: gleaner # sync with above... can be overridden with MINIO_BUCKET... get's zapped if it's not here.
+      domain: us-east-1
+    #headless field in gleaner.summoner
+    headless: http://127.0.0.1:9222
+    sourcesSource:
+      type: csv
+    #  location: sources.csv 
+    # this is a remote csv, of the Vetted sources (though it's called Test)
+      location:  https://docs.google.com/spreadsheets/d/1G7Wylo9dLlq3tmXe8E8lZDFNKFDuoIEeEZd3epS0ggQ/gviz/tq?tqx=out:csv&sheet=TestSources202210
+    #    location: https://docs.google.com/spreadsheets/d/1G7Wylo9dLlq3tmXe8E8lZDFNKFDuoIEeEZd3epS0ggQ/gviz/tq?tqx=out:csv&sheet=sources
+
+    ```
 
 values need to match your {myhost}.env file
 
-!!! note "**production** model for post step 4"
-    Portions of deployment/facets/config.yaml that might be changed.
-    This is for **production**. IF you completed the initial data load using gctest,
-    then you can modify
-    and rebuild the geecodes stack using **Updating a GEOCODES CLIENT Configuration production configuration**
-    in (Manging Geocodes UI containers)[./production/managing_geocodes_ui_containers.md]
-
-    ??? example "**production** section of deployment/facets/config.yaml"
-        ```{.yaml .copy}
-        API_URL: https://geocodes.{your host}/ec/api/
-        SPARQL_NB: https:/geocodes.{your host}/notebook/mkQ?q=${q}
-        SPARQL_YASGUI: https://geocodes.{your host}/sparqlgui?
-        #API_URL: "${window_location_origin}/ec/api"
-        #TRIPLESTORE_URL: https://graph.geocodes-1.earthcube.org/blazegraph/namespace/earthcube/sparql
-        TRIPLESTORE_URL: https://graph.{your host}/blazegraph/namespace/earthcube/sparql
-        BLAZEGRAPH_TIMEOUT: 20
-        ## ECRR need to use fuseki source, for now.
-        ECRR_TRIPLESTORE_URL: http://132.249.238.169:8080/fuseki/ecrr/query 
-        # ECRR_TRIPLESTORE_URL:   http://{your host}/blazegraph/namespace/ecrr/sparql 
-        ECRR_GRAPH: http://earthcube.org/gleaner-summoned
-        THROUGHPUTDB_URL: https://throughputdb.com/api/ccdrs/annotations
-        SPARQL_QUERY: queries/sparql_query.txt
-        SPARQL_HASTOOLS: queries/sparql_hastools.txt
-        SPARQL_TOOLS_WEBSERVICE: queries/sparql_gettools_webservice.txt
-        SPARQL_TOOLS_DOWNLOAD: queries/sparql_gettools_download.txt
-        # JSONLD_PROXY needs qoutes... since it has a $
-        JSONLD_PROXY: "https://geocodes.{your host}/ec/api/${o}"
-        
-        SPARQL_YASGUI: https://sparqlui.{your host}/?
-        ```
 
 ### Generate the configuration files for gleaner and nabu
 ??? example "`./glcon config generate --cfgName geocodes`"
     ```shell
-    
-    
     ./glcon config generate --cfgName geocodes
     INFO[0000] EarthCube Gleaner                            
     generate called
@@ -210,10 +204,44 @@ IF detached,  attach to a screen  in this case you use the name
 
 
 
-### run nabu prun
+### run nabu prune
 when gleaner is complete
 
 IF detached,  attach to a screen  in this case you use the name
 `screen -r gleaner`
 
 ` ./glcon nabu prune --cfgName geocodes`
+
+## Changes that will be needed for the client configuration
+
+!!! note "**production** model for post step 4"
+Portions of deployment/facets/config.yaml that might be changed.
+This is for **production**. IF you completed the initial data load using gctest,
+then you can modify
+and rebuild the geecodes stack using **Updating a GEOCODES CLIENT Configuration production configuration**
+in (Manging Geocodes UI containers)[./production/managing_geocodes_ui_containers.md]
+
+    ??? example "**production** section of deployment/facets/config.yaml"
+        ```{.yaml .copy}
+        API_URL: https://geocodes.{your host}/ec/api/
+        SPARQL_NB: https:/geocodes.{your host}/notebook/mkQ?q=${q}
+        SPARQL_YASGUI: https://geocodes.{your host}/sparqlgui?
+        #API_URL: "${window_location_origin}/ec/api"
+        #TRIPLESTORE_URL: https://graph.geocodes-1.earthcube.org/blazegraph/namespace/earthcube/sparql
+        TRIPLESTORE_URL: https://graph.{your host}/blazegraph/namespace/earthcube/sparql
+        BLAZEGRAPH_TIMEOUT: 20
+        ## ECRR need to use fuseki source, for now.
+        ECRR_TRIPLESTORE_URL: http://132.249.238.169:8080/fuseki/ecrr/query 
+        # ECRR_TRIPLESTORE_URL:   http://{your host}/blazegraph/namespace/ecrr/sparql 
+        ECRR_GRAPH: http://earthcube.org/gleaner-summoned
+        THROUGHPUTDB_URL: https://throughputdb.com/api/ccdrs/annotations
+        SPARQL_QUERY: queries/sparql_query.txt
+        SPARQL_HASTOOLS: queries/sparql_hastools.txt
+        SPARQL_TOOLS_WEBSERVICE: queries/sparql_gettools_webservice.txt
+        SPARQL_TOOLS_DOWNLOAD: queries/sparql_gettools_download.txt
+        # JSONLD_PROXY needs qoutes... since it has a $
+        JSONLD_PROXY: "https://geocodes.{your host}/ec/api/${o}"
+        
+        SPARQL_YASGUI: https://sparqlui.{your host}/?
+        ```
+

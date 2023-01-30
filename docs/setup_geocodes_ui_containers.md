@@ -46,7 +46,6 @@ Note it is using the gctest namespaces
     SPARQL_TOOLS_DOWNLOAD: queries/sparql_gettools_download.txt
     # JSONLD_PROXY needs qoutes... since it has a $
     JSONLD_PROXY: "https://geocodes.{your host}/ec/api/${o}"
-    
     SPARQL_YASGUI: https://sparqlui.{your host}/?
         ```
     
