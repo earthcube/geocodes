@@ -92,7 +92,7 @@ The sitemap is here:
     ```
 #### Copy sources list to configs/gctest
 !!! note
-    asssumes you are in indexing, and have put the gecodes at ~/geocodes aka your home directory
+    asssumes you are in indexing, and have put the geocodes at ~/geocodes aka your home directory
 
 `cp ~/gecodes/deployment/ingestconfig/gctest.csv configs/gctest/`
 

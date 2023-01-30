@@ -77,7 +77,8 @@ You will need to change the localConfig.yaml
     #  location: sources.csv 
     # this is a remote csv, of the Vetted sources (though it's called Test)
       location:  https://docs.google.com/spreadsheets/d/1G7Wylo9dLlq3tmXe8E8lZDFNKFDuoIEeEZd3epS0ggQ/gviz/tq?tqx=out:csv&sheet=TestSources202210
-    #    location: https://docs.google.com/spreadsheets/d/1G7Wylo9dLlq3tmXe8E8lZDFNKFDuoIEeEZd3epS0ggQ/gviz/tq?tqx=out:csv&sheet=sources
+    # this has all sources
+#      location: https://docs.google.com/spreadsheets/d/1G7Wylo9dLlq3tmXe8E8lZDFNKFDuoIEeEZd3epS0ggQ/gviz/tq?tqx=out:csv&sheet=sources
 
     ```
 

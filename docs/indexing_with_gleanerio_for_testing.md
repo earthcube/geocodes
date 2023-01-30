@@ -46,7 +46,7 @@ You will need to change the localConfig.yaml
 ```yaml
 ---
 minio:
-  address: 127.0.0.1
+  address: oss.{HOST}
   port: 433
   accessKey: worldsbestaccesskey
   secretKey: worldsbestaccesskey
