@@ -24,21 +24,20 @@ Steps:
     * **run** the run_add_configs.sh
 
 Portions of deployment/facets/config.yaml that might be changed.
-If you have just done the initial data load (aka step 3.) then you should use this config model example
-Note it is using the gctest namespaces
-??? example "**gctest** section of deployment/facets/config.yaml "
+??? example "section of deployment/facets/config.yaml"
     ```{.yaml .copy}
     API_URL: https://geocodes.{your host}/ec/api/
     SPARQL_NB: https:/geocodes.{your host}/notebook/mkQ?q=${q}
     SPARQL_YASGUI: https://geocodes.{your host}/sparqlgui?
     #API_URL: "${window_location_origin}/ec/api"
-    #TRIPLESTORE_URL: https://graph.geocodes-1.earthcube.org/blazegraph/namespace/gctest/sparql
-    TRIPLESTORE_URL: https://graph.{your host}/blazegraph/namespace/gctest_summary/sparql
+    #TRIPLESTORE_URL: https://graph.geocodes-1.earthcube.org/blazegraph/namespace/earthcube/sparql
+    TRIPLESTORE_URL: https://graph.{your host}/blazegraph/namespace/earthcube/sparql
     BLAZEGRAPH_TIMEOUT: 20
     ## ECRR need to use fuseki source, for now.
-    ECRR_TRIPLESTORE_URL: http://132.249.238.169:8080/fuseki/ecrr/query
-    # ECRR_TRIPLESTORE_URL:   http://{your host}/blazegraph/namespace/ecrr/sparql
+    ECRR_TRIPLESTORE_URL: http://132.249.238.169:8080/fuseki/ecrr/query 
+    # ECRR_TRIPLESTORE_URL:   http://{your host}/blazegraph/namespace/ecrr/sparql 
     ECRR_GRAPH: http://earthcube.org/gleaner-summoned
+
     THROUGHPUTDB_URL: https://throughputdb.com/api/ccdrs/annotations
     SPARQL_QUERY: queries/sparql_query.txt
     SPARQL_HASTOOLS: queries/sparql_hastools.txt
@@ -46,10 +45,9 @@ Note it is using the gctest namespaces
     SPARQL_TOOLS_DOWNLOAD: queries/sparql_gettools_download.txt
     # JSONLD_PROXY needs qoutes... since it has a $
     JSONLD_PROXY: "https://geocodes.{your host}/ec/api/${o}"
-    SPARQL_YASGUI: https://sparqlui.{your host}/?
-        ```
     
-
+    SPARQL_YASGUI: https://sparqlui.{your host}/?
+    ```
 
 ### Create Geocodes Stack
 
