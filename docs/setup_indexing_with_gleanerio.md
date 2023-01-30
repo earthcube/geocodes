@@ -110,7 +110,7 @@ You will need to change the localConfig.yaml
       ssl: true
       bucket: gctest # can be overridden with MINIO_BUCKET
     sparql:
-      endpoint: https://graph.{YOU HOST}/blazegraph/namespace/earthcube/sparql
+      endpoint: https://graph.{YOU HOST}/blazegraph/namespace/gctest/sparql
     s3:
       bucket: gctest # sync with above... can be overridden with MINIO_BUCKET... get's zapped if it's not here.
       domain: us-east-1 
