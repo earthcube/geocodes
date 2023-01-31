@@ -166,10 +166,32 @@ Run setup to see if you can connect to the minio store
         2022/07/21 23:42:54 Connection issue, make sure the minio server is running and accessible. The specified bucket does not exist.
         ubuntu@geocodes-dev:~/indexing$ 
      ```
+     !!! warning "Access issues"
+     ```json
+      {“file”:“/github/workspace/internal/organizations/org.go:87",“func”:“github.com/gleanerio/gleaner/internal/organizations.BuildGraph”,“level”:“error”,“msg”:“orgs/geocodes_demo_datasets.nqThe Access Key Id you provided does not exist in our records.“,”time”:“2023-01-31T15:27:39-06:00”}
+     ```
+     * **Access Key** password could be incorrect
+     * **address** may be incorrect. It is a hostname or TC/IP, and not a URL
+     * **ssl** may need to be true
 
 #### Load Data
  
 Gleaner will harvest jsonld from the URL's listed in the sitemap.
+
+!!! warning "Robots.txt"
+    OK TO IGNORE. you will need to ignore errors about robot.txt and sitemap.xml not being an index
+    ```json
+    {"file":"/github/workspace/internal/summoner/acquire/resources.go:204","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.getRobotsForDomain","level":"error","msg":"error getting robots.txt for https://www.earthcube.org/datasets/allgood:Robots.txt unavailable at https://www.earthcube.org/datasets/allgood/robots.txt","time":"2023-01-30T20:45:53-06:00"}
+    {"file":"/github/workspace/internal/summoner/acquire/resources.go:66","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.ResourceURLs","level":"error","msg":"Error getting robots.txt for geocodes_demo_datasets, continuing without it.","time":"2023-01-30T20:45:53-06:00"}    
+    ```
+
+!!! warning "Access issues"
+    ```json
+    {“file”:“/github/workspace/internal/organizations/org.go:87",“func”:“github.com/gleanerio/gleaner/internal/organizations.BuildGraph”,“level”:“error”,“msg”:“orgs/geocodes_demo_datasets.nqThe Access Key Id you provided does not exist in our records.“,”time”:“2023-01-31T15:27:39-06:00”}
+    ```
+    * **Access Key** password could be incorrect 
+    * **address** may be incorrect. It is a hostname or TC/IP, and not a URL
+    * **ssl** may need to be true
 
 ??? example "`./glcon gleaner batch --cfgName gctest`"
     ```shell
