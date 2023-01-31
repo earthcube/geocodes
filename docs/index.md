@@ -41,6 +41,7 @@
 * how to run indexing using gleaner
     * initial setup to use a test daatase
     * production setup to use the sources google spreadsheet
+    * to learn to renenerate the config files when you edit using glcon.
 * how to setup the UI
 * how to reconfigure the UI 
 
