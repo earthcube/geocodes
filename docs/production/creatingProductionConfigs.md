@@ -196,6 +196,7 @@ There is a screen on:
     * **Access Key** password could be incorrect
     * **address** may be incorrect. It is a hostname or TC/IP, and not a URL
     * **ssl** may need to be true
+    * [See setup issues](./troubleshooting.md#setup-failure)
 
 ??? example "`./glcon gleaner batch --cfgName geocodes`"
     ```shell
