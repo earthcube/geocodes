@@ -22,7 +22,17 @@ Steps:
 5. load data to graph using 'nabu' 
     6. `./glcon nabu prefix --cfgName gctest`
     7. `./glcon nabu prune --cfgName gctest`
-6. Run Summarize task. This is performance related.
+8. Test data in Graph 
+9. Example of how to edit the source
+   8. edit gctest.csv
+   9. regenerate configs
+   10. rerun batch
+10. Run Summarize task. This is performance related.
+
+!!! warn "regenerate"
+if you edit localConfig.yaml, you need to regenerate the configs using
+`./glcon config generate --cfgName gctest`
+
 ---
 
 ## Setup Datastores
@@ -271,10 +281,67 @@ A more complex query can be ran:
     ```
 More [SPARQL Examples](production/sparql.md)
 
-## Create reate a materilized view of the data using summarize to the  repo_summary namespace
+## Example of how to edit the source
+There are two lines in gctest csv. 
+The second dataset is actual data, so there may be errors.
+
+??? info "gctest cs"
+    ``` csv
+    hack,SourceType,Active,Name,ProperName,URL,Headless,HeadlessWait,IdentifierType,IdentifierPath,Domain,PID,Logo,validator link,NOTE
+    58,sitemap,TRUE,geocodes_demo_datasets,Geocodes Demo Datasets,https://earthcube.github.io/GeoCODES-Metadata/metadata/Dataset/allgood/sitemap.xml,FALSE,0,identifiersha,,https://www.earthcube.org/datasets/allgood,https://github.com/earthcube/GeoCODES-Metadata/metadata/OtherResources,,,
+    59,sitemap,FALSE,geocodes_actual_datasets,Geocodes Actual Datasets,https://earthcube.github.io/GeoCODES-Metadata/metadata/Dataset/actualdata/sitemap.xml,FALSE,0,identifiersha,,https://www.earthcube.org/datasets/actual,https://github.com/earthcube/GeoCODES-Metadata/metadata/,,,
+    ```
+
+### edit gctest.csv
+Set the second line active to TRUE
+
+??? info "edited gctest cs"
+    ``` csv
+    hack,SourceType,Active,Name,ProperName,URL,Headless,HeadlessWait,IdentifierType,IdentifierPath,Domain,PID,Logo,validator link,NOTE
+    58,sitemap,TRUE,geocodes_demo_datasets,Geocodes Demo Datasets,https://earthcube.github.io/GeoCODES-Metadata/metadata/Dataset/allgood/sitemap.xml,FALSE,0,identifiersha,,https://www.earthcube.org/datasets/allgood,https://github.com/earthcube/GeoCODES-Metadata/metadata/OtherResources,,,
+    59,sitemap,TRUE,geocodes_actual_datasets,Geocodes Actual Datasets,https://earthcube.github.io/GeoCODES-Metadata/metadata/Dataset/actualdata/sitemap.xml,FALSE,0,identifiersha,,https://www.earthcube.org/datasets/actual,https://github.com/earthcube/GeoCODES-Metadata/metadata/,,,
+    ```
+
+### regenerate configs
+`./glcon config generate --cfgName gctest`
+
+### rerun batch
+
+??? example "`./glcon gleaner batch --cfgName gctest`"
+    ```shell
+    ubuntu@geocodes:~/indexing$ ./glcon gleaner batch --cfgName gctest
+    version:  v3.0.8-fix129
+    batch called
+    {"file":"/github/workspace/internal/summoner/acquire/resources.go:204","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.getRobotsForDomain","level":"error","msg":"error getting robots.txt for https://www.earthcube.org/datasets/allgood:Robots.txt unavailable at https://www.earthcube.org/datasets/allgood/robots.txt","time":"2023-01-30T21:09:49-06:00"}
+    {"file":"/github/workspace/internal/summoner/acquire/resources.go:66","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.ResourceURLs","level":"error","msg":"Error getting robots.txt for geocodes_demo_datasets, continuing without it.","time":"2023-01-30T21:09:49-06:00"}
+    {"file":"/github/workspace/internal/summoner/acquire/resources.go:204","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.getRobotsForDomain","level":"error","msg":"error getting robots.txt for https://www.earthcube.org/datasets/actual:Robots.txt unavailable at https://www.earthcube.org/datasets/actual/robots.txt","time":"2023-01-30T21:09:49-06:00"}
+    {"file":"/github/workspace/internal/summoner/acquire/resources.go:66","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.ResourceURLs","level":"error","msg":"Error getting robots.txt for geocodes_actual_datasets, continuing without it.","time":"2023-01-30T21:09:49-06:00"}
+     100% |███████████████████████████████████████████████████████████████████████████████████████████| (3/3, 10 it/s)        
+     100% |███████████████████████████████████████████████████████████████████████████████████████████| (9/9, 25 it/s)        
+    RunStats:
+      Start: 2023-01-30 21:09:49.120833598 -0600 CST m=+0.105789938
+      Repositories:
+        - name: geocodes_demo_datasets
+          SitemapCount: 9 
+          SitemapHttpError: 0 
+          SitemapIssues: 0 
+          SitemapSummoned: 9 
+          SitemapStored: 9 
+        - name: geocodes_actual_datasets
+          SitemapSummoned: 3 
+          SitemapStored: 3 
+          SitemapCount: 3 
+          SitemapHttpError: 0 
+          SitemapIssues: 0 
+     100% |██████████████████████████████████████████████████████████████████████████████████████████| (9/9, 168 it/s)
+     100% |██████████████████████████████████████████████████████████████████████████████████████████| (2/2, 123 it/s)
+    ```
+
+
+## Create  a materialized view of the data using summarize to the  repo_summary namespace
 
 !!! warning "DOCUMENTATION NEEDED " 
-    (TBD assinged to Mike Bobak)
+    (TBD assigned to Mike Bobak)
 
 
 ## Go to step 4.

@@ -14,6 +14,20 @@ Should this be an actual production configuration, the names need to be changed 
 1. run gleaner
 1. run nabu
 
+Reconfiguration
+9. Changes to the gleaner/nabu configuration or the sources spreadsheet, other other items
+    8. make a change
+    9. regenerate configs
+    10. run batch
+   11. run nabu prefix
+   12. run nabu prune. 
+       13. if files were removed from a repo, then this should prune them.
+
+
+!!! note "regenerate"
+if you edit localConfig.yaml, you need to regenerate the configs using
+`./glcon config generate --cfgName geocodes`
+
 ## Setup Datastores
 
 If you followed the (setup indexing)[../setup_indexing_with_gleanerio.md] steps, you should have the datastores needed
@@ -64,11 +78,13 @@ You will need to change the localConfig.yaml
       accessKey: worldsbestaccesskey
       secretKey: worldsbestaccesskey
       ssl: true
-      bucket: gleaner # can be overridden with MINIO_BUCKET
+      bucket: gleaner
+      # bucket: can be overridden with MINIO_BUCKET
     sparql:
       endpoint: https://graph.{HOST}/blazegraph/namespace/earthcube/sparql
     s3:
-      bucket: gleaner # sync with above... can be overridden with MINIO_BUCKET... get's zapped if it's not here.
+      bucket: gleaner
+      #  sync with above... bucket: can be overridden with MINIO_BUCKET... get's zapped if it's not here.
       domain: us-east-1
     #headless field in gleaner.summoner
     headless: http://127.0.0.1:9222
@@ -248,8 +264,9 @@ in (Manging Geocodes UI containers)[./production/managing_geocodes_ui_containers
         
         SPARQL_YASGUI: https://sparqlui.{your host}/?
         ```
+### Reconfiguration
 
-### Changes to the gleaner/nabu configuration or the sources spreadsheet
+#### Changes to the gleaner/nabu configuration or the sources' spreadsheet
 
 If you change the {config}/localConfig.yaml
 or you update the source google sheet, then you need to regenerate the config files
@@ -257,3 +274,17 @@ or you update the source google sheet, then you need to regenerate the config fi
 !!! warn "regenerate"
     if you edit localConfig.yaml, you need to regenerate the configs using
     `./glcon config generate --cfgName gctest`
+
+###### regenerate configs
+`./glcon config generate --cfgName geocodes `
+
+###### run batch
+`./glcon gleaner batch --cfgName geocodes `
+
+###### run nabu prefix
+`./glcon nabu prefix --cfgName geocodes `
+
+###### run nabu prune.
+`./glcon nabu prune --cfgName geocodes `
+
+if files were removed from a repo, then this should prune them.

@@ -10,7 +10,6 @@ Steps:
 * instructions for Updating a GEOCODES CLIENT Configuration if things do not work
     * or delete stack and reload
 
-
 ###  Modify the Facet Search Configuration
 
 * edit in deployment/facets/config.yaml
@@ -75,7 +74,7 @@ noted here: [See Managing Geocodes UI Containers](production/managing_geocodes_u
 !!! note "Done"
 This is the end of the deployment steps.
 
-If the deployment is working, you can now
+## If the deployment is working, you can now
 
 * (Setup a Production Configuration)[./production/creatingProductionConfigs.md]
-* (Reconfigure Geocodes UI)[]
+* (Reconfigure Geocodes UI)[./production/reconfigure_geocodes_ui_containers.md]
