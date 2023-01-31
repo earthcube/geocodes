@@ -28,12 +28,22 @@
             end
         
     ~~~
-    
+  
 ## Overview:
 1. Configure a base server
 2. Setup services containers
 3. Intial setup of services and load data
 3. Setup Gepcodes UI containers,
+
+## What to learn from deploying the stack, and the indexing application
+
+* how to deploy containers
+* how to run indexing using gleaner
+    * initial setup to use a test daatase
+    * production setup to use the sources google spreadsheet
+* how to setup the UI
+* how to reconfigure the UI 
+
 
 ### Requirements prior to starting
 Three sections to know prior to installing

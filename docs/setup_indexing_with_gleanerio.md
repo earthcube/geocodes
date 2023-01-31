@@ -134,6 +134,7 @@ You will need to change the localConfig.yaml
     #  type: csv
     #  location: https://docs.google.com/spreadsheets/d/1G7Wylo9dLlq3tmXe8E8lZDFNKFDuoIEeEZd3epS0ggQ/gviz/tq?tqx=out:csv&sheet=TestDatasetSources
     ```
+
 !!! warn "regenerate"
     if you edit localConfig.yaml, you need to regenerate the configs using
     `./glcon config generate --cfgName gctest`
