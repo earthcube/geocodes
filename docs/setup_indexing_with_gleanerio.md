@@ -166,13 +166,16 @@ Run setup to see if you can connect to the minio store
         2022/07/21 23:42:54 Connection issue, make sure the minio server is running and accessible. The specified bucket does not exist.
         ubuntu@geocodes-dev:~/indexing$ 
      ```
-     !!! warning "Access issues"
-     ```json
-      {“file”:“/github/workspace/internal/organizations/org.go:87",“func”:“github.com/gleanerio/gleaner/internal/organizations.BuildGraph”,“level”:“error”,“msg”:“orgs/geocodes_demo_datasets.nqThe Access Key Id you provided does not exist in our records.“,”time”:“2023-01-31T15:27:39-06:00”}
-     ```
-     * **Access Key** password could be incorrect
-     * **address** may be incorrect. It is a hostname or TC/IP, and not a URL
-     * **ssl** may need to be true
+
+!!! hint "Access issues"
+    ```json
+    {“file”:“/github/workspace/internal/organizations/org.go:87",“func”:“github.com/gleanerio/gleaner/internal/organizations.BuildGraph”,“level”:“error”,“msg”:“orgs/geocodes_demo_datasets.nqThe Access Key Id you provided does not exist in our records.“,”time”:“2023-01-31T15:27:39-06:00”}
+    ```
+    * **Access Key** password could be incorrect
+    * **address** may be incorrect. It is a hostname or TC/IP, and not a URL
+    * **ssl** may need to be true
+    * [See setup issues](./troubleshooting.md#setup-failure)
+
 
 #### Load Data
  
