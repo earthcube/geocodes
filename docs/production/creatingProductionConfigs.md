@@ -240,7 +240,7 @@ IF detached,  attach to a screen  in this case you use the name
     This is for **production**. IF you completed the initial data load using gctest,
     then you can modify
     and rebuild the geecodes stack using **Updating a GEOCODES CLIENT Configuration production configuration**
-    in (Manging Geocodes UI containers)[./production/managing_geocodes_ui_containers.md]
+    in [Manging Geocodes UI containers](./production/managing_geocodes_ui_containers.md)
 
     ??? example "**production** section of deployment/facets/config.yaml"
         ```{.yaml .copy}
