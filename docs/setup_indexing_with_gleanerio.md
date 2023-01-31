@@ -282,8 +282,15 @@ A more complex query can be ran:
 More [SPARQL Examples](production/sparql.md)
 
 ## Example of how to edit the source
+This demonstrates a feature where if you have duplicate identifiers, then you can ensure all
+data get loaded. It's a bad idea to have the same ID, but it happens.
+
 There are two lines in gctest csv. 
-The second dataset is actual data, so there may be errors.
+The second dataset is (actual data)[https://github.com/earthcube/GeoCODES-Metadata/tree/main/metadata/Dataset/actualdata]. 
+There are three files, the two earthchem files have the same @id, (1)[https://github.com/earthcube/GeoCODES-Metadata/blob/9a41929bbead71c42a2066120480ae1375d952e7/metadata/Dataset/actualdata/earthchem1.json#L6] 
+(2)[https://github.com/earthcube/GeoCODES-Metadata/blob/9a41929bbead71c42a2066120480ae1375d952e7/metadata/Dataset/actualdata/earthchem1.json#L6]
+The identifierType is set to 'filesha' which generates a sha based on the entire file.
+
 
 ??? info "gctest cs"
     ``` csv
