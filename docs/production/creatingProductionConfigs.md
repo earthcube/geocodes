@@ -81,6 +81,9 @@ You will need to change the localConfig.yaml
 #      location: https://docs.google.com/spreadsheets/d/1G7Wylo9dLlq3tmXe8E8lZDFNKFDuoIEeEZd3epS0ggQ/gviz/tq?tqx=out:csv&sheet=sources
 
     ```
+!!! warn "regenerate"
+    if you edit localConfig.yaml, you need to regenerate the configs using
+    `./glcon config generate --cfgName gctest`
 
 values need to match your {myhost}.env file
 
@@ -246,3 +249,11 @@ in (Manging Geocodes UI containers)[./production/managing_geocodes_ui_containers
         SPARQL_YASGUI: https://sparqlui.{your host}/?
         ```
 
+### Changes to the gleaner/nabu configuration or the sources spreadsheet
+
+If you change the {config}/localConfig.yaml
+or you update the source google sheet, then you need to regenerate the config files
+
+!!! warn "regenerate"
+    if you edit localConfig.yaml, you need to regenerate the configs using
+    `./glcon config generate --cfgName gctest`

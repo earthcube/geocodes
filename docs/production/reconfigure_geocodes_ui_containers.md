@@ -1,17 +1,11 @@
-#  Setup Geocodes Services Containers for Test Data load GCTEST:
+#  Reconfigure Geocodes Services Containers for Production:
 
-This is step 4 of 4 major steps:
-
-1. [Install base containers on a server](./stack_machines.md)
-2. [Setup services containers](./setup_geocodes_services_containers.md)
-3. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
-4. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
 
 ## Setup and start GeoCodes Client using portainer ui
 Steps:
 
-* modify the configuration file
-* create stack in portainer
+* Stop the geocodes stack
+* copy, edit, delete, recreate the configuration file
 * test
 * instructions for Updating a GEOCODES CLIENT Configuration if things do not work
     * or delete stack and reload
@@ -24,7 +18,7 @@ Steps:
     * **run** the run_add_configs.sh
 
 Portions of deployment/facets/config.yaml that might be changed.
-??? example "section of deployment/facets/config.yaml"
+??? example "portainer configs/facets_config.yaml"
     ```{.yaml .copy}
     API_URL: https://geocodes.{your host}/ec/api/
     SPARQL_NB: https:/geocodes.{your host}/notebook/mkQ?q=${q}
@@ -84,4 +78,4 @@ This is the end of the deployment steps.
 If the deployment is working, you can now
 
 * (Setup a Production Configuration)[./production/creatingProductionConfigs.md]
-* (Reconfigure Geocodes UI)[./production/reconfigure_geocodes_ui_containers.md]
+* (Reconfigure Geocodes UI)[]

@@ -94,7 +94,7 @@ The sitemap is here:
 !!! note
     asssumes you are in indexing, and have put the geocodes at ~/geocodes aka your home directory
 
-`cp ~/gecodes/deployment/ingestconfig/gctest.csv configs/gctest/`
+`cp ~/geocodes/deployment/ingestconfig/gctest.csv configs/gctest/`
 
 #### edit files: 
 You will need to change the localConfig.yaml
@@ -124,8 +124,13 @@ You will need to change the localConfig.yaml
     #  location: https://docs.google.com/spreadsheets/d/1G7Wylo9dLlq3tmXe8E8lZDFNKFDuoIEeEZd3epS0ggQ/gviz/tq?tqx=out:csv&sheet=TestDatasetSources
 
     ```
+!!! warn "regenerate"
+    if you edit localConfig.yaml, you need to regenerate the configs using
+    `./glcon config generate --cfgName gctest`
 
 ####  Generate configs 
+
+
 ??? example "`./glcon config generate --cfgName gctest`"
     ```shell
     ./glcon config generate --cfgName gctest
