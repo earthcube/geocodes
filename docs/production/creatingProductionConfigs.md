@@ -14,7 +14,8 @@ Should this be an actual production configuration, the names need to be changed 
 1. run gleaner
 1. run nabu
 
-Reconfiguration
+### Reconfiguration
+
 9. Changes to the gleaner/nabu configuration or the sources spreadsheet, other other items
     8. make a change
     9. regenerate configs

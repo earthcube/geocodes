@@ -286,9 +286,11 @@ This demonstrates a feature where if you have duplicate identifiers, then you ca
 data get loaded. It's a bad idea to have the same ID, but it happens.
 
 There are two lines in gctest csv. 
-The second dataset is (actual data)[https://github.com/earthcube/GeoCODES-Metadata/tree/main/metadata/Dataset/actualdata]. 
-There are three files, the two earthchem files have the same @id, (1)[https://github.com/earthcube/GeoCODES-Metadata/blob/9a41929bbead71c42a2066120480ae1375d952e7/metadata/Dataset/actualdata/earthchem1.json#L6] 
-(2)[https://github.com/earthcube/GeoCODES-Metadata/blob/9a41929bbead71c42a2066120480ae1375d952e7/metadata/Dataset/actualdata/earthchem1.json#L6]
+The second dataset is [actual data]
+(https://github.com/earthcube/GeoCODES-Metadata/tree/main/metadata/Dataset/actualdata). 
+There are three files, the two earthchem files have the same @id,
+[1](https://github.com/earthcube/GeoCODES-Metadata/blob/9a41929bbead71c42a2066120480ae1375d952e7/metadata/Dataset/actualdata/earthchem1.json#L6)
+[2](hhttps://github.com/earthcube/GeoCODES-Metadata/blob/9a41929bbead71c42a2066120480ae1375d952e7/metadata/Dataset/actualdata/earthchem2.json#L6)
 The identifierType is set to 'filesha' which generates a sha based on the entire file.
 
 
@@ -296,7 +298,7 @@ The identifierType is set to 'filesha' which generates a sha based on the entire
     ``` csv
     hack,SourceType,Active,Name,ProperName,URL,Headless,HeadlessWait,IdentifierType,IdentifierPath,Domain,PID,Logo,validator link,NOTE
     58,sitemap,TRUE,geocodes_demo_datasets,Geocodes Demo Datasets,https://earthcube.github.io/GeoCODES-Metadata/metadata/Dataset/allgood/sitemap.xml,FALSE,0,identifiersha,,https://www.earthcube.org/datasets/allgood,https://github.com/earthcube/GeoCODES-Metadata/metadata/OtherResources,,,
-    59,sitemap,FALSE,geocodes_actual_datasets,Geocodes Actual Datasets,https://earthcube.github.io/GeoCODES-Metadata/metadata/Dataset/actualdata/sitemap.xml,FALSE,0,identifiersha,,https://www.earthcube.org/datasets/actual,https://github.com/earthcube/GeoCODES-Metadata/metadata/,,,
+    59,sitemap,FALSE,geocodes_actual_datasets,Geocodes Actual Datasets,https://earthcube.github.io/GeoCODES-Metadata/metadata/Dataset/actualdata/sitemap.xml,FALSE,0,filesha,,https://www.earthcube.org/datasets/actual,https://github.com/earthcube/GeoCODES-Metadata/metadata/,,,
     ```
 
 ### edit gctest.csv
@@ -306,7 +308,7 @@ Set the second line active to TRUE
     ``` csv
     hack,SourceType,Active,Name,ProperName,URL,Headless,HeadlessWait,IdentifierType,IdentifierPath,Domain,PID,Logo,validator link,NOTE
     58,sitemap,TRUE,geocodes_demo_datasets,Geocodes Demo Datasets,https://earthcube.github.io/GeoCODES-Metadata/metadata/Dataset/allgood/sitemap.xml,FALSE,0,identifiersha,,https://www.earthcube.org/datasets/allgood,https://github.com/earthcube/GeoCODES-Metadata/metadata/OtherResources,,,
-    59,sitemap,TRUE,geocodes_actual_datasets,Geocodes Actual Datasets,https://earthcube.github.io/GeoCODES-Metadata/metadata/Dataset/actualdata/sitemap.xml,FALSE,0,identifiersha,,https://www.earthcube.org/datasets/actual,https://github.com/earthcube/GeoCODES-Metadata/metadata/,,,
+    59,sitemap,TRUE,geocodes_actual_datasets,Geocodes Actual Datasets,https://earthcube.github.io/GeoCODES-Metadata/metadata/Dataset/actualdata/sitemap.xml,FALSE,0,filesha,,https://www.earthcube.org/datasets/actual,https://github.com/earthcube/GeoCODES-Metadata/metadata/,,,
     ```
 
 ### regenerate configs
