@@ -45,7 +45,7 @@ Earthcube/Decoder staff should use the A Community pattern when setting up an in
 
 | Repository             | config            | s3 Bucket | graph namespaces           | notes                           |
 |------------------------|-------------------|-----------|----------------------------|---------------------------------|
-| GeocodesTest           | gctest            | gctest      | gctest, gctest_summary         | samples of actual datasets      |
+| **GeocodesTest**           | **gctest**            | **gctest**      | **gctest**, **gctest_summary**         | samples of actual datasets      |
 | geocodes               | geocodes          | geocodes  | geocodes, geocodes_summary | suggested standalone repository |
 | earthcube              | geocodes          | gleaner   | earthcube, summary         | DEFAULT PRODUCTION NAME         |
 | A COMMUNITY eg {acomm} | {acomm}           | {acomm}   | {acomm}, {acomm}_summary   | A communities tenant repository |
@@ -64,6 +64,7 @@ create buckets gctest, and geocodes
 go to settings for the bucket and make  public.
 
 ### Setup Graph stores.
+
 Nabu pulls from the s3 system, converts to RDF quads, and uploads to a graph store.
 
 go to https://graph.{your host}
@@ -102,7 +103,7 @@ The sitemap is here:
     ```
 #### Copy sources list to configs/gctest
 !!! note
-    asssumes you are in indexing, and have put the geocodes at ~/geocodes aka your home directory
+    assumes you are in indexing, and have put the geocodes at ~/geocodes aka your home directory
 
 `cp ~/geocodes/deployment/ingestconfig/gctest.csv configs/gctest/`
 
@@ -132,7 +133,6 @@ You will need to change the localConfig.yaml
     # this can be a remote csv
     #  type: csv
     #  location: https://docs.google.com/spreadsheets/d/1G7Wylo9dLlq3tmXe8E8lZDFNKFDuoIEeEZd3epS0ggQ/gviz/tq?tqx=out:csv&sheet=TestDatasetSources
-
     ```
 !!! warn "regenerate"
     if you edit localConfig.yaml, you need to regenerate the configs using
@@ -282,6 +282,7 @@ A more complex query can be ran:
 More [SPARQL Examples](production/sparql.md)
 
 ## Example of how to edit the source
+
 This demonstrates a feature where if you have duplicate identifiers, then you can ensure all
 data get loaded. It's a bad idea to have the same ID, but it happens.
 

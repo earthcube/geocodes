@@ -26,8 +26,8 @@ Should this be an actual production configuration, the names need to be changed 
 
 
 !!! note "regenerate"
-if you edit localConfig.yaml, you need to regenerate the configs using
-`./glcon config generate --cfgName geocodes`
+    if you edit localConfig.yaml, you need to regenerate the configs using
+    `./glcon config generate --cfgName geocodes`
 
 ## Setup Datastores
 
@@ -67,10 +67,10 @@ See that it is created.
 
 note there a only a few files.
 
-### edit the local config for the configuration
+### Edit the local config for the configuration
 
 You will need to change the localConfig.yaml
-??? note `nano configs/ci/localConfig.yaml`
+??? note "`nano configs/ci/localConfig.yaml`"
     ```yaml
     ---
     minio:
