@@ -236,11 +236,11 @@ IF detached,  attach to a screen  in this case you use the name
 ## Changes that will be needed for the client configuration
 
 !!! note "**production** model for post step 4"
-Portions of deployment/facets/config.yaml that might be changed.
-This is for **production**. IF you completed the initial data load using gctest,
-then you can modify
-and rebuild the geecodes stack using **Updating a GEOCODES CLIENT Configuration production configuration**
-in (Manging Geocodes UI containers)[./production/managing_geocodes_ui_containers.md]
+    Portions of deployment/facets/config.yaml that might be changed.
+    This is for **production**. IF you completed the initial data load using gctest,
+    then you can modify
+    and rebuild the geecodes stack using **Updating a GEOCODES CLIENT Configuration production configuration**
+    in (Manging Geocodes UI containers)[./production/managing_geocodes_ui_containers.md]
 
     ??? example "**production** section of deployment/facets/config.yaml"
         ```{.yaml .copy}
@@ -265,6 +265,7 @@ in (Manging Geocodes UI containers)[./production/managing_geocodes_ui_containers
         
         SPARQL_YASGUI: https://sparqlui.{your host}/?
         ```
+
 ### Reconfiguration
 
 #### Changes to the gleaner/nabu configuration or the sources' spreadsheet
