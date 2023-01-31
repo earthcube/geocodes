@@ -155,7 +155,7 @@ to detach from screen, use: `ctl-a-d`
 
 to find running screens: `screen -ls`
 
-```shell ""
+```shell 
 There are screens on:
 	7187.gleaner	(07/28/22 17:43:48)	(Detached)
 	6879.pts-3.geocodes-dev	(07/28/22 17:33:25)	(Detached)
