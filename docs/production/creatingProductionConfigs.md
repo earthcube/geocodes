@@ -145,6 +145,7 @@ Now there will be at least a 'gleaner', a 'nabu' and a 'nabu_prov' files.
 
 ## start a screen
 Since this is a long running process, it is suggested that this be done in `screen`
+There is also a possibility of using tmux, if a user has experience with it.
 
 ### Notes: 
 To create a 'named' screen named gleaner 
