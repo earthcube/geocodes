@@ -46,8 +46,17 @@
 * how to setup the UI
 * how to reconfigure the UI 
 
+!!! warn "Clean Machine"
+    These are instructions for a clean machine. Your mileage will vary if you are trying to install this stack on
+    a developers workstation.
+    If you are experienced, then you can probably deploy the docker stacks on a server with docker running.
+    The stack uses treafik labels to manage the roures between the web server and the containers. It is not
+    a task for the faint of heart, but IMOHO, it is more automatic that nginx or caddy reverse proxy routing.
+    and allows us to deploy 'tenant' client stacks using configured data steores for each client in the services stack.
+    Probably can be done with helm charts.
 
 ### Requirements prior to starting
+
 Three sections to know prior to installing
 * All
 * Production
