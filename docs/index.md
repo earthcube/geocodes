@@ -32,6 +32,7 @@
 ## Overview:
 1. Configure a base server
 2. Setup services containers
+3. Setup Gleaner containers
 3. Intial setup of services and load data
 3. Setup Gepcodes UI containers,
 
@@ -79,6 +80,7 @@ Should be > v2.13 `docker compose  --help` needs to show the -p --project flag
 
 1. [Configure a base server](./setup_base_machine_configuration.md)
     * docker
+    * setup directory and groups for installing geocodes
     * git clone https://github.com/earthcube/geocodes.git
     * cd geocodes/deployment
     * setup domain names
@@ -90,7 +92,8 @@ Should be > v2.13 `docker compose  --help` needs to show the -p --project flag
     * setup and configure services
         * create env variables file for the services
         * add stack services-compose.yaml to portainer
-
+1. [Setup Gleaner containers](./setup_gleaner_container.md)
+   * run shell script `run_gleaner.sh`
 1. [Initial Setup of datastores and loading of sample data](./setup_indexing_with_gleanerio.md)
     * Setup datastores for s3 and graph
     * Install software glcon
@@ -114,7 +117,9 @@ Should be > v2.13 `docker compose  --help` needs to show the -p --project flag
 ### Data Loading
 
 * [Testing](./indexing_with_gleanerio_for_testing.md)
-* [Create a  'Production' config](production/creatingProductionConfigs.md) 
+* Production
+    * [Create a  'Production' config](production/creatingProductionConfigs.md) 
+    * [Production Fragments](production/production_configs.md)
 
 
 ### NOTES

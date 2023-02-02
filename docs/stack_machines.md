@@ -1,5 +1,34 @@
 ## Stack Containers
 
+??? info "Containers and Routes"
+    ~~~mermaid
+    flowchart TB
+    services-- deployed by -->portainer
+    geocodes-- deployed by  --> portainer
+    gleaner-- deployed by  --> portainer
+    facetsearch-- routes --> traefik
+    facetsearchservices-- routes-->traefik
+    oss-- routes-->traefik
+    triplestore-- routes --> traefik
+    sparqlgui-- routes --> traefik
+    subgraph gleaner
+    headless
+    end
+    subgraph geocodes
+    facetsearch-->facetsearchservices
+    end
+    subgraph services
+    oss["oss s3"]
+    sparqlgui
+    triplestore["graph -- triplestore"]
+    end
+    
+            subgraph base
+               traefik<-- routes -->portainer
+            end
+        
+        ~~~
+
 This is a list of the stack containers.
 
 **NOTE, for production stacks, DNS Names listed need to be cnamed.
@@ -22,31 +51,4 @@ The local stacks are under developement.
 | geodexclient  | geodex.{HOST}       | geodex            | n/a                                | for harvesting                                  |
 | geodexapi     | api.{HOST}          | geodex            | n/a                                | for harvesting                                  |
 
-??? info "Containers and Routes"
-    ~~~mermaid
-    flowchart TB
-        services-- deployed by -->portainer
-        geocodes-- deployed by  --> portainer
-        gleaner-- deployed by  --> portainer
-        facetsearch-- routes --> traefik
-        facetsearchservices-- routes-->traefik
-        oss-- routes-->traefik
-        triplestore-- routes --> traefik
-        sparqlgui-- routes --> traefik
-        subgraph gleaner
-           headless
-        end
-        subgraph geocodes
-           facetsearch-->facetsearchservices
-        end
-        subgraph services
-           oss["oss s3"]
-           sparqlgui
-           triplestore["graph -- triplestore"]
-        end
-    
-        subgraph base
-           traefik<-- routes -->portainer
-        end
-    
-    ~~~
+

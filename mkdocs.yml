@@ -35,7 +35,8 @@ nav:
   - List of services: stack_machines.md
   - Setup:
       - Base Machine: setup_base_machine_configuration.md
-      - Create Servicess Containers: setup_geocodes_services_containers.md
+      - Create Services Containers: setup_geocodes_services_containers.md
+      - Create Gleaner Containers: setup_gleaner_container.md
       - Load Data: setup_indexing_with_gleanerio.md
       - Create Geocodes UI Containers: setup_geocodes_ui_containers.md
       - Creating a Community Instance (Tenant): tenant
