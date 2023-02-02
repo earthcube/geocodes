@@ -1,12 +1,13 @@
 
 # Loading Data for The Initial Installation
 
-This is step 3 of 4 major steps:
+This is step 4 of 5 major steps:
 
 1. [Install base containers on a server](./stack_machines.md)
 2. [Setup services containers](./setup_geocodes_services_containers.md)
-3. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
-4. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
+3. [Setup Gleaner containers](setup_gleaner_container.md)
+4. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
+5. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
 
 Steps:
 
@@ -383,9 +384,10 @@ Set the second line active to TRUE
     (TBD assigned to Mike Bobak)
 
 
-## Go to step 4.
+## Go to step 5.
 
 1. [Install base containers on a server](./stack_machines.md)
 2. [Setup services containers](./setup_geocodes_services_containers.md)
-3. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
-4. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
+3. [Setup Gleaner containers](setup_gleaner_container.md)
+4. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
+5. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)

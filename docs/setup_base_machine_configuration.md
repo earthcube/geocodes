@@ -1,13 +1,14 @@
-##  Setup Machine:
+#  Setup Machine:
 
-This is step 1 of 4 major steps:
+This is step 1 of 5 major steps:
 
 1. [Install base containers on a server](./stack_machines.md)
 2. [Setup services containers](./setup_geocodes_services_containers.md)
-3. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
-4. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
+3. [Setup Gleaner containers](setup_gleaner_container.md)
+4. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
+5. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
 
-# Base Machine to run Docker Containers Treafik and Portainer:
+##  Base Machine to run Docker Containers Treafik and Portainer:
 This is what will be needed to create a production server
 
 * base virtual machine for containers
@@ -34,7 +35,7 @@ This is what will be needed to create a production server
 
 
 --- 
-### Steps:
+## Steps:
 
 * create a machine in openstack (if production)
     * select size
@@ -55,13 +56,21 @@ This is what will be needed to create a production server
         * `sudo usermod -aG docker ubuntu`
     * reboot
     * `sudo reboot now`
+* create a directory for geocodes, set up permissions and groups
+    * `sudo mkdir /data/geocodes`
+    * `ln -s /data/geocodes/ geocodes`
+    * `sudo addgroup geocodes`
+    * `usermod -a -G geocodes {user}`
+    * `sudo chgrp geocodes /data/geocodes`
+    * `sudo chmod g+rwx /data/geocodes`
 * init docker swarm
     * `docker swarm init`
 * verify proper base configuration
-    * docker compose --help shows a -p flag
+    * `docker compose --help` shows a -p flag
 * SNAPSHOT and creaate an image
     * 
 * clone geocodes
+    * `cd geocodes` or `cd /data/geocodes`
     * `git clone https://github.com/earthcube/geocodes.git`
 * configure a base server
 * take a break and wait for the DNS entries.
@@ -71,7 +80,7 @@ This is what will be needed to create a production server
 
 
 ---
-## create a machine in openstack
+### create a machine in openstack
 
 !!! info "Suggested size:"
     SDSC Openstack:
@@ -96,7 +105,8 @@ This is what will be needed to create a production server
     After the machine is created, we can change the IP to the one associated with geocodes.earthcube.org
 
 ---
-# setup domain names
+#### setup domain names
+
 * [Machines]( stack_machines.md )
 *   [Name for remote DNS](https://raw.githubusercontent.com/earthcube/geocodes/main/deployment/hosts.geocodess)
 
@@ -114,7 +124,7 @@ local ports for services that cannot be proxied
 
 ---
 
-## ssh to machine and verify
+### ssh to machine and verify
 
 `ssh -i ~/.ssh/earthcube.pem ubuntu@{public IP}`
 
@@ -154,17 +164,57 @@ local ports for services that cannot be proxied
 
 ---
 
-# configure a base server
+### configure a base server
 
-* add docker, git
+####  update OS
+
+* update apt
+    * `sudo apt update`
+* update base software
+    * `sudo apt upgrade
+
+#####  add docker, git
+
 ??? note "Offical Docker for Ubuntu"
     **use these docker install** [instruction](https://docs.docker.com/engine/install/ubuntu/)
-* git clone https://github.com/earthcube/geocodes.git
-* cd geocodes/deployment
-* copy  base_machine.example.env, to .env
-    * modify the file
+
+* add ubuntu (or other users) to docker group
+   * `sudo groupadd docker`
+   * `sudo usermod -aG docker ubuntu`
+* reboot
+   * `sudo reboot now`
+
+##### create a directory for geocodes, set up permissions and groups
+
+    * `sudo mkdir /data/decoder`
+    * `ln -s /data/decoder/ decoder`
+    * `sudo addgroup geocodes`
+    * `usermod -a -G geocodes {user}`
+    * `sudo chgrp geocodes /data/decoder`
+    * `sudo chmod g+rwx /data/decoder`
+
+ 
+##### clone geocodes stack
+
+* `cd decoder` or `cd /data/decoder`
+* `git clone https://github.com/earthcube/geocodes.git`
+* `cd geocodes/deployment`
+
+##### copy  base_machine.example.env, to .env
+
+###### Option 1. production server use .env
+
+* `cp base_machine.example.env .env`
+* modify the file
     * note: you can also copy the full portainer.env. 
-* modify the treafik-data/traefik.yml
+
+###### Option 2. testing, playing, developer
+* `cp base_machine.example.env {myproject}.env`
+* modify the file
+    * note: you can also copy the full portainer.env.
+
+##### modify the treafik-data/traefik.yml
+
 ???+ example "treafik-data/traefik.yml"
     ```{ .yaml .copy }    
     acme:
@@ -187,10 +237,11 @@ local ports for services that cannot be proxied
 
 
      
-# start the base containers 
+###### start the base containers 
 
 * new machine or developer
-  * `./run_base.sh -e {your environment file}`
+  * `./run_base.sh -e  {myproject}.env`
+ 
 * **production**: this uses the default .env (cp  portainer.env .env)
 ??? example "`./run_base.sh`"
     ```shell     
@@ -211,9 +262,13 @@ local ports for services that cannot be proxied
           ⠿ Container portainer  Started                                           13.7s
           ⠿ Container traefik    Started
     ```
-      
-**Are containers running**
-??? example "`docker ps`" 
+
+###### Testing Setup
+
+-----
+
+??? example "`Are containers running`"
+    `docker ps`
     ```shell
         * ubuntu@geocodes-dev:~/geocodes/deployment$ docker ps
           CONTAINER ID   IMAGE                           COMMAND                  CREATED         STATUS         PORTS                                                                      NAMES
@@ -221,8 +276,11 @@ local ports for services that cannot be proxied
           d3e2333ade6f   portainer/portainer-ce:latest   "/portainer"             2 minutes ago   Up 2 minutes   8000/tcp, 9000/tcp, 9443/tcp                                               portainer
     ```
 
-**Is network setup correctly?**
-??? example "`docker network ls`"
+-----
+ 
+
+??? example "Is network setup correctly?"
+    `docker network ls`
     ```shell
     docker network ls
           NETWORK ID     NAME              DRIVER    SCOPE
@@ -236,8 +294,9 @@ local ports for services that cannot be proxied
     ??? note
         NAME:traefik_proxy needs to exist, and be DRIVER:overlay, SCOPE:swarm
 
-**Are volumes available**
-??? example "`docker volumes`"
+
+??? example "Are volumes available"
+    `docker volumes`
     ```shell
     ubuntu@geocodes-dev:~$ docker volume ls
           DRIVER    VOLUME NAME
@@ -247,7 +306,8 @@ local ports for services that cannot be proxied
           local     traefik_data
     ```
 
-## are Traefik and Portainer available via the web?
+-----
+**are Traefik and Portainer available via the web?**
 
 * **Treafik** https://admin.{host}
     * login is admin:iforget
@@ -258,8 +318,22 @@ local ports for services that cannot be proxied
     * this will ask you to setup and admin password
 ??? info "image"
     ![Portainer](./images/portainer_home.png)
-    * 
-# updating Portainer, or treafik
+    
+
+
+## Go to step 2.
+
+1. [Install base containers on a server](./stack_machines.md)
+2. [Setup services containers](./setup_geocodes_services_containers.md)
+3. [Setup Gleaner containers](setup_gleaner_container.md)
+4. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
+5. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
+
+-----
+
+#### How to/Troubleshooting
+
+##### updating Portainer, or treafik
 
 the latest image needs to be pulled
 
@@ -268,14 +342,8 @@ the latest image needs to be pulled
 then
 `./run_base.sh`
 
-## Go to step 2.
-1. [Install base containers on a server](./stack_machines.md)
-2. [Setup services containers](./setup_geocodes_services_containers.md)
-3. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
-4. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
 
-
-## How tos needed:
+###### How tos needed:
 * LOCAL DNS SETUP
   * editing your local machine /etc/hosts file does not work with letsencrypt. 
   * If user has a local name server they control, that might work.

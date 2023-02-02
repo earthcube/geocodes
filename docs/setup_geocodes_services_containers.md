@@ -1,4 +1,4 @@
-#  Setup Geocodes Services and Geocodes Client Containers:
+#  Setup Geocodes Services  Containers:
 
 This is step 2 of 4 major steps:
 

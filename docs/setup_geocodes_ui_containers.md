@@ -1,11 +1,12 @@
 #  Setup Geocodes Services Containers for Test Data load GCTEST:
 
-This is step 4 of 4 major steps:
+This is step 5 of 5 major steps:
 
 1. [Install base containers on a server](./stack_machines.md)
 2. [Setup services containers](./setup_geocodes_services_containers.md)
-3. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
-4. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
+3. [Setup Gleaner containers](setup_gleaner_container.md)
+4. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
+5. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
 
 ## Setup and start GeoCodes Client using portainer ui
 Steps:
@@ -69,17 +70,17 @@ Compose path: deployment/geocodes-compose.yaml
 ### Test Geocodes Client
 
 !!! important "Issues"
-IF things are not working in the UI, it is probably the facet search configuration
-You can take down the geocodes stack, and delete the config/facets_search or you can
-possibly just stop the gecodes_vue_ui service, and edit the facets_search config as
-noted here: [See Managing Geocodes UI Containers](production/managing_geocodes_ui_containers.md)
+    IF things are not working in the UI, it is probably the facet search configuration
+    You can take down the geocodes stack, and delete the config/facets_search or you can
+    possibly just stop the gecodes_vue_ui service, and edit the facets_search config as
+    noted here: [See Managing Geocodes UI Containers](production/managing_geocodes_ui_containers.md)
 
 1.  Got to https://geocodes.{your host}/
 1. Got to configuration: https://geocodes.{your host}/#/config
    * Two sections, one is the facests/config.yaml and the second is the API configuration (sanitized, we hope)
 
 !!! note "Done"
-This is the end of the deployment steps.
+    This is the end of the deployment steps.
 
 If the deployment is working, you can now
 
