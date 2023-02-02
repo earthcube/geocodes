@@ -57,12 +57,12 @@ This is what will be needed to create a production server
     * reboot
     * `sudo reboot now`
 * create a directory for geocodes, set up permissions and groups
-    * `sudo mkdir /data/geocodes`
-    * `ln -s /data/geocodes/ geocodes`
+    * `sudo mkdir /data/decoder`
+    * `ln -s /data/geocodes/ decoder`
     * `sudo addgroup geocodes`
     * `usermod -a -G geocodes {user}`
-    * `sudo chgrp geocodes /data/geocodes`
-    * `sudo chmod g+rwx /data/geocodes`
+    * `sudo chgrp geocodes /data/decoder`
+    * `sudo chmod g+rwx /data/decoder`
 * init docker swarm
     * `docker swarm init`
 * verify proper base configuration
@@ -70,7 +70,7 @@ This is what will be needed to create a production server
 * SNAPSHOT and creaate an image
     * 
 * clone geocodes
-    * `cd geocodes` or `cd /data/geocodes`
+    * `cd decoder` or `cd /data/decoder`
     * `git clone https://github.com/earthcube/geocodes.git`
 * configure a base server
 * take a break and wait for the DNS entries.

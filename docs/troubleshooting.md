@@ -98,3 +98,12 @@ cd /var/lib/blazegraph ;java -jar /usr/bin/blazegraph.jar com.bigdata.journal.Co
 SELECT (COUNT(*) as ?Triples) WHERE {graph ?g {?s ?p ?o}}
 ```
 
+## updating Portainer, or treafik
+
+the latest image needs to be pulled
+
+`docker pull portainer/portainer-ce:latest`
+
+then
+`./run_base.sh`
+
