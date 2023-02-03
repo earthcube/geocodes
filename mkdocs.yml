@@ -33,7 +33,7 @@ plugins:
   -  mkdocs-jupyter
   - callouts
 nav:
-  - Home: index.md
+  - How To Create a Geocodes Server: index.md
   - List of services: stack_machines.md
   - Setup:
       - Base Machine: setup_base_machine_configuration.md
@@ -44,7 +44,7 @@ nav:
       - Creating a Community Instance (Tenant): tenant
   - Load and Manage Production Data:
       - Production: production
-      - Creating Production Configs: production/creatingProductionConfigs.md
+      - Creating and Loading Production: production/creatingAndLoadingProduction.md
       - Manage Services: production/managing_services.md
   - Testing and Validation:
      - Some SPARQL Queries: production/sparql.md

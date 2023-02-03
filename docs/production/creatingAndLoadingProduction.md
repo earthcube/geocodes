@@ -3,7 +3,7 @@ setting up the 'production' config files
 This example is using geocodes-dev.earthcube.org
 Should this be an actual production configuration, the names need to be changed to protect the innocent
 
-Fragements from production configs for cribbing are [in production_configs.md](production_configs.md):
+Fragments from production configs for cribbing are in [production_configs.md](production_configs.md):
 
 ## Overview
 1. Setup Datastores

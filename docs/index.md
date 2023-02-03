@@ -127,7 +127,7 @@ Should be > v2.13 `docker compose  --help` needs to show the -p --project flag
 
 * [Testing](./indexing_with_gleanerio_for_testing.md)
 * Production
-    * [Create a  'Production' config](production/creatingProductionConfigs.md) 
+    * [Create a  'Production' config](production/creatingAndLoadingProduction.md) 
     * [Production Fragments](production/production_configs.md)
 
 
