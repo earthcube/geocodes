@@ -1,4 +1,6 @@
 site_name: Geocodes Documentation
+repo_url: https://github.com/earthcube/geocodes
+edit_uri: blob/docs/docs/
 theme:
 #  name: 'readthedocs'
   name: material
