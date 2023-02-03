@@ -21,13 +21,11 @@
     oss["oss s3"]
     sparqlgui
     triplestore["graph -- triplestore"]
-    end
-    
+    end 
             subgraph base
                traefik<-- routes -->portainer
-            end
-        
-        ~~~
+            end 
+    ~~~
 
 This is a list of the stack containers.
 
@@ -42,7 +40,6 @@ The local stacks are under developement.
 | s3system      | oss.{HOST}          | services          | http://localhost:9000              | s3 store                                        |
 | s3system      | minioadmin.{HOST}   | services          | http://localhost:9001              | s3 store                                        |
 | triplestore   | graph.{HOST}        | services          | http://localhost:8888/blazegraph/  |                                                 |
-| fuseki        | graph2.{HOST}       | fuseki            |                                    | WILL BE ADDED TO Services to replace triplstore |
 | sparqlgui     | sparqlui.{HOST}     | services          | http://localhost:8888/sparqlgui    | sparql ui                                       |
 | headless      | {none}       | gleaner_via_shell |                                    | start with ./run_gleaner.sh                     |
 | vue-client    | geocodes.{HOST}     | geocodes          | http://localhost:8888/             | facetsearch ui                                  |
