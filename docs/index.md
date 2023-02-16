@@ -28,14 +28,35 @@
             end
         
     ~~~
-    
+  
 ## Overview:
 1. Configure a base server
 2. Setup services containers
+3. Setup Gleaner containers
 3. Intial setup of services and load data
 3. Setup Gepcodes UI containers,
 
+## What to learn from deploying the stack, and the indexing application
+
+* how to deploy containers
+* how to run indexing using gleaner
+    * initial setup to use a test daatase
+    * production setup to use the sources google spreadsheet
+    * to learn to renenerate the config files when you edit using glcon.
+* how to setup the UI
+* how to reconfigure the UI 
+
+!!! warn "Clean Machine"
+    These are instructions for a clean machine. Your mileage will vary if you are trying to install this stack on
+    a developers workstation.
+    If you are experienced, then you can probably deploy the docker stacks on a server with docker running.
+    The stack uses treafik labels to manage the roures between the web server and the containers. It is not
+    a task for the faint of heart, but IMOHO, it is more automatic that nginx or caddy reverse proxy routing.
+    and allows us to deploy 'tenant' client stacks using configured data steores for each client in the services stack.
+    Probably can be done with helm charts.
+
 ### Requirements prior to starting
+
 Three sections to know prior to installing
 * All
 * Production
@@ -68,6 +89,7 @@ Should be > v2.13 `docker compose  --help` needs to show the -p --project flag
 
 1. [Configure a base server](./setup_base_machine_configuration.md)
     * docker
+    * setup directory and groups for installing geocodes
     * git clone https://github.com/earthcube/geocodes.git
     * cd geocodes/deployment
     * setup domain names
@@ -79,7 +101,8 @@ Should be > v2.13 `docker compose  --help` needs to show the -p --project flag
     * setup and configure services
         * create env variables file for the services
         * add stack services-compose.yaml to portainer
-
+1. [Setup Gleaner containers](./setup_gleaner_container.md)
+   * run shell script `run_gleaner.sh`
 1. [Initial Setup of datastores and loading of sample data](./setup_indexing_with_gleanerio.md)
     * Setup datastores for s3 and graph
     * Install software glcon
@@ -103,8 +126,10 @@ Should be > v2.13 `docker compose  --help` needs to show the -p --project flag
 ### Data Loading
 
 * [Testing](./indexing_with_gleanerio_for_testing.md)
-* [Create a  'Production' config](production/creatingProductionConfigs.md) 
-* [Ingest]
+* Production
+    * [Create a  'Production' config](production/creatingAndLoadingProduction.md) 
+    * [Production Fragments](production/production_configs.md)
+
 
 ### NOTES
 * [Troubleshooting](troubleshooting.md)

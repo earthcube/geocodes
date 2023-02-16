@@ -24,7 +24,8 @@
 
 ## Pages:
 
-* [Configuration for loading](creatingProductionConfigs.md)
+* [Creating Configurations for Production](creatingAndLoadingProduction.md)
+    * [Production Configuration Fragments](production_configs.md)
 * [Managing Services](managing_services.md)
 * [Maanging Geocodes UI Containers](managing_geocodes_ui_containers.md)
 * [Some Sparql queries](sparql.md)

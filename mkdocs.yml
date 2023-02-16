@@ -1,4 +1,6 @@
 site_name: Geocodes Documentation
+repo_url: https://github.com/earthcube/geocodes
+edit_uri: blob/docs/docs/
 theme:
 #  name: 'readthedocs'
   name: material
@@ -31,17 +33,18 @@ plugins:
   -  mkdocs-jupyter
   - callouts
 nav:
-  - Home: index.md
+  - How To Create a Geocodes Server: index.md
   - List of services: stack_machines.md
   - Setup:
       - Base Machine: setup_base_machine_configuration.md
-      - Create Servicess Containers: setup_geocodes_services_containers.md
+      - Create Services Containers: setup_geocodes_services_containers.md
+      - Create Gleaner Containers: setup_gleaner_container.md
       - Load Data: setup_indexing_with_gleanerio.md
       - Create Geocodes UI Containers: setup_geocodes_ui_containers.md
       - Creating a Community Instance (Tenant): tenant
   - Load and Manage Production Data:
       - Production: production
-      - Creating Production Configs: production/creatingProductionConfigs.md
+      - Creating and Loading Production: production/creatingAndLoadingProduction.md
       - Manage Services: production/managing_services.md
   - Testing and Validation:
      - Some SPARQL Queries: production/sparql.md

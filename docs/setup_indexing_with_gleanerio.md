@@ -1,12 +1,13 @@
 
 # Loading Data for The Initial Installation
 
-This is step 3 of 4 major steps:
+This is step 4 of 5 major steps:
 
 1. [Install base containers on a server](./stack_machines.md)
 2. [Setup services containers](./setup_geocodes_services_containers.md)
-3. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
-4. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
+3. [Setup Gleaner containers](setup_gleaner_container.md)
+4. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
+5. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
 
 Steps:
 
@@ -22,7 +23,17 @@ Steps:
 5. load data to graph using 'nabu' 
     6. `./glcon nabu prefix --cfgName gctest`
     7. `./glcon nabu prune --cfgName gctest`
-6. Run Summarize task. This is performance related.
+8. Test data in Graph 
+9. Example of how to edit the source
+   8. edit gctest.csv
+   9. regenerate configs
+   10. rerun batch
+10. Run Summarize task. This is performance related.
+
+!!! warn "regenerate"
+if you edit localConfig.yaml, you need to regenerate the configs using
+`./glcon config generate --cfgName gctest`
+
 ---
 
 ## Setup Datastores
@@ -35,7 +46,7 @@ Earthcube/Decoder staff should use the A Community pattern when setting up an in
 
 | Repository             | config            | s3 Bucket | graph namespaces           | notes                           |
 |------------------------|-------------------|-----------|----------------------------|---------------------------------|
-| GeocodesTest           | gctest            | gctest      | gctest, gctest_summary         | samples of actual datasets      |
+| **GeocodesTest**           | **gctest**            | **gctest**      | **gctest**, **gctest_summary**         | samples of actual datasets      |
 | geocodes               | geocodes          | geocodes  | geocodes, geocodes_summary | suggested standalone repository |
 | earthcube              | geocodes          | gleaner   | earthcube, summary         | DEFAULT PRODUCTION NAME         |
 | A COMMUNITY eg {acomm} | {acomm}           | {acomm}   | {acomm}, {acomm}_summary   | A communities tenant repository |
@@ -54,6 +65,7 @@ create buckets gctest, and geocodes
 go to settings for the bucket and make  public.
 
 ### Setup Graph stores.
+
 Nabu pulls from the s3 system, converts to RDF quads, and uploads to a graph store.
 
 go to https://graph.{your host}
@@ -92,9 +104,9 @@ The sitemap is here:
     ```
 #### Copy sources list to configs/gctest
 !!! note
-    asssumes you are in indexing, and have put the gecodes at ~/geocodes aka your home directory
+    assumes you are in indexing, and have put the geocodes at ~/geocodes aka your home directory
 
-`cp ~/gecodes/deployment/ingestconfig/gctest.csv configs/gctest/`
+`cp ~/geocodes/deployment/ingestconfig/gctest.csv configs/gctest/`
 
 #### edit files: 
 You will need to change the localConfig.yaml
@@ -110,7 +122,7 @@ You will need to change the localConfig.yaml
       ssl: true
       bucket: gctest # can be overridden with MINIO_BUCKET
     sparql:
-      endpoint: https://graph.{YOU HOST}/blazegraph/namespace/earthcube/sparql
+      endpoint: https://graph.{YOU HOST}/blazegraph/namespace/gctest/sparql
     s3:
       bucket: gctest # sync with above... can be overridden with MINIO_BUCKET... get's zapped if it's not here.
       domain: us-east-1 
@@ -122,10 +134,15 @@ You will need to change the localConfig.yaml
     # this can be a remote csv
     #  type: csv
     #  location: https://docs.google.com/spreadsheets/d/1G7Wylo9dLlq3tmXe8E8lZDFNKFDuoIEeEZd3epS0ggQ/gviz/tq?tqx=out:csv&sheet=TestDatasetSources
-
     ```
 
+!!! warn "regenerate"
+    if you edit localConfig.yaml, you need to regenerate the configs using
+    `./glcon config generate --cfgName gctest`
+
 ####  Generate configs 
+
+
 ??? example "`./glcon config generate --cfgName gctest`"
     ```shell
     ./glcon config generate --cfgName gctest
@@ -152,9 +169,37 @@ Run setup to see if you can connect to the minio store
         ubuntu@geocodes-dev:~/indexing$ 
      ```
 
+!!! hint "Access issues"
+    ```json
+    {“file”:“/github/workspace/internal/organizations/org.go:87",“func”:“github.com/gleanerio/gleaner/internal/organizations.BuildGraph”,“level”:“error”,“msg”:“orgs/geocodes_demo_datasets.nqThe Access Key Id you provided does not exist in our records.“,”time”:“2023-01-31T15:27:39-06:00”}
+    ```
+
+    * **Access Key** password could be incorrect
+    * **address** may be incorrect. It is a hostname or TC/IP, and not a URL
+    * **ssl** may need to be true
+    * [See setup issues](./troubleshooting.md#setup-failure)
+
+
 #### Load Data
  
 Gleaner will harvest jsonld from the URL's listed in the sitemap.
+
+!!! warning "Robots.txt"
+    OK TO IGNORE. you will need to ignore errors about robot.txt and sitemap.xml not being an index
+    ```json
+    {"file":"/github/workspace/internal/summoner/acquire/resources.go:204","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.getRobotsForDomain","level":"error","msg":"error getting robots.txt for https://www.earthcube.org/datasets/allgood:Robots.txt unavailable at https://www.earthcube.org/datasets/allgood/robots.txt","time":"2023-01-30T20:45:53-06:00"}
+    {"file":"/github/workspace/internal/summoner/acquire/resources.go:66","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.ResourceURLs","level":"error","msg":"Error getting robots.txt for geocodes_demo_datasets, continuing without it.","time":"2023-01-30T20:45:53-06:00"}    
+    ```
+
+!!! warning "Access issues"
+    ```json
+    {“file”:“/github/workspace/internal/organizations/org.go:87",“func”:“github.com/gleanerio/gleaner/internal/organizations.BuildGraph”,“level”:“error”,“msg”:“orgs/geocodes_demo_datasets.nqThe Access Key Id you provided does not exist in our records.“,”time”:“2023-01-31T15:27:39-06:00”}
+    ```
+
+    * **Access Key** password could be incorrect 
+    * **address** may be incorrect. It is a hostname or TC/IP, and not a URL
+    * **ssl** may need to be true
+    * [See setup issues](./troubleshooting.md#setup-failure)
 
 ??? example "`./glcon gleaner batch --cfgName gctest`"
     ```shell
@@ -266,15 +311,83 @@ A more complex query can be ran:
     ```
 More [SPARQL Examples](production/sparql.md)
 
-## Create reate a materilized view of the data using summarize to the  repo_summary namespace
+## Example of how to edit the source
+
+This demonstrates a feature where if you have duplicate identifiers, then you can ensure all
+data get loaded. It's a bad idea to have the same ID, but it happens.
+
+There are two lines in gctest csv. 
+The second dataset is [actual data]
+(https://github.com/earthcube/GeoCODES-Metadata/tree/main/metadata/Dataset/actualdata). 
+There are three files, the two earthchem files have the same @id,
+[1](https://github.com/earthcube/GeoCODES-Metadata/blob/9a41929bbead71c42a2066120480ae1375d952e7/metadata/Dataset/actualdata/earthchem1.json#L6)
+[2](hhttps://github.com/earthcube/GeoCODES-Metadata/blob/9a41929bbead71c42a2066120480ae1375d952e7/metadata/Dataset/actualdata/earthchem2.json#L6)
+The identifierType is set to 'filesha' which generates a sha based on the entire file.
+
+
+??? info "gctest cs"
+    ``` csv
+    hack,SourceType,Active,Name,ProperName,URL,Headless,HeadlessWait,IdentifierType,IdentifierPath,Domain,PID,Logo,validator link,NOTE
+    58,sitemap,TRUE,geocodes_demo_datasets,Geocodes Demo Datasets,https://earthcube.github.io/GeoCODES-Metadata/metadata/Dataset/allgood/sitemap.xml,FALSE,0,identifiersha,,https://www.earthcube.org/datasets/allgood,https://github.com/earthcube/GeoCODES-Metadata/metadata/OtherResources,,,
+    59,sitemap,FALSE,geocodes_actual_datasets,Geocodes Actual Datasets,https://earthcube.github.io/GeoCODES-Metadata/metadata/Dataset/actualdata/sitemap.xml,FALSE,0,filesha,,https://www.earthcube.org/datasets/actual,https://github.com/earthcube/GeoCODES-Metadata/metadata/,,,
+    ```
+
+### edit gctest.csv
+Set the second line active to TRUE
+
+??? info "edited gctest cs"
+    ``` csv
+    hack,SourceType,Active,Name,ProperName,URL,Headless,HeadlessWait,IdentifierType,IdentifierPath,Domain,PID,Logo,validator link,NOTE
+    58,sitemap,TRUE,geocodes_demo_datasets,Geocodes Demo Datasets,https://earthcube.github.io/GeoCODES-Metadata/metadata/Dataset/allgood/sitemap.xml,FALSE,0,identifiersha,,https://www.earthcube.org/datasets/allgood,https://github.com/earthcube/GeoCODES-Metadata/metadata/OtherResources,,,
+    59,sitemap,TRUE,geocodes_actual_datasets,Geocodes Actual Datasets,https://earthcube.github.io/GeoCODES-Metadata/metadata/Dataset/actualdata/sitemap.xml,FALSE,0,filesha,,https://www.earthcube.org/datasets/actual,https://github.com/earthcube/GeoCODES-Metadata/metadata/,,,
+    ```
+
+### regenerate configs
+`./glcon config generate --cfgName gctest`
+
+### rerun batch
+
+??? example "`./glcon gleaner batch --cfgName gctest`"
+    ```shell
+    ubuntu@geocodes:~/indexing$ ./glcon gleaner batch --cfgName gctest
+    version:  v3.0.8-fix129
+    batch called
+    {"file":"/github/workspace/internal/summoner/acquire/resources.go:204","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.getRobotsForDomain","level":"error","msg":"error getting robots.txt for https://www.earthcube.org/datasets/allgood:Robots.txt unavailable at https://www.earthcube.org/datasets/allgood/robots.txt","time":"2023-01-30T21:09:49-06:00"}
+    {"file":"/github/workspace/internal/summoner/acquire/resources.go:66","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.ResourceURLs","level":"error","msg":"Error getting robots.txt for geocodes_demo_datasets, continuing without it.","time":"2023-01-30T21:09:49-06:00"}
+    {"file":"/github/workspace/internal/summoner/acquire/resources.go:204","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.getRobotsForDomain","level":"error","msg":"error getting robots.txt for https://www.earthcube.org/datasets/actual:Robots.txt unavailable at https://www.earthcube.org/datasets/actual/robots.txt","time":"2023-01-30T21:09:49-06:00"}
+    {"file":"/github/workspace/internal/summoner/acquire/resources.go:66","func":"github.com/gleanerio/gleaner/internal/summoner/acquire.ResourceURLs","level":"error","msg":"Error getting robots.txt for geocodes_actual_datasets, continuing without it.","time":"2023-01-30T21:09:49-06:00"}
+     100% |███████████████████████████████████████████████████████████████████████████████████████████| (3/3, 10 it/s)        
+     100% |███████████████████████████████████████████████████████████████████████████████████████████| (9/9, 25 it/s)        
+    RunStats:
+      Start: 2023-01-30 21:09:49.120833598 -0600 CST m=+0.105789938
+      Repositories:
+        - name: geocodes_demo_datasets
+          SitemapCount: 9 
+          SitemapHttpError: 0 
+          SitemapIssues: 0 
+          SitemapSummoned: 9 
+          SitemapStored: 9 
+        - name: geocodes_actual_datasets
+          SitemapSummoned: 3 
+          SitemapStored: 3 
+          SitemapCount: 3 
+          SitemapHttpError: 0 
+          SitemapIssues: 0 
+     100% |██████████████████████████████████████████████████████████████████████████████████████████| (9/9, 168 it/s)
+     100% |██████████████████████████████████████████████████████████████████████████████████████████| (2/2, 123 it/s)
+    ```
+
+
+## Create  a materialized view of the data using summarize to the  repo_summary namespace
 
 !!! warning "DOCUMENTATION NEEDED " 
-    (TBD assinged to Mike Bobak)
+    (TBD assigned to Mike Bobak)
 
 
-## Go to step 4.
+## Go to step 5.
 
 1. [Install base containers on a server](./stack_machines.md)
 2. [Setup services containers](./setup_geocodes_services_containers.md)
-3. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
-4. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
+3. [Setup Gleaner containers](setup_gleaner_container.md)
+4. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
+5. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
