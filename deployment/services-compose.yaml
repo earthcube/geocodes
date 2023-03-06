@@ -138,6 +138,7 @@ services:
     environment:
       -  MINIO_ROOT_USER=${MINIO_ROOT_ACCESS_KEY}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_SECRET_KEY}
+      - MINIO_BROWSER_REDIRECT_URL=https://${GLEANER_OSS_CONSOLE_DOMAIN}/
     networks:
       - traefik_proxy
 #    command: ["server", "/data"]
