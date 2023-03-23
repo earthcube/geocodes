@@ -1,33 +1,33 @@
 # Documentation for the Geocodes Container Stack
 
 
-    ~~~mermaid
-    flowchart TB
-    services-- deployed by -->portainer
-    geocodes-- deployed by  --> portainer
-    gleaner-- deployed by  --> portainer
-    facetsearch-- routes --> traefik
-    facetsearchservices-- routes-->traefik
-    oss-- routes-->traefik
-    triplestore-- routes --> traefik
-    sparqlgui-- routes --> traefik
-    subgraph gleaner
-    headless
-    end
-    subgraph geocodes
-    facetsearch-->facetsearchservices
-    end
-    subgraph services
-    oss["oss s3"]
-    sparqlgui
-    triplestore["graph -- triplestore"]
-    end
+~~~mermaid
+flowchart TB
+services-- deployed by -->portainer
+geocodes-- deployed by  --> portainer
+gleaner-- deployed by  --> portainer
+facetsearch-- routes --> traefik
+facetsearchservices-- routes-->traefik
+oss-- routes-->traefik
+triplestore-- routes --> traefik
+sparqlgui-- routes --> traefik
+subgraph gleaner
+headless
+end
+subgraph geocodes
+facetsearch-->facetsearchservices
+end
+subgraph services
+oss["oss s3"]
+sparqlgui
+triplestore["graph -- triplestore"]
+end
+
+        subgraph base
+           traefik<-- routes -->portainer
+        end
     
-            subgraph base
-               traefik<-- routes -->portainer
-            end
-        
-    ~~~
+~~~
   
 ## Overview:
 1. Configure a base server
