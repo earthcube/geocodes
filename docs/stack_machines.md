@@ -1,31 +1,31 @@
 ## Stack Containers
 
-??? info "Containers and Routes"
-    ~~~mermaid
-    flowchart TB
-    services-- deployed by -->portainer
-    geocodes-- deployed by  --> portainer
-    gleaner-- deployed by  --> portainer
-    facetsearch-- routes --> traefik
-    facetsearchservices-- routes-->traefik
-    oss-- routes-->traefik
-    triplestore-- routes --> traefik
-    sparqlgui-- routes --> traefik
-    subgraph gleaner
-    headless
-    end
-    subgraph geocodes
-    facetsearch-->facetsearchservices
-    end
-    subgraph services
-    oss["oss s3"]
-    sparqlgui
-    triplestore["graph -- triplestore"]
-    end 
-            subgraph base
-               traefik<-- routes -->portainer
-            end 
-    ~~~
+### "Containers and Routes"
+~~~mermaid
+flowchart TB
+services-- deployed by -->portainer
+geocodes-- deployed by  --> portainer
+gleaner-- deployed by  --> portainer
+facetsearch-- routes --> traefik
+facetsearchservices-- routes-->traefik
+oss-- routes-->traefik
+triplestore-- routes --> traefik
+sparqlgui-- routes --> traefik
+subgraph gleaner
+headless
+end
+subgraph geocodes
+facetsearch-->facetsearchservices
+end
+subgraph services
+oss["oss s3"]
+sparqlgui
+triplestore["graph -- triplestore"]
+end 
+        subgraph base
+           traefik<-- routes -->portainer
+        end 
+~~~
 
 This is a list of the stack containers.
 
