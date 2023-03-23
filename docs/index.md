@@ -1,6 +1,6 @@
 # Documentation for the Geocodes Container Stack
 
-??? info "system image"
+
     ~~~mermaid
     flowchart TB
     services-- deployed by -->portainer
