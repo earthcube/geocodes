@@ -1,6 +1,7 @@
 # Documentation for the Geocodes Container Stack
 
 
+
 ~~~mermaid
 flowchart TB
 services-- deployed by -->portainer
@@ -28,6 +29,7 @@ end
         end
     
 ~~~
+
   
 ## Overview:
 1. Configure a base server
