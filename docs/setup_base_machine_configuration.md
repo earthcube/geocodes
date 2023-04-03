@@ -35,7 +35,7 @@ This is what will be needed to create a production server
 
 
 --- 
-## Steps:
+## Step Overview:
 
 * create a machine in openstack (if production)
     * select size
@@ -79,7 +79,10 @@ This is what will be needed to create a production server
         * use chrome, click advanced, and go to the port.
 
 
+
 ---
+## Step Details:
+
 ### create a machine in openstack
 
 !!! info "Suggested size:"

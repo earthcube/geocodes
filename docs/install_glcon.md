@@ -8,7 +8,7 @@ It also has features to create and manage configurations for gleaner and nabu.
 We will try to keep this updated, but for the [latest release](https://github.com/gleanerio/gleaner/releases).
 `wget https://github.com/gleanerio/gleaner/releases/download/{{RELASE}}}}`
 
-`tar xf glcon-v3.0.4-dev-linux-amd64.tar.gz`
+`tar xf glcon-v3.0.8-linux-amd64.tar.gz`
 
 | OS              | download                                |  
 |-----------------|-----------------------------------------|

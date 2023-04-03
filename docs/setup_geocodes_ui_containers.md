@@ -8,8 +8,8 @@ This is step 5 of 5 major steps:
 4. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
 5. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
 
-## Setup and start GeoCodes Client using portainer ui
-Steps:
+
+## Step Overview: Setup and start GeoCodes Client using portainer ui:
 
 * modify the configuration file
 * create stack in portainer
@@ -17,6 +17,7 @@ Steps:
 * instructions for Updating a GEOCODES CLIENT Configuration if things do not work
     * or delete stack and reload
 
+## Step Details:
 
 ###  Modify the Facet Search Configuration
 
