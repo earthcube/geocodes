@@ -7,7 +7,7 @@ Fragments from production configs for cribbing are in [production_configs.md](pr
 
 ## Overview
 1. Setup Datastores
-2. install glcon
+2. [install glcon](../install_glcon.md)
 1. create a new configuration directory
 1. edit the local config for the configuration
 1. Generate the configuration files for gleaner and nabu
