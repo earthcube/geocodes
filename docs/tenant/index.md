@@ -25,22 +25,35 @@ A 'tenant' will allow us to host a project with a separate UI, using common serv
 ### Setup
 
 * Choose a 'project' identifier, This will be an ENV variable ${GC_BASE} set in local environment, or portainer
-* setup namespace in graph
+* setup two namespaces in graph (see table below)
+   * `project` - a quad store
+   * `project_summary` - a triple store, full text index
 * setup bucket in minio
+   * `project`
 * ask project to setup a DNS name for the client:
    * `geocodes.project.org CNAME geocodes-dev.earthcube.org`
 
 
-| Item    | Name                             | This instance                                                                    |
-|---------|----------------------------------|----------------------------------------------------------------------------------|
-| project | GC_BASE                          | if you are testing locally you can use an env variable, export GC_BASE={project} |
-| DNS     | DNS HOST                         | geocodes.{dns}                                                                   |
-| graph   | graph.XXXX.XXX                   | {project}                                                                        |
-| summary | graph.XXXX.XXX                   | {project}_summary                                                                |
-| bucket  | oss.xxxx.xxx                     | {project}                                                                        |
-| config  | {on docker/portainer server xxx} | facets_config_{project}                                                          | 
+| Item            | Name                             | This instance                                                                    |
+|-----------------|----------------------------------|----------------------------------------------------------------------------------|
+| project         | GC_BASE                          | if you are testing locally you can use an env variable, export GC_BASE={project} |
+| DNS             | DNS HOST                         | geocodes.{dns}                                                                   |
+| project graph   | graph.XXXX.XXX                   | {project}        (quad with full text)                                           |
+| project summary | graph.XXXX.XXX                   | {project}_summary   (triples with full text)                                     |
+| project bucket  | oss.xxxx.xxx                     | {project}                                                                        |
+| config          | {on docker/portainer server xxx} | facets_config_{project}                                                          | 
 
-### Add data
+### Load data
+Load data Steps Overview:
+
+* setup source
+* glcon/gleaer/nabu
+* init config
+* edit localconfig.yaml
+* generate config
+* run gleaner
+* run nabu
+* run summary
 
 #### create a config for the project, run and load data to the namespace and graph
   * data
@@ -50,8 +63,6 @@ A 'tenant' will allow us to host a project with a separate UI, using common serv
   *  edit localConfig.yaml
     * `nano configs/{project}/localConfig.yaml`
   * `glcon config generate --cfgName {project}`
-  * `glcon gleaner batch --cfgName {project}`
-  * `glcon nabu prefix --cfgName {project}`
 
 ??? example "localConfig.yaml"
     ``yaml
@@ -82,10 +93,28 @@ A 'tenant' will allow us to host a project with a separate UI, using common serv
     #  type: yaml
     #  location: gleaner.yaml
     ```
+### Run Glcon
+* 
+* `glcon gleaner batch --cfgName {project}`
+* `glcon nabu prefix --cfgName {project}`
+
+### Run Summarize
+[summarize](https://earthcube.github.io/earthcube_utilities/summarize/) materializes a flattend the graph 
+* 
+* Note this is new, undetested... take a look at the source if something breaks
+
+* install earthcube summarize
+* `pip3 install earthcube_summarize`
+* [run summarize](https://earthcube.github.io/earthcube_utilities/summarize/#run-summarize_from_graph_namespace) (if installed via package, there should be a command line)
+  * `summarize_from_graph--repo {repo} --graphendpoint {endppiont} --summary_namespace {earthcube_summary}`
 
 
 
 ### Configure Client
+
+If you may want to initially test with a local instance in an IDE.
+After that this is the possible instructions for creating a tennant.
+
 
 #### add a config in portainer (facets_config_{project})
     * using namespaces, minio and dns from above
