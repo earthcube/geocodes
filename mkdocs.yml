@@ -41,8 +41,9 @@ plugins:
 #  - https://unpkg.com/mermaid/dist/mermaid.min.js
 #  -
 nav:
-  - How To Create a Geocodes Server: index.md
-  - List of services: stack_machines.md
+  - How To Create a Geocodes Server:
+    - Overview: index.md
+    - List of services: stack_machines.md
   - Setup:
       - Services:
         - Base Machine: setting_up_services/setup_base_machine_configuration.md
@@ -53,20 +54,22 @@ nav:
       - User Interface:
         - Create Geocodes UI Containers: setting_up_user_interface/setup_geocodes_ui_containers.md
         - Creating a Community Instance (Tenant): setting_up_user_interface/tenant
-  - Load and Manage Production Data:
+  - Load Data:
       - Load Data: data_loading/setup_indexing_with_gleanerio.md
   - Production:
       - Production: production
       - Creating and Loading Production: production/creatingAndLoadingProduction.md
       - Manage Services: production/managing_services.md
   - Tooling:
-      - Install Glcon: install_glcon.md
+      - Install Glcon: data_loading/install_glcon.md
       - Earthcube Utilities:
           - Overview: https://earthcube.github.io/earthcube_utilities/
           - Earthcube Utilities: https://earthcube.github.io/earthcube_utilities/earthcube_utilities/
           - Summarize: https://earthcube.github.io/earthcube_utilities/summarize/
   - Development:
-      - User Interface: development/local_stacks.md
+      - User Interface: development/index.md
+      - Local Stacks: development/local_stacks.md
+      - Configuration examples (TBD): docs/development/localdeveloper_configs.md
   - Help:
     -        Some SPARQL Queries: production/sparql.md
     - Troubleshooting: troubleshooting.md
