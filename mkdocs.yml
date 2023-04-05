@@ -41,7 +41,7 @@ plugins:
 #  - https://unpkg.com/mermaid/dist/mermaid.min.js
 #  -
 nav:
-  - How To Create a Geocodes Server: local_stacks.md
+  - How To Create a Geocodes Server: index.md
   - List of services: stack_machines.md
   - Setup:
       - Services:
