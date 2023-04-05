@@ -7,6 +7,9 @@ theme:
   features:
 #    - content.code.copy
     - navigation.sections
+    - navigation.tabs
+    - navigation.path
+    - navigation.indexes
 markdown_extensions:
   - toc:
       permalink: 
@@ -22,6 +25,7 @@ markdown_extensions:
 
 
 plugins:
+  - glightbox
   - search
   # literate_nav must load after multirepo for the features to be available.
   - multirepo:
@@ -37,22 +41,32 @@ plugins:
 #  - https://unpkg.com/mermaid/dist/mermaid.min.js
 #  -
 nav:
-  - How To Create a Geocodes Server: index.md
+  - How To Create a Geocodes Server: local_stacks.md
   - List of services: stack_machines.md
   - Setup:
-      - Base Machine: setup_base_machine_configuration.md
-      - Create Services Containers: setup_geocodes_services_containers.md
-      - Create Gleaner Containers: setup_gleaner_container.md
-      - Load Data: setup_indexing_with_gleanerio.md
-      - Create Geocodes UI Containers: setup_geocodes_ui_containers.md
-      - Creating a Community Instance (Tenant): tenant
+      - Services:
+        - Base Machine: setting_up_services/setup_base_machine_configuration.md
+        - Create Services Containers: setting_up_services/setup_geocodes_services_containers.md
+        - Create Gleaner Containers: setting_up_services/setup_gleaner_container.md
+      - Test Data:
+        - Load Data: data_loading/indexing_with_gleanerio_for_testing.md
+      - User Interface:
+        - Create Geocodes UI Containers: setting_up_user_interface/setup_geocodes_ui_containers.md
+        - Creating a Community Instance (Tenant): setting_up_user_interface/tenant
   - Load and Manage Production Data:
+      - Load Data: data_loading/setup_indexing_with_gleanerio.md
+  - Production:
       - Production: production
       - Creating and Loading Production: production/creatingAndLoadingProduction.md
       - Manage Services: production/managing_services.md
-  - Testing and Validation:
-     - Some SPARQL Queries: production/sparql.md
-     - Testing: indexing_with_gleanerio_for_testing.md
   - Tooling:
       - Install Glcon: install_glcon.md
-  - Troubleshooting: troubleshooting.md
+      - Earthcube Utilities:
+          - Overview: https://earthcube.github.io/earthcube_utilities/
+          - Earthcube Utilities: https://earthcube.github.io/earthcube_utilities/earthcube_utilities/
+          - Summarize: https://earthcube.github.io/earthcube_utilities/summarize/
+  - Development:
+      - User Interface: development/local_stacks.md
+  - Help:
+    -        Some SPARQL Queries: production/sparql.md
+    - Troubleshooting: troubleshooting.md

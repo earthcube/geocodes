@@ -3,11 +3,11 @@
 
 This is step 4 of 5 major steps:
 
-1. [Install base containers on a server](./stack_machines.md)
-2. [Setup services containers](./setup_geocodes_services_containers.md)
-3. [Setup Gleaner containers](setup_gleaner_container.md)
-4. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
-5. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
+1. [Install base containers on a server](../stack_machines.md)
+2. [Setup services containers](../setup_geocodes_services_containers.md)
+3. [Setup Gleaner containers](../setting_up_services/setup_gleaner_container.md)
+4. [Initial setup of services and loading of data](setup_indexing_with_gleanerio.md)
+5. [Setup Geocodes UI using datastores defined in Initial Setup](../setup_geocodes_ui_containers.md)
 
 Step Overview:
 
@@ -310,7 +310,7 @@ A more complex query can be ran:
     SELECT (count(?g ) as ?count) 
     WHERE     {     GRAPH ?g {?s a <https://schema.org/Dataset>}}
     ```
-More [SPARQL Examples](production/sparql.md)
+More [SPARQL Examples](../production/sparql.md)
 
 ### Example of how to edit the source
 
@@ -387,8 +387,8 @@ Set the second line active to TRUE
 
 ### Go to step 5.
 
-1. [Install base containers on a server](./stack_machines.md)
-2. [Setup services containers](./setup_geocodes_services_containers.md)
-3. [Setup Gleaner containers](setup_gleaner_container.md)
-4. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
-5. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
+1. [Install base containers on a server](../stack_machines.md)
+2. [Setup services containers](../setting_up_services/setup_geocodes_services_containers.md)
+3. [Setup Gleaner containers](../setting_up_services/setup_gleaner_container.md)
+4. [Initial setup of services and loading of data](setup_indexing_with_gleanerio.md)
+5. [Setup Geocodes UI using datastores defined in Initial Setup](../setting_up_user_interface/setup_geocodes_ui_containers.md)
