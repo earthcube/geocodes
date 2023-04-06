@@ -5,11 +5,27 @@ theme:
 #  name: 'readthedocs'
   name: material
   features:
-#    - content.code.copy
+    - content.action.edit
+    - content.action.view
     - navigation.sections
     - navigation.tabs
     - navigation.path
     - navigation.indexes
+    - navigation.footer
+  icon:
+    edit: material/pencil
+    view: material/eye
+extra:
+  social:
+    - icon: fontawesome/brands/slack
+      link: https://earthcube.slack.com
+      name: Earthcube on Slack
+    - icon: fontawesome/brands/github
+      link: https://github.com/earthcube/geocodes
+      name: Geocodes on Github
+    - icon: fontawesome/brands/docker
+      link: https://hub.docker.com/?namespace=nsfearthcube
+      name: Earthcube on Dockerhub
 markdown_extensions:
   - toc:
       permalink: 

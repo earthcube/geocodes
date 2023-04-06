@@ -3,9 +3,9 @@
 This is step 5 of 5 major steps:
 
 1. [Install base containers on a server](../stack_machines.md)
-2. [Setup services containers](./setup_geocodes_services_containers.md)
+2. [Setup services containers](../setting_up_services/setup_geocodes_services_containers.md)
 3. [Setup Gleaner containers](../setting_up_services/setup_gleaner_container.md)
-4. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
+4. [Initial setup of services and loading of data](../data_loading/setup_indexing_with_gleanerio.md)
 5. [Setup Geocodes UI using datastores defined in Initial Setup](setup_geocodes_ui_containers.md)
 
 

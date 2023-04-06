@@ -4,8 +4,8 @@ This is step 2 of 4 major steps:
 
 1. [Install base containers on a server](../stack_machines.md)
 2. [Setup services containers](setup_geocodes_services_containers.md)
-3. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
-4. [Setup Geocodes UI using datastores defined in Initial Setup](../setup_geocodes_ui_containers.md)
+3. [Initial setup of services and loading of data](../data_loading/setup_indexing_with_gleanerio.md)
+4. [Setup Geocodes UI using datastores defined in Initial Setup](../setting_up_user_interface/setup_geocodes_ui_containers.md)
 
 ## Services Stack
 The services stack includes the graph, storage (s3) and sparql gui containers.
@@ -60,7 +60,7 @@ Compose path: deployment/services-compose.yaml
 
 1. [Install base containers on a server](../stack_machines.md)
 2. [Setup services containers](setup_geocodes_services_containers.md)
-3. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
+3. [Initial setup of services and loading of data](../data_loading/setup_indexing_with_gleanerio.md)
 4. [Setup Geocodes UI using datastores defined in Initial Setup](../setting_up_user_interface/setup_geocodes_ui_containers.md)
 5. 
 #### Testing Services Stack

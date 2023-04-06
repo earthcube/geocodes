@@ -105,7 +105,7 @@ Should be > v2.13 `docker compose  --help` needs to show the -p --project flag
         * add stack services-compose.yaml to portainer
 1. [Setup Gleaner containers](setting_up_services/setup_gleaner_container.md)
    * run shell script `run_gleaner.sh`
-1. [Initial Setup of datastores and loading of sample data](./setup_indexing_with_gleanerio.md)
+1. [Initial Setup of datastores and loading of sample data](data_loading/setup_indexing_with_gleanerio.md)
     * Setup datastores for s3 and graph
     * Install software glcon
       * create configuration gctest `./glcon config init --cfgName gctest`

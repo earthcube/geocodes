@@ -65,7 +65,7 @@ Load data Steps Overview:
   * `glcon config generate --cfgName {project}`
 
 ??? example "localConfig.yaml"
-    ``yaml
+    ```yaml
     ---
     minio:
       address: oss.geocodes-dev.earthcube.org
@@ -94,7 +94,7 @@ Load data Steps Overview:
     #  location: gleaner.yaml
     ```
 ### Run Glcon
-* 
+
 * `glcon gleaner batch --cfgName {project}`
 * `glcon nabu prefix --cfgName {project}`
 
@@ -106,7 +106,7 @@ Load data Steps Overview:
 * install earthcube summarize
 * `pip3 install earthcube_summarize`
 * [run summarize](https://earthcube.github.io/earthcube_utilities/summarize/#run-summarize_from_graph_namespace) (if installed via package, there should be a command line)
-  * `summarize_from_graph--repo {repo} --graphendpoint {endppiont} --summary_namespace {earthcube_summary}`
+* `summarize_from_graph--repo {repo} --graphendpoint {endppiont} --summary_namespace {earthcube_summary}`
 
 
 
@@ -159,7 +159,7 @@ S3KEY={snip}
 S3SECRET={snip}
 S3SSL=true
 S3PORT=443
-BUCKET={PROJECT}/
+BUCKET={PROJECT}
 BUCKETPATH=summoned
 PATHTEMPLATE={{bucketpath}}/{{reponame}}/{{sha}}.jsonld
 TOOLTEMPLATE={{bucketpath}}/{reponame}}/{{ref}}.json
@@ -169,4 +169,4 @@ GC_GITHUB_SECRET={snip}
 GC_GITHUB_CLIENTID={snip}
 GC_NB_AUTH_MODE=service
 GC_BASE=wifire
-
+```

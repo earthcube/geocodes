@@ -3,10 +3,10 @@
 This is step 1 of 5 major steps:
 
 1. [Install base containers on a server](../stack_machines.md)
-2. [Setup services containers](../setup_geocodes_services_containers.md)
+2. [Setup services containers](setup_geocodes_services_containers.md)
 3. [Setup Gleaner containers](setup_gleaner_container.md)
-4. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
-5. [Setup Geocodes UI using datastores defined in Initial Setup](../setup_geocodes_ui_containers.md)
+4. [Initial setup of services and loading of data](../data_loading/setup_indexing_with_gleanerio.md)
+5. [Setup Geocodes UI using datastores defined in Initial Setup](../setting_up_user_interface/setup_geocodes_ui_containers.md)
 
 ##  Base Machine to run Docker Containers Treafik and Portainer:
 This is what will be needed to create a production server
@@ -329,7 +329,7 @@ local ports for services that cannot be proxied
 1. [Install base containers on a server](../stack_machines.md)
 2. [Setup services containers](setup_geocodes_services_containers.md)
 3. [Setup Gleaner containers](setup_gleaner_container.md)
-4. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
+4. [Initial setup of services and loading of data](../data_loading/setup_indexing_with_gleanerio.md)
 5. [Setup Geocodes UI using datastores defined in Initial Setup](../setting_up_user_interface/setup_geocodes_ui_containers.md)
 
 -----
