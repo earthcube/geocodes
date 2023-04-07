@@ -3,16 +3,16 @@
 
 This is step 4 of 5 major steps:
 
-1. [Install base containers on a server](./stack_machines.md)
-2. [Setup services containers](./setup_geocodes_services_containers.md)
-3. [Setup Gleaner containers](setup_gleaner_container.md)
-4. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
-5. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
+1. [Install base containers on a server](../stack_machines.md)
+2. [Setup services containers](../setting_up_services/setup_geocodes_services_containers.md)
+3. [Setup Gleaner containers](../setting_up_services/setup_gleaner_container.md)
+4. [Initial setup of services and loading of data](setup_indexing_with_gleanerio.md)
+5. [Setup Geocodes UI using datastores defined in Initial Setup](../setting_up_user_interface/setup_geocodes_ui_containers.md)
 
-Steps:
+Step Overview:
 
 2. create data stores in minioadmin and graph
-2.  install glcon, if not installed
+2.  [install glcon](install_glcon.md), if not installed
 3. create a configuration file to install a small set of data
     4. `./glcon config init --cfgName gctest`
     5.  edit
@@ -36,7 +36,8 @@ if you edit localConfig.yaml, you need to regenerate the configs using
 
 ---
 
-## Setup Datastores
+## Step Details
+### Setup Datastores
 
 There are several datastores required to enable data summoning(harvesting), converting to a graph.
 While the production presently uses the earthcube repository convention, we suggest that 
@@ -54,7 +55,7 @@ Earthcube/Decoder staff should use the A Community pattern when setting up an in
 !!! note "Initial Setup"
     we will be setting up both the gctest and gecodes repositories.
 
-### Setup Minio buckets
+#### Setup Minio buckets
 Gleaner extracts JSONLD from a web apge, and stores it in an s3 system (Minio)
 in 
 
@@ -64,7 +65,7 @@ create buckets gctest, and geocodes
 
 go to settings for the bucket and make  public.
 
-### Setup Graph stores.
+#### Setup Graph stores.
 
 Nabu pulls from the s3 system, converts to RDF quads, and uploads to a graph store.
 
@@ -76,20 +77,20 @@ namespace tab, create  a mode **'quads'** namespace with full text index,
 namespace tab, create mode **'triples'** namespace with full text index,
 "gctest_summary", and "geocodes_summary"
 
-## Install Indexing Software
+### Install Indexing Software
 `glcon` is a console application that combines the functionality of Gleaner and Nabu into a single application.
 It also has features to create and manage configurations for gleaner and nabu.
 
 [Install glcon](install_glcon.md)
 
-## Harvest and load data 
+### Harvest and load data 
 
 Goal is to create a configuration file to load gctest data.
 The sitemap is here:
 
-### Create a configuration and load sample data
+#### Create a configuration and load sample data
 
-#### Create a configuration for Continuous Integration 
+##### Create a configuration for Continuous Integration 
 
 ??? example "`./glcon config init --cfgName gctest`"
     ```shell
@@ -102,13 +103,13 @@ The sitemap is here:
         gleaner_base.yaml             nabu_base.yaml
         ubuntu@geocodes-dev:~/indexing$ 
     ```
-#### Copy sources list to configs/gctest
+##### Copy sources list to configs/gctest
 !!! note
     assumes you are in indexing, and have put the geocodes at ~/geocodes aka your home directory
 
 `cp ~/geocodes/deployment/ingestconfig/gctest.csv configs/gctest/`
 
-#### edit files: 
+##### edit files: 
 You will need to change the localConfig.yaml
 
 ??? example "`nano configs/gctest/localConfig.yaml`"
@@ -140,7 +141,7 @@ You will need to change the localConfig.yaml
     if you edit localConfig.yaml, you need to regenerate the configs using
     `./glcon config generate --cfgName gctest`
 
-####  Generate configs 
+#####  Generate configs 
 
 
 ??? example "`./glcon config generate --cfgName gctest`"
@@ -154,7 +155,7 @@ You will need to change the localConfig.yaml
     Regnerate nabu
     ```
 
-####  flightest
+#####  flightest
 Run setup to see if you can connect to the minio store
 
 ??? example "`./glcon gleaner setup --cfgName gctest"
@@ -180,7 +181,7 @@ Run setup to see if you can connect to the minio store
     * [See setup issues](./troubleshooting.md#setup-failure)
 
 
-#### Load Data
+##### Load Data
  
 Gleaner will harvest jsonld from the URL's listed in the sitemap.
 
@@ -253,7 +254,7 @@ Gleaner will harvest jsonld from the URL's listed in the sitemap.
 
 (NEED IMAGE HERE)
 
-####  Push to graph
+#####  Push to graph
 Nabu will read files from the bucket, and push them to the graph store.
 
 ??? example "`./glcon nabu prefix --cfgName gctest`" 
@@ -274,7 +275,7 @@ Nabu will read files from the bucket, and push them to the graph store.
     
     ```
 
-####  Test in Graph
+#####  Test in Graph
 
 One the data is loaded into the graph store
 `https://graph.{your host}/blazegraph/#query`
@@ -309,9 +310,9 @@ A more complex query can be ran:
     SELECT (count(?g ) as ?count) 
     WHERE     {     GRAPH ?g {?s a <https://schema.org/Dataset>}}
     ```
-More [SPARQL Examples](production/sparql.md)
+More [SPARQL Examples](../production/sparql.md)
 
-## Example of how to edit the source
+### Example of how to edit the source
 
 This demonstrates a feature where if you have duplicate identifiers, then you can ensure all
 data get loaded. It's a bad idea to have the same ID, but it happens.
@@ -332,7 +333,7 @@ The identifierType is set to 'filesha' which generates a sha based on the entire
     59,sitemap,FALSE,geocodes_actual_datasets,Geocodes Actual Datasets,https://earthcube.github.io/GeoCODES-Metadata/metadata/Dataset/actualdata/sitemap.xml,FALSE,0,filesha,,https://www.earthcube.org/datasets/actual,https://github.com/earthcube/GeoCODES-Metadata/metadata/,,,
     ```
 
-### edit gctest.csv
+#### edit gctest.csv
 Set the second line active to TRUE
 
 ??? info "edited gctest cs"
@@ -342,10 +343,10 @@ Set the second line active to TRUE
     59,sitemap,TRUE,geocodes_actual_datasets,Geocodes Actual Datasets,https://earthcube.github.io/GeoCODES-Metadata/metadata/Dataset/actualdata/sitemap.xml,FALSE,0,filesha,,https://www.earthcube.org/datasets/actual,https://github.com/earthcube/GeoCODES-Metadata/metadata/,,,
     ```
 
-### regenerate configs
+#### regenerate configs
 `./glcon config generate --cfgName gctest`
 
-### rerun batch
+#### rerun batch
 
 ??? example "`./glcon gleaner batch --cfgName gctest`"
     ```shell
@@ -378,16 +379,16 @@ Set the second line active to TRUE
     ```
 
 
-## Create  a materialized view of the data using summarize to the  repo_summary namespace
+### Create  a materialized view of the data using summarize to the  repo_summary namespace
 
 !!! warning "DOCUMENTATION NEEDED " 
     (TBD assigned to Mike Bobak)
 
 
-## Go to step 5.
+### Go to step 5.
 
-1. [Install base containers on a server](./stack_machines.md)
-2. [Setup services containers](./setup_geocodes_services_containers.md)
-3. [Setup Gleaner containers](setup_gleaner_container.md)
-4. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
-5. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
+1. [Install base containers on a server](../stack_machines.md)
+2. [Setup services containers](../setting_up_services/setup_geocodes_services_containers.md)
+3. [Setup Gleaner containers](../setting_up_services/setup_gleaner_container.md)
+4. [Initial setup of services and loading of data](setup_indexing_with_gleanerio.md)
+5. [Setup Geocodes UI using datastores defined in Initial Setup](../setting_up_user_interface/setup_geocodes_ui_containers.md)

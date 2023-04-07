@@ -24,10 +24,10 @@ delete the config and recreate the config.
 
 ## DEVELOPERS: Testing a UI Branch in Portainer/Docker
 
-> :memo: An Update May be needed. You can now deploy a tennant configuration, which many mean that geocodes repo changes
+>:memo: An Update May be needed. You can now deploy a tennant configuration, which many mean that geocodes repo changes
 > may not be needed
 
-> :memo: you should do local development before deployment testing
+>:memo: you should do local development before deployment testing
 
 To do this we will need to do two branches, one on the facet search, and one on the services stack geocodes.
 Or, you can disconnect your development services
@@ -51,15 +51,16 @@ on:
 
 * create a branch
 * modify   deployment/geocodes-compose.yaml
+
 ```yaml
 vue-services:
   image: nsfearthcube/ec_facets_api_nodejs:{{BRANCH NAME}}
-  ```
+```
 
 ```yaml
 vue-client:
   image: nsfearthcube/ec_facets_client:{{BRANCH NAME}}
-  ```
+```
 
 ### Deployment in in portainer
 
@@ -82,8 +83,8 @@ containers.
 * open stack
 * user Redeploy from Git: select advanced configuration
 * change the branch information
-  ??? example "stack deploy from a branch"
-  ![](images/portainer_branch_deployment.png)
+??? example "stack deploy from a branch"
+    ![](../images/portainer_branch_deployment.png)
 
 Occasionally, the latest will not be pulled, Seen  when I  change a branch,
 
@@ -91,5 +92,5 @@ Occasionally, the latest will not be pulled, Seen  when I  change a branch,
 * select a service,
 * go down to Change container image
 * set to the appropriate container path.
-  ??? example "stack deploy from a branch"
-  ![](images/service_change_container.png)
+??? example "stack container path "
+    ![](../images/service_change_container.png)

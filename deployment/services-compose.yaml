@@ -30,7 +30,7 @@ services:
   ## this allows portainer to be proxied, and have an SSL certificate.
 
 ###############
-# graphstore: blasegraph
+# graphstore: blazegraph
 ###############
   graph:
     image: nawer/blazegraph
@@ -91,9 +91,10 @@ services:
 #########
   s3system:
     image: quay.io/minio/minio
+# docker Swarm wants port 9001
     ports:
-      - 9000
-#      - 9001
+      - 9000:9000
+#      - 9011:9001
     logging:
       options:
         max-size: "10m"

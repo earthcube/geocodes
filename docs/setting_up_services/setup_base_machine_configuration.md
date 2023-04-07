@@ -2,11 +2,11 @@
 
 This is step 1 of 5 major steps:
 
-1. [Install base containers on a server](./stack_machines.md)
-2. [Setup services containers](./setup_geocodes_services_containers.md)
+1. [Install base containers on a server](../stack_machines.md)
+2. [Setup services containers](setup_geocodes_services_containers.md)
 3. [Setup Gleaner containers](setup_gleaner_container.md)
-4. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
-5. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
+4. [Initial setup of services and loading of data](../data_loading/setup_indexing_with_gleanerio.md)
+5. [Setup Geocodes UI using datastores defined in Initial Setup](../setting_up_user_interface/setup_geocodes_ui_containers.md)
 
 ##  Base Machine to run Docker Containers Treafik and Portainer:
 This is what will be needed to create a production server
@@ -35,7 +35,7 @@ This is what will be needed to create a production server
 
 
 --- 
-## Steps:
+## Step Overview:
 
 * create a machine in openstack (if production)
     * select size
@@ -79,7 +79,10 @@ This is what will be needed to create a production server
         * use chrome, click advanced, and go to the port.
 
 
+
 ---
+## Step Details:
+
 ### create a machine in openstack
 
 !!! info "Suggested size:"
@@ -107,7 +110,7 @@ This is what will be needed to create a production server
 ---
 #### setup domain names
 
-* [Machines]( stack_machines.md )
+* [Machines]( ../stack_machines.md )
 *   [Name for remote DNS](https://raw.githubusercontent.com/earthcube/geocodes/main/deployment/hosts.geocodess)
 
 !!! warning "ESSENTIAL for PRODUCTION"
@@ -119,7 +122,7 @@ You might be able to run production stack using localhost, with these DNS...
 but that mucks with the lets encrypt HTTPS certs... if you control your own DNS, these are the 
 entries needed.  [Name for local DNS](https://raw.githubusercontent.com/earthcube/geocodes/main/deployment/hosts.geocodes-local)
 
-[Local testing and development](local_developer/index.md) can be using  the local compose configuration. This use http, and 
+[Local testing and development](../development/local_stacks.md) can be using  the local compose configuration. This use http, and 
 local ports for services that cannot be proxied
 
 ---
@@ -312,22 +315,22 @@ local ports for services that cannot be proxied
 * **Treafik** https://admin.{host}
     * login is admin:iforget
 ??? info "image"
-    ![Traefik_admin](./images/traefik_admin.png)
+    ![Traefik_admin](../images/traefik_admin.png)
 
 * **Portainer** https://portainer.{host}/
     * this will ask you to setup and admin password
 ??? info "image"
-    ![Portainer](./images/portainer_home.png)
+    ![Portainer](../images/portainer_home.png)
     
 
 
 ## Go to step 2.
 
-1. [Install base containers on a server](./stack_machines.md)
-2. [Setup services containers](./setup_geocodes_services_containers.md)
+1. [Install base containers on a server](../stack_machines.md)
+2. [Setup services containers](setup_geocodes_services_containers.md)
 3. [Setup Gleaner containers](setup_gleaner_container.md)
-4. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
-5. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
+4. [Initial setup of services and loading of data](../data_loading/setup_indexing_with_gleanerio.md)
+5. [Setup Geocodes UI using datastores defined in Initial Setup](../setting_up_user_interface/setup_geocodes_ui_containers.md)
 
 -----
 

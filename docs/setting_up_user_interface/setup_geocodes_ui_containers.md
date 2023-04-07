@@ -2,14 +2,14 @@
 
 This is step 5 of 5 major steps:
 
-1. [Install base containers on a server](./stack_machines.md)
-2. [Setup services containers](./setup_geocodes_services_containers.md)
-3. [Setup Gleaner containers](setup_gleaner_container.md)
-4. [Initial setup of services and loading of data](./setup_indexing_with_gleanerio.md)
-5. [Setup Geocodes UI using datastores defined in Initial Setup](./setup_geocodes_ui_containers.md)
+1. [Install base containers on a server](../stack_machines.md)
+2. [Setup services containers](../setting_up_services/setup_geocodes_services_containers.md)
+3. [Setup Gleaner containers](../setting_up_services/setup_gleaner_container.md)
+4. [Initial setup of services and loading of data](../data_loading/setup_indexing_with_gleanerio.md)
+5. [Setup Geocodes UI using datastores defined in Initial Setup](setup_geocodes_ui_containers.md)
 
-## Setup and start GeoCodes Client using portainer ui
-Steps:
+
+## Step Overview: Setup and start GeoCodes Client using portainer ui:
 
 * modify the configuration file
 * create stack in portainer
@@ -17,6 +17,7 @@ Steps:
 * instructions for Updating a GEOCODES CLIENT Configuration if things do not work
     * or delete stack and reload
 
+## Step Details:
 
 ###  Modify the Facet Search Configuration
 
@@ -65,7 +66,7 @@ Compose path: deployment/geocodes-compose.yaml
     * Actions:
         * Click: Deploy This Stack
 ??? note "Geocodes Stack "
-    ![Create Geocodes Stack](./images/create_geocodes_stack.png)
+    ![Create Geocodes Stack](../images/create_geocodes_stack.png)
 
 ### Test Geocodes Client
 
@@ -73,7 +74,7 @@ Compose path: deployment/geocodes-compose.yaml
     IF things are not working in the UI, it is probably the facet search configuration
     You can take down the geocodes stack, and delete the config/facets_search or you can
     possibly just stop the gecodes_vue_ui service, and edit the facets_search config as
-    noted here: [See Managing Geocodes UI Containers](production/managing_geocodes_ui_containers.md)
+    noted here: [See Managing Geocodes UI Containers](../production/managing_geocodes_ui_containers.md)
 
 1.  Got to https://geocodes.{your host}/
 1. Got to configuration: https://geocodes.{your host}/#/config

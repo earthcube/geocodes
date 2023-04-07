@@ -38,6 +38,38 @@ In traefik, are  errors on the https://admin.{host}
 Initially, we are using letsencypt dev services. THis message will show until you
 rebuild the base containers with the dev line commented out
 
+#### But that line is commented out.
+  need to delete the acme.json and restart the container.
+
+log onto console via portainer, use /bin/sh
+```shell
+/ # ls
+acme.json      dev            etc            lib            mnt            proc           run            srv            tmp            var
+bin            entrypoint.sh  home           media          opt            root           sbin           sys            usr
+/ # cat acme.json 
+{
+  "httpresolver": {
+    "Account": {
+      "Email": "dwvalentine@ucsd.edu",
+      "Registration": {
+        "body": {
+          "status": "valid",
+          "contact": [
+            "mailto:dwvalentine@ucsd.edu"
+          ]
+        },
+        "uri": "https://acme-v02.api.letsencrypt.org/acme/acct/1030461777"
+        
+```
+
+```sheel
+rm acme.json
+```
+ 
+some docker command also...
+
+
+
 ### cannot connect to (minioadmin,graph,sparqlui)
 
 * is the traefik proxy a SCOPE swarm

@@ -89,7 +89,7 @@ Should be > v2.13 `docker compose  --help` needs to show the -p --project flag
 
 ### Creating and managing CONTAINERS
 
-1. [Configure a base server](./setup_base_machine_configuration.md)
+1. [Configure a base server](setting_up_services/setup_base_machine_configuration.md)
     * docker
     * setup directory and groups for installing geocodes
     * git clone https://github.com/earthcube/geocodes.git
@@ -99,13 +99,13 @@ Should be > v2.13 `docker compose  --help` needs to show the -p --project flag
     * add  (traefik and portainer ) build-machine-compose.yaml
     * (add headless with larger shared memory) ./run_gleaner.sh   
 
-2. [Use portainer to setup geocodes services ](./setup_geocodes_services_containers.md)
+2. [Use portainer to setup geocodes services ](setting_up_services/setup_geocodes_services_containers.md)
     * setup and configure services
         * create env variables file for the services
         * add stack services-compose.yaml to portainer
-1. [Setup Gleaner containers](./setup_gleaner_container.md)
+1. [Setup Gleaner containers](setting_up_services/setup_gleaner_container.md)
    * run shell script `run_gleaner.sh`
-1. [Initial Setup of datastores and loading of sample data](./setup_indexing_with_gleanerio.md)
+1. [Initial Setup of datastores and loading of sample data](data_loading/setup_indexing_with_gleanerio.md)
     * Setup datastores for s3 and graph
     * Install software glcon
       * create configuration gctest `./glcon config init --cfgName gctest`
@@ -118,16 +118,16 @@ Should be > v2.13 `docker compose  --help` needs to show the -p --project flag
         * run sparql query at graph service to see that triples got converted and uploaded
     * create a materilized view of the data using summarize (TB DOCUMENTED BY MBCODE)
 
-1. [Use portainer to setup geocodes user interface (and services )](./setup_geocodes_ui_containers.md)
+1. [Use portainer to setup geocodes user interface (and services )](setting_up_user_interface/setup_geocodes_ui_containers.md)
     * setup and configure user infertace and it's services
         * create a facets config
         * upload facets config to portainer/docker
         * add  stack gecodes-compose.yaml to portainer
-1. [Creating a community instance (aka tennant)](./tenant/)
+1. [Creating a community instance (aka tennant)](setting_up_user_interface/tenant/)
 
 ### Data Loading
 
-* [Testing](./indexing_with_gleanerio_for_testing.md)
+* [Testing](data_loading/indexing_with_gleanerio_for_testing.md)
 * Production
     * [Create a  'Production' config](production/creatingAndLoadingProduction.md) 
     * [Production Fragments](production/production_configs.md)

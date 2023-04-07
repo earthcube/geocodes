@@ -1,0 +1,13 @@
+# needed for local testing of mkdocs
+# command to locally test is: `mkdocs serve`
+mkdocs
+mkdocs-material
+mkdocs-mermaid2-plugin
+mkdocs-schema-reader
+mkdocs-multirepo-plugin
+mkdocs-literate-nav
+mkdocs-jupyter
+mkdocs-callouts
+mkdocstrings-python
+mkdocs-include-markdown-plugin
+mkdocs-glightbox
