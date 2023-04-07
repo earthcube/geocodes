@@ -93,7 +93,7 @@ services:
     image: quay.io/minio/minio
     ports:
       - 9000
-      - 9001
+#      - 9001
     logging:
       options:
         max-size: "10m"
