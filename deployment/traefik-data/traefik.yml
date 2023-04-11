@@ -18,6 +18,6 @@ certificatesResolvers:
       # using staging for testing/development
       caServer: https://acme-staging-v02.api.letsencrypt.org/directory
       email: dwvalentine@ucsd.edu
-      storage: acme.json
+      storage: /etc/traefik/acme.json
       httpChallenge:
         entryPoint: http
