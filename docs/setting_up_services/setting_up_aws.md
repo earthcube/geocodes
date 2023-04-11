@@ -8,7 +8,8 @@ To do this, we are going to utilize four pieces:
 
 Major differences in the docker:
 * uses config to store traefik config
-* use a volume to store the trafikl
+* use a volume to store the trafik
+* using secrets
 
 ## Notes on Setting up s3 and Neptune
 
@@ -41,13 +42,10 @@ MINIO_ROOT_SECRET_KEY=worldsbestsecretkey
 #MINIO_SERVICE_ACCESS_KEY=worldsbestaccesskey
 #MINIO_SERVICE_SECRET_KEY=worldsbestsecretkey
 
-GC_GITHUB_SECRET=OAUTH SECRET
-GC_GITHUB_CLIENTID=OAUTH APP ID
-GC_NB_AUTH_MODE=service
-# a user api key.  All gists are stored in this users account
-#GC_GITHUB_USER=USER
-#GC_GITHUB_TOKEN=ghp_KEY
-#GC_NB_AUTH_MODE=apikey
+GC_GITHUB_CLIENTID_OR_USER_GITHUB_TOKEN=OAUTH SECRET
+GC_GITHUB_SECRET_OR_USER=OAUTH APP ID
+
+
 
 
 ###  setup stack in portainer
