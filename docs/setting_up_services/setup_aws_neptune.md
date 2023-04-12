@@ -1,4 +1,4 @@
-## setting up services
+## [setting up AWS services](setting_up_aws.md)
 ### setup up AWS-Neptune
 
 Start with cloudbank login
@@ -16,3 +16,5 @@ you can take all the defaults
 including making a decoder notebook to look at it
 
 more to come as we sort out access
+
+For now getting crawl from radiant to s3, for later Neptune load
