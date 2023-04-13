@@ -20,26 +20,29 @@ name this repository.
 Please put any issues/notes in the production/repos google docs
 
 ## Some steps.
-1. Grab some urls from the sitemap, evaulate in validator.schema.org
+1. Grab some urls from the sitemap, evaluate in validator.schema.org
 3. run check_sitemap to see it url's are good
-2. create gleaner config for repo
+
 3. setup datastores
     * any s3
     * independent project and project_summary namespaces
-3. glcon gleaner Summon to an s3 location. Repos are independent at this point.
-4. evaluate summon. Look at jsonld. does it seem reasonable.
-    * doe we need a tool to pull a specific url from s3? filter the listSummonedUrls, or getOringalUr
-    * run missing stats... may need an option to just check the sitemap>summon
-5. if these look good, then glcon nabu prefix
-6. run graph_stats and missing stats
-    * report needs to be updated to include [all/repo]_count_types_top_level.sparql, 
+2. create gleaner config for repo
+2.  `glcon gleaner batch` Summon to an s3 location. Repos are independent at this point.
+4. evaluate summon. Look at jsonld. Do they seem like they got loaded?
+    * thought: do we need a tool to pull a specific url from s3? could filter the listSummonedUrls, we do have getOringalUrl
+    * run missing stats... may need an option to just check the sitemap>summon portion
+5. `glcon nabu prefix` if these look good, then 
+6. run `graph_stats` and `missing...`
+    * graph stats report needs to be updated to include [all/repo]_count_types_top_level.sparql, 
 7. check reports
 9. feel free to run repo_urn_w_types_toplevel.sparql
 9. run summarize_* to populate summary
-9. create a facets configuration, and create  tennant containers to run against the project and project_summary namespaces
+9. create a facets configuration for the project, upload to portainer, and create stack of tenant containers to run against the project and project_summary namespaces
 10. via UI run queries to see that it works.
     * humm, add a simple query tester to scripts
-
+11. Review with team
+12. review with datasource
+13. add to production sources
 
 ### Evaluating with validator
 what to look for
@@ -51,3 +54,7 @@ What to look for
 What to look for
 
 ### How to test the UI
+
+keywords:
+* data
+* repository keywords
