@@ -27,6 +27,7 @@
 * [Creating Configurations for Production](creatingAndLoadingProduction.md)
     * [Production Configuration Fragments](production_configs.md)
 * [Managing Services](managing_services.md)
+* [Testing/Onboarding a Datasource](../data_loading/onboarding_or_testing_a_datasource.md)
 * [Maanging Geocodes UI Containers](managing_geocodes_ui_containers.md)
 * [Some Sparql queries](sparql.md)
 * [Notebook Proxy Container](geocodes_notebook_proxy_notes.md)
