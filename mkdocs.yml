@@ -76,6 +76,7 @@ nav:
       - Production: production
       - Creating and Loading Production: production/creatingAndLoadingProduction.md
       - Manage Services: production/managing_services.md
+      - Testing/Onboarding a Datasource: data_loading/onboarding_or_testing_a_datasource.md
   - Tooling:
       - Install Glcon: data_loading/install_glcon.md
       - Earthcube Utilities:

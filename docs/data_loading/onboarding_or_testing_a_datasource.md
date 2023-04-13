@@ -20,7 +20,7 @@ name this repository.
 Please put any issues/notes in the production/repos google docs
 
 ## Some steps.
-2. Grab some urls from the sitemap, evaulate in validator.schema.org
+1. Grab some urls from the sitemap, evaulate in validator.schema.org
 3. run check_sitemap to see it url's are good
 2. create gleaner config for repo
 3. setup datastores
