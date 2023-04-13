@@ -14,7 +14,8 @@ Some topics (sorry disorganized notes)
 * OS issues
     * Ubuntu docker
     * Ubuntu 16. glcon
-
+* [issue with a repository](./data_loading/onboarding_or_testing_a_datasource.md)
+* 
 ## can't seem to connect;
 are containers running
 `docker ps`
