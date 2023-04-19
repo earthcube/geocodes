@@ -146,7 +146,7 @@ After that this is the possible instructions for creating a tennant.
 
 
 ```shell
-HOST=geocodes-dev.earthcube,org
+HOST=geocodes-dev.earthcube.org
 FACET_SERVICES_FILE=./config/services.js
 GC_CLIENT_DOMAIN=geocodes.{dns}
 MINIO_ROOT_ACCESS_KEY={snip}
