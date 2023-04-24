@@ -115,9 +115,34 @@ Load data Steps Overview:
 If you may want to initially test with a local instance in an IDE.
 After that this is the possible instructions for creating a tennant.
 
+Steps to 
+* create add config
+* setup a stack
+```text
+Name: geocodes
+Build method: git repository
+Repository URL: https://github.com/earthcube/geocodes
+reference: refs/heads/main
+Compose path: deployment/geocodes-compose-named.yaml
+```
+* config
+* 
 
 #### add a config in portainer (facets_config_{project})
     * using namespaces, minio and dns from above
+
+portainer stack:
+
+```text
+Name: geocodes
+Build method: git repository
+Repository URL: https://github.com/earthcube/geocodes
+reference: refs/heads/main
+Compose path: deployment/geocodes-compose-named.yaml
+```
+*** BE SURE TO USE deployment/geocodes-compose-named.yaml ***
+
+
 ??? example "config/facets_config_PROJECt"
     ```yaml
     ---
@@ -141,14 +166,24 @@ After that this is the possible instructions for creating a tennant.
     ```
 
 #### setup tenant stack
+
     * add a stack with project name  using  geocodes-compose_named.yaml
     * Before saving,  env var GC_BASE with project name
 
+use advanced to upload
+
+*** important changes ***
+
+* host is machine host
+* GC_CLIENT_DOMAIN:
+* TRIPLESTORE_URL
+* SUMMARYSTORE_URL
+* jsonLD_proxy
 
 ```shell
 HOST=geocodes-dev.earthcube.org
 FACET_SERVICES_FILE=./config/services.js
-GC_CLIENT_DOMAIN=geocodes.{dns}
+GC_CLIENT_DOMAIN=geocodes.{HOST}
 MINIO_ROOT_ACCESS_KEY={snip}
 MINIO_ROOT_SECRET_KEY={snip}
 MINIO_SERVICE_ACCESS_KEY={snip}
@@ -170,3 +205,6 @@ GC_GITHUB_CLIENTID={snip}
 GC_NB_AUTH_MODE=service
 GC_BASE=wifire
 ```
+
+## issues:
+[traefik admin](https//admin.{HOST})
