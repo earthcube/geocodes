@@ -64,9 +64,8 @@ Load data Steps Overview:
     * `nano configs/{project}/localConfig.yaml`
   * `glcon config generate --cfgName {project}`
 
-??? example "localConfig.yaml"
+* example "localConfig.yaml"
     ```yaml
-    ---
     minio:
       address: oss.geocodes-dev.earthcube.org
       port: 443
@@ -99,39 +98,25 @@ Load data Steps Overview:
 * `glcon nabu prefix --cfgName {project}`
 
 ### Run Summarize
-[summarize](https://earthcube.github.io/earthcube_utilities/summarize/) materializes a flattend the graph 
-* 
-* Note this is new, undetested... take a look at the source if something breaks
-
+[summarize](https://earthcube.github.io/earthcube_utilities/summarize/) materializes a flattend the graph
+* Note this is new, untested... take a look at the source if something breaks
 * install earthcube summarize
 * `pip3 install earthcube_summarize`
 * [run summarize](https://earthcube.github.io/earthcube_utilities/summarize/#run-summarize_from_graph_namespace) (if installed via package, there should be a command line)
 * `summarize_from_graph--repo {repo} --graphendpoint {endppiont} --summary_namespace {earthcube_summary}`
 
-
-
 ### Configure Client
 
 If you may want to initially test with a local instance in an IDE.
-After that this is the possible instructions for creating a tennant.
+After that this is the possible instructions for creating a tenant.
 
-Steps to 
-* create add config
-* setup a stack
-```text
-Name: geocodes
-Build method: git repository
-Repository URL: https://github.com/earthcube/geocodes
-reference: refs/heads/main
-Compose path: deployment/geocodes-compose-named.yaml
-```
-* config
-* 
-
-#### add a config in portainer (facets_config_{project})
-    * using namespaces, minio and dns from above
-
-portainer stack:
+* setup a stack on portainer
+  * go to Stacks/Repository
+  * fill out the section Git repository
+  * add a stack with project name using geocodes-compose-named.yaml
+  * you can use advanced mode for easier editting the config 
+  * before saving, modify GC_BASE with project name
+  * deploy it
 
 ```text
 Name: geocodes
@@ -140,45 +125,6 @@ Repository URL: https://github.com/earthcube/geocodes
 reference: refs/heads/main
 Compose path: deployment/geocodes-compose-named.yaml
 ```
-*** BE SURE TO USE deployment/geocodes-compose-named.yaml ***
-
-
-??? example "config/facets_config_PROJECt"
-    ```yaml
-    ---
-    #API_URL: http://localhost:3000
-    API_URL: https://geocodes.{HOST}/ec/api
-    TRIPLESTORE_URL: https://graph.geocodes-dev.earthcube.org/blazegraph/namespace/{PROJECT}/sparql
-    SUMMARYSTORE_URL: https://graph.geocodes-dev.earthcube.org/blazegraph/namespace/{PROJECT}_summary/sparql
-    ECRR_TRIPLESTORE_URL: http://132.249.238.169:8080/fuseki/ecrr/query
-    ECRR_GRAPH: http://earthcube.org/gleaner-summoned
-    THROUGHPUTDB_URL: https://throughputdb.com/api/ccdrs/annotations
-    SPARQL_QUERY: queries/sparql_query.txt
-    SPARQL_HASTOOLS: queries/sparql_hastools.txt
-    SPARQL_TOOLS_WEBSERVICE: queries/sparql_gettools_webservice.txt
-    SPARQL_TOOLS_DOWNLOAD: queries/sparql_gettools_download.txt
-    JSONLD_PROXY: "${window.location.origin}/ec/api/${o}"
-    # oauth issues. need to add another auth app for additional 'proxies'
-    # This is the one that will work: SPARQL_NB: https://geocodes.earthcube.org/notebook/mkQ?q=${q}
-    SPARQL_NB: https://geocodes.earthcube.org/notebook/mkQ?q=${q}
-    ####
-    SPARQL_YASGUI: https://sparqlui.geocodes-dev.earthcube.org/?
-    ```
-
-#### setup tenant stack
-
-    * add a stack with project name  using  geocodes-compose_named.yaml
-    * Before saving,  env var GC_BASE with project name
-
-use advanced to upload
-
-*** important changes ***
-
-* host is machine host
-* GC_CLIENT_DOMAIN:
-* TRIPLESTORE_URL
-* SUMMARYSTORE_URL
-* jsonLD_proxy
 
 ```shell
 HOST=geocodes-dev.earthcube.org
@@ -205,6 +151,36 @@ GC_GITHUB_CLIENTID={snip}
 GC_NB_AUTH_MODE=service
 GC_BASE=wifire
 ```
+
+* add a config in portainer (facets_config_{project}) (go to Configs on portainer)
+  * using namespaces, minio and dns from above
+  * example for "config/facets_config_PROJECT"
+```yaml
+    #API_URL: http://localhost:3000
+    API_URL: https://geocodes.{HOST}/ec/api
+    TRIPLESTORE_URL: https://graph.geocodes-dev.earthcube.org/blazegraph/namespace/{PROJECT}/sparql
+    SUMMARYSTORE_URL: https://graph.geocodes-dev.earthcube.org/blazegraph/namespace/{PROJECT}_summary/sparql
+    ECRR_TRIPLESTORE_URL: http://132.249.238.169:8080/fuseki/ecrr/query
+    ECRR_GRAPH: http://earthcube.org/gleaner-summoned
+    THROUGHPUTDB_URL: https://throughputdb.com/api/ccdrs/annotations
+    SPARQL_QUERY: queries/sparql_query.txt
+    SPARQL_HASTOOLS: queries/sparql_hastools.txt
+    SPARQL_TOOLS_WEBSERVICE: queries/sparql_gettools_webservice.txt
+    SPARQL_TOOLS_DOWNLOAD: queries/sparql_gettools_download.txt
+    JSONLD_PROXY: "${window.location.origin}/ec/api/${o}"
+    # oauth issues. need to add another auth app for additional 'proxies'
+    # This is the one that will work: SPARQL_NB: https://geocodes.earthcube.org/notebook/mkQ?q=${q}
+    SPARQL_NB: https://geocodes.earthcube.org/notebook/mkQ?q=${q}
+    ####
+    SPARQL_YASGUI: https://sparqlui.geocodes-dev.earthcube.org/?
+```
+
+### important changes
+* host is machine host
+* GC_CLIENT_DOMAIN
+* TRIPLESTORE_URL
+* SUMMARYSTORE_URL
+* jsonLD_proxy
 
 ## issues:
 [traefik admin](https//admin.{HOST})
