@@ -16,7 +16,7 @@
 You should see a set of json records being reported.
 
 !!! Note NABU
-    Nabu will provide a progress bar.
+    Nabu will provide a progress bar, but not anything into the main gleaner log.
 
 ### Logs
 * `cd indexing` or whereever you ran glcon from
@@ -36,8 +36,12 @@ repo-opentopography-issues-2022-10-05-22-04-03.log
 repo-opentopography-loaded-2022-10-05-22-04-03.log
 ```
 
-when a run is complete, or stopped (ctrl-c) this will appear
+!!! Note HEADLESS
+    Headless repositories run after the not headless repositories. They also run serially, so it can take a long time to run headless.
+    You can just run the headless as separate runs using the --source {SOURCE/REPO}
+
 ```
+
 gleaner-runstats-2023-04-27-05-38-59.log
 ```
 
