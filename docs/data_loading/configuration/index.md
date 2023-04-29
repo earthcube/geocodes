@@ -17,27 +17,31 @@ The services can be a remote cloud based, or  local usually running in a contain
 ## Using glcon to generate configurations
 
 Step overview:
+
 * `./glcon config init --cfgName {projectname}`
 * edit configs/projectname/localConfig.yaml
 * `./glcon config generate --cfgName {projectname}`
 
-~~~yaml title="localConfig.yaml
+
+```
 {%
    include './template/localConfig.yaml'
    
 %}
-~~~
+```
+
 
 ## Examples
 
 ### Demo
 This is configured as a local
-~~~yaml title="localConfig.yaml
+
+```
 {%
-   include './configuration/demo/localConfig.yaml'
+   include './demo/localConfig.yaml'
    
 %}
-~~~
+```
 
 
 ### Flight Test

@@ -52,6 +52,7 @@ plugins:
   #https://pypi.org/project/mkdocs-jupyter/
   -  mkdocs-jupyter
   - callouts
+  - include-markdown
 
 #extra_javascript:
 #  - https://unpkg.com/mermaid/dist/mermaid.min.js
@@ -72,6 +73,10 @@ nav:
         - Creating a Community Instance (Tenant): setting_up_user_interface/tenant
   - Load Data:
       - Load Data: data_loading/setup_indexing_with_gleanerio.md
+      - Configuration Examples: data_loading/configuration
+      - Onboarding: data_loading/onboarding_or_testing_a_datasource.md
+      #- Watching Data Loading:  data_loading/watching_manual_gleanerio_data_loading.md
+      - data_loading/*.md
   - Production:
       - Production: production
       - Creating and Loading Production: production/creatingAndLoadingProduction.md
