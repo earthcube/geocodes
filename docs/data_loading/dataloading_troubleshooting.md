@@ -1,6 +1,6 @@
 # Data Loading Trouble shooting
 
-## Data Loading stops my terminal disconnects
+## Data Loading stops when my terminal disconnects
 Yes, the process dies when you are disconnected...
 if you do not nohup the process,  or use tmux or screen to allow the process 
 to be detaached.
