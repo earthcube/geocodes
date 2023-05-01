@@ -1,5 +1,18 @@
 # Data Loading Trouble shooting
 
+## Data Loading stops my terminal disconnects
+Yes, the process dies when you are disconnected...
+if you do not nohup the process,  or use tmux or screen to allow the process 
+to be detaached.
+
+There are insructions for [screen](using_screen_for_manual_loading.md), since that is what the write of this
+documentation uses:
+
+If source is large,  use [screen](using_screen_for_manual_loading.md) e.g. `screen -S gleaner`
+
+Did we suggest running in a [screen](using_screen_for_manual_loading.md)
+
+
 ## Missing JSONLD
 from open topo one id
 

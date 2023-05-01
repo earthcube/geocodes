@@ -146,7 +146,7 @@ Now there will be at least a 'gleaner', a 'nabu' and a 'nabu_prov' files.
     ```
 
 ## start a screen
-Since this is a long running process, it is suggested that this be done in `screen`
+Since this is a long running process, it is suggested that this be done in [`screen`](using_screen_for_manual_loading.md)
 There is also a possibility of using tmux, if a user has experience with it.
 
 ### Notes: 
@@ -200,6 +200,8 @@ There is a screen on:
     * **address** may be incorrect. It is a hostname or TC/IP, and not a URL
     * **ssl** may need to be true
     * [See setup issues](./troubleshooting.md#setup-failure)
+
+** Are you running, like suggested in a [screen](using_screen_for_manual_loading.md)**
 
 ??? example "`./glcon gleaner batch --cfgName geocodes`"
     ```shell
