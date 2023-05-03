@@ -15,6 +15,8 @@ Fragments from production configs for cribbing are in [production_configs.md](pr
 2. start a screen (adds ability to run long running processes)
 1. run `gleaner batch` ||  `glcon gleaner batch`
 1. run `nabu prefix` ||  `glcon nabu prefix`
+  * there needs to be a note above can be replaced with  `glcon nabu release --cfgName CONFIG`, and how to upload the quads
+
 
 ### Reconfiguration
 
@@ -246,6 +248,9 @@ IF detached,  attach to a screen  in this case you use the name
 
 ` ./glcon nabu prefix --cfg configs/geocodes/nabuprov`
 
+!!! Note
+     The above can be replaced with  `glcon nabu release --cfgName CONFIG`, 
+     Need Note on how to do this and how to upload the quads
 
 
 ### run nabu prune  to cull/remove data to graph store

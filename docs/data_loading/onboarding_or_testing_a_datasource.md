@@ -39,6 +39,7 @@ Please put any issues/notes in the production/repos google docs
     * run missing stats... may need an option to just check the sitemap>summon portion
 5. `glcon nabu prefix` if these look good, then 
     *  did we suggest runing in a [screen](using_screen_for_manual_loading.md)
+    * there needs to be a note about using `glcon nabu release --cfgName CONFIG`, and how to upload the quads
 6. run `graph_stats` and `missing...`
     * graph stats report needs to be updated to include [all/repo]_count_types_top_level.sparql, 
 7. check reports
