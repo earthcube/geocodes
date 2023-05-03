@@ -13,17 +13,17 @@ Fragments from production configs for cribbing are in [production_configs.md](pr
 1. Generate the configuration files for gleaner and nabu
 1. setup minio using glcon gleaner setup
 2. start a screen (adds ability to run long running processes)
-1. run gleaner
-1. run nabu
+1. run `gleaner batch` ||  `glcon gleaner batch`
+1. run `nabu prefix` ||  `glcon nabu prefix`
 
 ### Reconfiguration
 
 9. Changes to the gleaner/nabu configuration or the sources spreadsheet, other other items
     8. make a change
-    9. regenerate configs
-    10. run batch
-   11. run nabu prefix
-   12. run nabu prune. 
+    9. regenerate configs  `glcon config generate`
+    10. run `gleaner batch` ||  `glcon gleaner batch`
+   11. run `nabu prefix` ||  `glcon nabu prefix`
+   12. run `nabu prune` ||  `glcon nabu prune`
        13. if files were removed from a repo, then this should prune them.
 
 
@@ -145,7 +145,7 @@ Now there will be at least a 'gleaner', a 'nabu' and a 'nabu_prov' files.
     {"file":"/github/workspace/pkg/gleaner.go:78","func":"github.com/gleanerio/gleaner/pkg.Setup","level":"info","msg":"Buckets generated.  Object store should be ready for runs","time":"2022-07-28T17:32:51Z"}
     ```
 
-## start a screen
+## Start a screen
 Since this is a long running process, it is suggested that this be done in [`screen`](using_screen_for_manual_loading.md)
 There is also a possibility of using tmux, if a user has experience with it.
 
@@ -182,7 +182,7 @@ There is a screen on:
 1 Socket in /run/screen/S-ubuntu.
 ```
 
-### run gleaner
+### Run Gleaner to pull JSONLD from sitemaps
 
 !!! warning "Robots.txt"
     OK TO IGNORE. you will need to ignore errors about robot.txt and sitemap.xml not being an index
@@ -230,7 +230,7 @@ to attach to a screen  in this case you use the name
 
 `screen -r gleaner`
 
-### run nabu prefix
+### run nabu prefix  to upload data to graph store
 when gleaner is complete
 
 IF detached,  attach to a screen  in this case you use the name
@@ -238,7 +238,7 @@ IF detached,  attach to a screen  in this case you use the name
 
 ` ./glcon nabu prefix --cfgName geocodes`
 
-### run nabu prefix to upload prov
+### Run nabu prefix to prov to graph store
 This uses a separate config, for now.
 
 IF detached,  attach to a screen  in this case you use the name
@@ -248,7 +248,7 @@ IF detached,  attach to a screen  in this case you use the name
 
 
 
-### run nabu prune
+### run nabu prune  to cull/remove data to graph store
 when gleaner is complete
 
 IF detached,  attach to a screen  in this case you use the name
