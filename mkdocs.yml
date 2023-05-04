@@ -1,9 +1,11 @@
 site_name: Geocodes Documentation
 repo_url: https://github.com/earthcube/geocodes
 edit_uri: blob/docs/docs/
+
 theme:
 #  name: 'readthedocs'
   name: material
+  custom_dir: overrides
   features:
     - content.action.edit
     - content.action.view

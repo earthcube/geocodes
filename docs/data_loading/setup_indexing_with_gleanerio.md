@@ -19,7 +19,7 @@ Step Overview:
     6. `./glcon config generate --cfgName gctest`
 4. setup and summon data using 'gleaner' 
     5. `./glcon gleaner setup --cfgName gctest`
-    7. `./glcon config generate --cfgName gctest`
+    7. `./glcon gleaner batch --cfgName gctest`
 5. load data to graph using 'nabu' 
     6. `./glcon nabu prefix --cfgName gctest`
     7. `./glcon nabu prune --cfgName gctest`
@@ -31,8 +31,8 @@ Step Overview:
 10. Run Summarize task. This is performance related.
 
 !!! warn "regenerate"
-if you edit localConfig.yaml, you need to regenerate the configs using
-`./glcon config generate --cfgName gctest`
+    if you edit localConfig.yaml, you need to regenerate the configs using
+    `./glcon config generate --cfgName gctest`
 
 ---
 
