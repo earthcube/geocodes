@@ -1,9 +1,11 @@
 site_name: Geocodes Documentation
 repo_url: https://github.com/earthcube/geocodes
 edit_uri: blob/docs/docs/
+
 theme:
 #  name: 'readthedocs'
   name: material
+  custom_dir: overrides
   features:
     - content.action.edit
     - content.action.view
@@ -12,6 +14,7 @@ theme:
     - navigation.path
     - navigation.indexes
     - navigation.footer
+    - announce.dismiss
   icon:
     edit: material/pencil
     view: material/eye
@@ -52,6 +55,7 @@ plugins:
   #https://pypi.org/project/mkdocs-jupyter/
   -  mkdocs-jupyter
   - callouts
+  - include-markdown
 
 #extra_javascript:
 #  - https://unpkg.com/mermaid/dist/mermaid.min.js
@@ -72,10 +76,15 @@ nav:
         - Creating a Community Instance (Tenant): setting_up_user_interface/tenant
   - Load Data:
       - Load Data: data_loading/setup_indexing_with_gleanerio.md
+      - Configuration Examples: data_loading/configuration
+      - Onboarding: data_loading/onboarding_or_testing_a_datasource.md
+      #- Watching Data Loading:  data_loading/watching_manual_gleanerio_data_loading.md
+      - data_loading/*.md
   - Production:
       - Production: production
       - Creating and Loading Production: production/creatingAndLoadingProduction.md
       - Manage Services: production/managing_services.md
+      - Testing/Onboarding a Datasource: data_loading/onboarding_or_testing_a_datasource.md
   - Tooling:
       - Install Glcon: data_loading/install_glcon.md
       - Earthcube Utilities:

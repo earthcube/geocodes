@@ -33,6 +33,9 @@ This is what will be needed to create a production server
          API version:       1.41
     ```
 
+!!! warning "DOCKER SWARM"
+    Docker swarm needs to be init'd with the public ip address.
+
 
 --- 
 ## Step Overview:
@@ -64,7 +67,9 @@ This is what will be needed to create a production server
     * `sudo chgrp geocodes /data/decoder`
     * `sudo chmod g+rwx /data/decoder`
 * init docker swarm
-    * `docker swarm init`
+    * !!! warning "DOCKER SWARM"
+          Docker swarm needs to be init'd with the public ip address.
+    * `docker swarm init --advertise-addr {PUBLIC_IP}`
 * verify proper base configuration
     * `docker compose --help` shows a -p flag
 * SNAPSHOT and creaate an image

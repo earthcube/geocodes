@@ -14,7 +14,8 @@ Some topics (sorry disorganized notes)
 * OS issues
     * Ubuntu docker
     * Ubuntu 16. glcon
-
+* [issue with a repository](./data_loading/onboarding_or_testing_a_datasource.md)
+* 
 ## can't seem to connect;
 are containers running
 `docker ps`
@@ -178,5 +179,6 @@ version:  v3.0.8-ec
 {"file":"/Users/valentin/development/dev_earthcube/gleanerio/gleaner/pkg/cli/gleaner.go:71","func":"github.com/gleanerio/gleaner/pkg/cli.initGleanerConfig","level":"fatal","msg":"error reading config file While parsing config: yaml: unmarshal errors:\n  line 1: cannot unmarshal !!str `\u003c?xml v...` into map[string]interface {}","time":"2023-02-14T15:58:00Z"}
 ubuntu@geocodes-dev:~/indexing$
  ```
+
 
 
