@@ -1,3 +1,11 @@
+#####################
+#
+# THIS SHOULD ONLY BE USED ONCE PER DOCKER SWARM SERVER.
+#  IT INCLUDES A FIXED TRAEFIK Routing names: beta-server, beta-client, nb
+# and HOST NAME 'geocodes.earthcube.org'
+#
+# IT DOES NOT USE SECRETS
+##########
 version: '3.3'
 networks:
   traefik_proxy:
@@ -139,4 +147,10 @@ services:
       - "traefik.http.routers.nb-secure.middlewares=nb_prefix"
     networks:
       - traefik_proxy
-
+#####################
+#
+# THIS SHOULD ONLY BE USED ONCE PER DOCKER SWARM SERVER.
+#  IT INCLUDES A FIXED TRAEFIK Routing names: beta-server, beta-client, nb
+# and HOST NAME 'geocodes.earthcube.org'
+#
+##########
