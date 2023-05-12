@@ -1,18 +1,17 @@
 #####################
 #
 # THIS SHOULD ONLY BE USED ONCE PER DOCKER SWARM SERVER.
-#  IT INCLUDES A FIXED TRAEFIK Routing names: prod-server, prod-client, prod-nb
+#  IT INCLUDES A FIXED TRAEFIK Routing names: prod-server, prod-client, nb
 # and HOST NAME 'geocodes.earthcube.org'
-#
+# This should only be used on a server whose name is geocodes.earthcube.org
 ##########
-version: '3.5'
+version: '3.3'
 networks:
   traefik_proxy:
     external: true
 configs:
   facets_config:
     external: true
-    name:   facets_config_production
 
 services:
   # the base routes:
@@ -54,15 +53,13 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.prod-server.entrypoints=http"
       - "traefik.http.routers.prod-server.priority=90"
-      - "traefik.http.routers.prod-server.rule=Host( `geocodes.earthcube.org`) && PathPrefix(`/ec/api`)"
-#      - "traefik.http.routers.prod-server.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`,  `geocodes.earthcube.org`) && PathPrefix(`/ec/api`)"
+      - "traefik.http.routers.prod-server.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`,  `geocodes.earthcube.org`) && PathPrefix(`/ec/api`)"
       #      - "traefik.http.routers.prod-server.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`)  && PathPrefix(`/ec/api`)"
       - "traefik.http.middlewares.prod-server-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.prod-server.middlewares=prod-server-https-redirect"
       - "traefik.http.routers.prod-server-secure.priority=91"
       - "traefik.http.routers.prod-server-secure.entrypoints=https"
-      - "traefik.http.routers.prod-server-secure.rule=Host( `geocodes.earthcube.org`) && PathPrefix(`/ec/api`)"
-#      - "traefik.http.routers.prod-server-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`, `geocodes.earthcube.org`) && PathPrefix(`/ec/api`)"
+      - "traefik.http.routers.prod-server-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`, `geocodes.earthcube.org`) && PathPrefix(`/ec/api`)"
       #      - "traefik.http.routers.prod-server-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`) && PathPrefix(`/ec/api`)"
       - "traefik.http.routers.prod-server-secure.tls=true"
       - "traefik.http.routers.prod-server-secure.tls.certresolver=httpresolver"
@@ -98,15 +95,13 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.prod-client.entrypoints=http"
       - "traefik.http.routers.prod-client.priority=13"
-      - "traefik.http.routers.prod-client.rule=Host( `geocodes.earthcube.org`)"
-  #    - "traefik.http.routers.prod-client.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`, `geocodes.earthcube.org`)"
+      - "traefik.http.routers.prod-client.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`, `geocodes.earthcube.org`)"
       #      - "traefik.http.routers.prod-client.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`) "
       - "traefik.http.middlewares.prod-client-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.prod.middlewares=prod-client-https-redirect"
       - "traefik.http.routers.prod-client-secure.entrypoints=https"
       - "traefik.http.routers.prod-client-secure.priority=12"
-      - "traefik.http.routers.prod-client-secure.rule=Host( `geocodes.earthcube.org`)"
- #     - "traefik.http.routers.prod-client-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`, `geocodes.earthcube.org`)"
+      - "traefik.http.routers.prod-client-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`, `geocodes.earthcube.org`)"
       #      - "traefik.http.routers.prod-client-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`)"
       - "traefik.http.routers.prod-client-secure.tls=true"
       - "traefik.http.routers.prod-client-secure.tls.certresolver=httpresolver"
@@ -136,15 +131,13 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.prod-nb.entrypoints=http"
       - "traefik.http.routers.prod-nb.priority=90"
-      - "traefik.http.routers.prod-nb.rule=Host( `geocodes.earthcube.org`) && PathPrefix(`/notebook`)"
-#      - "traefik.http.routers.prod-nb.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`, `geocodes.earthcube.org`) && PathPrefix(`/notebook`)"
+      - "traefik.http.routers.prod-nb.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`, `geocodes.earthcube.org`) && PathPrefix(`/notebook`)"
       #      - "traefik.http.routers.prod-nb.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`) && PathPrefix(`/notebook`)"
       - "traefik.http.middlewares.prod-nb-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.prod-nb.middlewares=prod-nb-https-redirect"
       - "traefik.http.routers.prod-nb-secure.entrypoints=https"
       - "traefik.http.routers.prod-nb-secure.priority=90"
-      - "traefik.http.routers.prod-nb-secure.rule=Host( `geocodes.earthcube.org`) && PathPrefix(`/notebook`)"
-#      - "traefik.http.routers.prod-nb-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`, `geocodes.earthcube.org`) && PathPrefix(`/notebook`)"
+      - "traefik.http.routers.prod-nb-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`, `geocodes.earthcube.org`) && PathPrefix(`/notebook`)"
       #      - "traefik.http.routers.prod-nb-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`) && PathPrefix(`/notebook`)"
       - "traefik.http.routers.prod-nb-secure.tls=true"
       - "traefik.http.routers.prod-nb-secure.tls.certresolver=httpresolver"
