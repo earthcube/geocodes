@@ -1,3 +1,6 @@
+# this is the compose file for a container stack without a portainer.
+# basically a docker-swarm stack that provides the traefik router.
+
 version: '3.6'
 configs:
   traefik_yml:
