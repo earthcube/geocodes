@@ -1,11 +1,11 @@
+## run `mkdocs serve` from docks to test this out
+
 site_name: Geocodes Documentation
 repo_url: https://github.com/earthcube/geocodes
 edit_uri: blob/docs/docs/
-
 theme:
 #  name: 'readthedocs'
   name: material
-  custom_dir: overrides
   features:
     - content.action.edit
     - content.action.view
@@ -85,6 +85,7 @@ nav:
       - Creating and Loading Production: production/creatingAndLoadingProduction.md
       - Manage Services: production/managing_services.md
       - Testing/Onboarding a Datasource: data_loading/onboarding_or_testing_a_datasource.md
+      - Production UI DNS changes: production/production_ui_deployment.md
   - Tooling:
       - Install Glcon: data_loading/install_glcon.md
       - Earthcube Utilities:
