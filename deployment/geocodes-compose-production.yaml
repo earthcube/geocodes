@@ -13,19 +13,19 @@ configs:
   facets_config:
     external: true
     name:   facets_config_production
-secrets:
-  MINIO_ROOT_ACCESS_KEY:
-    external: true
- #   name:   PROD_ROOT_ACCESS_KEY
-  MINIO_ROOT_SECRET_KEY:
-    external: true
- #   name:   PROD_ROOT_SECRET_KEY
-  GC_GITHUB_SECRET_OR_USER:
-    external: true
- #   name:   PROD_GITHUB_SECRET_OR_USER
-  GC_GITHUB_CLIENTID_OR_USER_GITHUB_TOKEN:
-    external: true
-    #   name:   PROD_GITHUB_CLIENTID_OR_USER_GITHUB_TOKEN
+#secrets:
+#  MINIO_ROOT_ACCESS_KEY:
+#    external: true
+# #   name:   PROD_ROOT_ACCESS_KEY
+#  MINIO_ROOT_SECRET_KEY:
+#    external: true
+# #   name:   PROD_ROOT_SECRET_KEY
+#  GC_GITHUB_SECRET_OR_USER:
+#    external: true
+# #   name:   PROD_GITHUB_SECRET_OR_USER
+#  GC_GITHUB_CLIENTID_OR_USER_GITHUB_TOKEN:
+#    external: true
+#    #   name:   PROD_GITHUB_CLIENTID_OR_USER_GITHUB_TOKEN
 services:
   # the base routes:
   # geocodes /
