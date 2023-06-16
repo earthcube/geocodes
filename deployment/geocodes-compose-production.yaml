@@ -55,8 +55,8 @@ services:
     environment:
         NODE_ENV: produdction
         S3ADDRESS: ${GLEANER_OSS_DOMAIN}
-        S3KEY: /run/secrets/MINIO_ROOT_ACCESS_KEY
-        S3SECRET: /run/secrets/MINIO_ROOT_SECRET_KEY
+        S3KEY: ${MINIO_ROOT_ACCESS_KEY}
+        S3SECRET: ${MINIO_ROOT_SECRET_KEY}
         S3SSL: ${S3SSL}
         S3PORT: ${S3PORT}
         BUCKET: ${BUCKET}
