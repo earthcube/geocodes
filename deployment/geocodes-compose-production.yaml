@@ -154,8 +154,7 @@ services:
         - GITHUB_CLIENTID=${GC_GITHUB_CLIENTID}
         - GITHUB_USER==${GC_GITHUB_USER}
         - GITHUB_TOKEN=${GC_GITHUB_GITHUB_TOKEN}
-      #GC_NB_AUTH_MODE=apikey
-      DOMAIN: https://${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}/
+        - DOMAIN: https://${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}/
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.prod-nb.entrypoints=http"
