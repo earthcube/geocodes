@@ -62,9 +62,6 @@ docker volume create minio
 echo run as detached: $detached
 
 # uses swarm :
-if [ "$detached" = true  ]
-  then
-    docker compose -p base --env-file $envfile  -f base-machine-compose.yaml  restart  -d
-  else
-    docker compose -p base --env-file $envfile  -f base-machine-compose.yaml  restart
-fi
+
+docker compose -p base --env-file $envfile  -f base-machine-compose.yaml  restart
+
