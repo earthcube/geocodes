@@ -13,15 +13,15 @@ configs:
   facets_config:
     external: true
     name:   facets_config_production
-secrets:
-  MINIO_ROOT_ACCESS_KEY:
-    external: true
-  MINIO_ROOT_SECRET_KEY:
-    external: true
-  GC_GITHUB_SECRET_OR_USER:
-    external: true
-  GC_GITHUB_CLIENTID_OR_USER_GITHUB_TOKEN:
-    external: true
+#secrets:
+#  MINIO_ROOT_ACCESS_KEY:
+#    external: true
+#  MINIO_ROOT_SECRET_KEY:
+#    external: true
+#  GC_GITHUB_SECRET_OR_USER:
+#    external: true
+#  GC_GITHUB_CLIENTID_OR_USER_GITHUB_TOKEN:
+#    external: true
 services:
   # the base routes:
   # geocodes /
