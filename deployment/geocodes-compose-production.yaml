@@ -16,6 +16,7 @@ configs:
 secrets:
   MINIO_ROOT_ACCESS_KEY:
     external: true
+    name:   PROD_ROOT_ACCESS_KEY
   MINIO_ROOT_SECRET_KEY:
     external: true
   GC_GITHUB_SECRET_OR_USER:
@@ -76,7 +77,7 @@ services:
 #      - "traefik.http.routers.prod-server-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`, `geocodes.earthcube.org`) && PathPrefix(`/ec/api`)"
       #      - "traefik.http.routers.prod-server-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`) && PathPrefix(`/ec/api`)"
       - "traefik.http.routers.prod-server-secure.tls=true"
-      - "traefik.http.routers.prod-server-secure.tls.certresolver=httpresolver"
+      - "traefik.http.routers.prod-server-secure.tls.certresolver=httpresolver_${LETSENCRYPT:-staging}"
       - "traefik.http.routers.prod-server-secure.service=prod-server"
       - "traefik.http.services.prod-server.loadbalancer.server.port=3000"
       - "traefik.docker.network=traefik_proxy"
@@ -120,7 +121,7 @@ services:
  #     - "traefik.http.routers.prod-client-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`, `geocodes.earthcube.org`)"
       #      - "traefik.http.routers.prod-client-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`)"
       - "traefik.http.routers.prod-client-secure.tls=true"
-      - "traefik.http.routers.prod-client-secure.tls.certresolver=httpresolver"
+      - "traefik.http.routers.prod-client-secure.tls.certresolver=httpresolver_${LETSENCRYPT:-staging}"
       - "traefik.http.routers.prod-client-secure.service=prod-client"
       - "traefik.http.services.prod-client.loadbalancer.server.port=8080"
       - "traefik.docker.network=traefik_proxy"
@@ -162,7 +163,7 @@ services:
 #      - "traefik.http.routers.prod-nb-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`, `geocodes.earthcube.org`) && PathPrefix(`/notebook`)"
       #      - "traefik.http.routers.prod-nb-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`) && PathPrefix(`/notebook`)"
       - "traefik.http.routers.prod-nb-secure.tls=true"
-      - "traefik.http.routers.prod-nb-secure.tls.certresolver=httpresolver"
+      - "traefik.http.routers.prod-nb-secure.tls.certresolver=httpresolver_${LETSENCRYPT:-staging}"
       - "traefik.http.routers.prod-nb-secure.service=prod-nb"
       - "traefik.http.services.prod-nb.loadbalancer.server.port=3031"
       - "traefik.docker.network=traefik_proxy"
