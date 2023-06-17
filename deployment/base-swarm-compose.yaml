@@ -39,7 +39,7 @@ services:
       #      - "--ping=true"                                   #enable traefik healthcheck
       #      - "--accesslog=true"                              #enable access log
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.entrypoints=http"
+      - "traefik.http.routers.traefik.entrypoints=http_${LETSENCRYPT:-staging}"
       - "traefik.http.routers.traefik.rule=Host(`${GLEANER_ADMIN_DOMAIN}`)"
       #      - "traefik.http.middlewares.traefik-auth.basicauth.users=`${TRAEFIK_AUTH}`"
       - "traefik.http.middlewares.traefik-auth.basicauth.users=admin:$$apr1$$8o8BiXsR$$a2uH18QqyyAO9vM2nk5gq/"
@@ -65,7 +65,7 @@ services:
       DEFAULT_SPARQL_ENDPOINT: "https://`${GLEANER_GRAPH_DOMAIN}/${SPARQL_DEFAULT_SPARQL_ENDPOINT_PATH}`"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.sparqlgui.entrypoints=http"
+      - "traefik.http.routers.sparqlgui.entrypoints=http_${LETSENCRYPT:-staging}"
       - "traefik.http.routers.sparqlgui.priority=92"
       - "traefik.http.routers.sparqlgui.rule=Host(`${GLEANER_SPARQLGUI_DOMAIN}` )  "
       - "traefik.http.routers.sparqlgui.service=sparqlgui"
