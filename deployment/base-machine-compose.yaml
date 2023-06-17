@@ -37,7 +37,7 @@ services:
 #      - ./traefik-data/acme:/etc/traefik/acme/
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.entrypoints=http"
+      - "traefik.http.routers.traefik.entrypoints=http_${LETSENCRYPT:-staging}"
       - "traefik.http.routers.traefik.rule=Host(`${GLEANER_ADMIN_DOMAIN}`)"
 #      - "traefik.http.middlewares.traefik-auth.basicauth.users=`${TRAEFIK_AUTH}`"
       - "traefik.http.middlewares.traefik-auth.basicauth.users=admin:$$apr1$$8o8BiXsR$$a2uH18QqyyAO9vM2nk5gq/"
@@ -71,7 +71,7 @@ services:
 #      - portainer_data:/data
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.portainer.entrypoints=http"
+      - "traefik.http.routers.portainer.entrypoints=http_${LETSENCRYPT:-staging}"
       - "traefik.http.routers.portainer.rule=Host(`${GLEANER_PORTAINER_DOMAIN}`)"
       - "traefik.http.middlewares.portainer-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.portainer.middlewares=portainer-https-redirect"
