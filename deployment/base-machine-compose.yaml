@@ -47,7 +47,7 @@ services:
       - "traefik.http.routers.traefik-secure.rule=Host(`${GLEANER_ADMIN_DOMAIN}`)"
       - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
       - "traefik.http.routers.traefik-secure.tls=true"
-      - "traefik.http.routers.traefik-secure.tls.certresolver=httpresolver_"
+      - "traefik.http.routers.traefik-secure.tls.certresolver=httpresolver"
       # not going to work onc httpChallenge only
       #      - "traefik.http.routers.traefik-secure.tls.certresolver=httpresolver_${LETSENCRYPT:-staging}"
       - "traefik.http.routers.traefik-secure.service=api@internal"
