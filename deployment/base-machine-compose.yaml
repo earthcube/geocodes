@@ -48,8 +48,6 @@ services:
       - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
       - "traefik.http.routers.traefik-secure.tls=true"
       - "traefik.http.routers.traefik-secure.tls.certresolver=httpresolver"
-      # not going to work onc httpChallenge only
-      #      - "traefik.http.routers.traefik-secure.tls.certresolver=httpresolver_${LETSENCRYPT:-staging}"
       - "traefik.http.routers.traefik-secure.service=api@internal"
 #      - "--certificatesresolvers.http.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
 #      - "--certificatesresolvers.http.acme.httpchallenge=true"
