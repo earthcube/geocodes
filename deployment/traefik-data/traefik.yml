@@ -11,11 +11,7 @@ providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
-  middlewares:
-      geocodes-auth:
-        basicAuth:
-          users:
-          - "admin:<password>"
+
 certificatesResolvers:
   httpresolver:
     acme:
