@@ -11,7 +11,11 @@ providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
-
+  middlewares:
+      geocodes-auth:
+        basicAuth:
+          users:
+          - "admin:<password>"
 certificatesResolvers:
   httpresolver:
     acme:
@@ -21,19 +25,20 @@ certificatesResolvers:
       storage: /etc/traefik/acme.json
       httpChallenge:
         entryPoint: http
-  httpresolver_staging:
-    acme:
-      # using staging for testing/development
-      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
-      email: dwvalentine@ucsd.edu
-      storage: /etc/traefik/acme_stage.json
-      httpChallenge:
-        entryPoint: http
-  httpresolver_production:
-    acme:
-      # using staging for testing/development
-      #caServer: https://acme-staging-v02.api.letsencrypt.org/directory
-      email: dwvalentine@ucsd.edu
-      storage: /etc/traefik/acme_production.json
-      httpChallenge:
-        entryPoint: http
+# this is not going to work. Only one can be active at a time.
+#  httpresolver_staging:
+#    acme:
+#      # using staging for testing/development
+#      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+#      email: dwvalentine@ucsd.edu
+#      storage: /etc/traefik/acme_stage.json
+#      httpChallenge:
+#        entryPoint: http
+#  httpresolver_production:
+#    acme:
+#      # using staging for testing/development
+#      #caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+#      email: dwvalentine@ucsd.edu
+#      storage: /etc/traefik/acme_production.json
+#      httpChallenge:
+#        entryPoint: http
