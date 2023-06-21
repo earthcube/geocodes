@@ -80,7 +80,7 @@ services:
 #      - "traefik.http.routers.prod-server-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`, `geocodes.earthcube.org`) && PathPrefix(`/ec/api`)"
       #      - "traefik.http.routers.prod-server-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`) && PathPrefix(`/ec/api`)"
       - "traefik.http.routers.prod-server-secure.tls=true"
-      - "traefik.http.routers.portainer-secure.tls.certresolver=httpresolver_"
+      - "traefik.http.routers.prod-server.tls.certresolver=httpresolver_"
       # not going to work onc httpChallenge only
       #      - "traefik.http.routers.portainer-secure.tls.certresolver=httpresolver"
       - "traefik.http.routers.prod-server-secure.service=prod-server"
