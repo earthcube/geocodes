@@ -119,7 +119,7 @@ services:
   #    - "traefik.http.routers.prod-client.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`, `geocodes.earthcube.org`)"
       #      - "traefik.http.routers.prod-client.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`) "
       - "traefik.http.middlewares.prod-client-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.prod.middlewares=prod-client-https-redirect"
+      - "traefik.http.routers.prod-client.middlewares=prod-client-https-redirect"
       - "traefik.http.routers.prod-client-secure.entrypoints=https"
       - "traefik.http.routers.prod-client-secure.priority=12"
       - "traefik.http.routers.prod-client-secure.rule=Host( `geocodes.earthcube.org`)"
