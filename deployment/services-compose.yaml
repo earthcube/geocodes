@@ -180,22 +180,23 @@ services:
   pyshacl:
     image: docker.io/ashleysommer/pyshacl:latest
     restart: unless-stopped
-#    ports:
-#      - 8080:8080
+    #    ports:
+    #      - 8080:8080
     environment:
       - PYSHACL_SERVER=TRUE
       - PYSHACL_SERVER_PORT=8080
+      - PYSHACL_SERVER_LISTEN=0.0.0.0
       - PYSHACL_SERVER_HOSTNAME=pyshacl.${HOST}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.pyshacl-server.entrypoints=http"
       - "traefik.http.routers.pyshacl-server.priority=90"
       - "traefik.http.routers.pyshacl-server.rule=Host(`pyshacl.${HOST}`) "
-      - "traefik.http.middlewares.pyshacl-server-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.pyshacl-server.middlewares=pyshacl-server-https-redirect"
+      #  - "traefik.http.middlewares.pyshacl-server-https-redirect.redirectscheme.scheme=https"
+      #  - "traefik.http.routers.pyshacl-server.middlewares=pyshacl-server-https-redirect"
       - "traefik.http.routers.pyshacl-server-secure.priority=91"
       - "traefik.http.routers.pyshacl-server-secure.entrypoints=https"
-      - "traefik.http.routers.pyshacl-server-secure.rule=Host(`pyshacl.${HOST}`)"
+      - "traefik.http.routers.pyshacl-server-secure.rule=Host(`pyshacl.${HOST}`) "
       - "traefik.http.routers.pyshacl-server-secure.tls=true"
       - "traefik.http.routers.pyshacl-server-secure.tls.certresolver=httpresolver"
       - "traefik.http.routers.pyshacl-server-secure.service=pyshacl-server"
