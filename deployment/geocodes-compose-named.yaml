@@ -15,7 +15,7 @@ networks:
 configs:
   facets_config_named:
     external: true
-    name:   facets_config_${GC_BASE}
+    name:   ${FACETS_CONFIG_CONFIG}
 
 services:
   # the base routes:

@@ -6,14 +6,14 @@
 #
 # IT DOES NOT USE SECRETS
 ##########
-version: '3.3'
+version: '3.7'
 networks:
   traefik_proxy:
     external: true
 configs:
   facets_config:
     external: true
-
+    name:   ${FACETS_CONFIG_CONFIG}
 services:
   # the base routes:
   # geocodes /
