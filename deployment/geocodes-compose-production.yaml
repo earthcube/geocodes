@@ -12,7 +12,7 @@ networks:
 configs:
   facets_config:
     external: true
-    name:   facets_config_production
+    name:   ${FACETS_CONFIG_CONFIG:-facets_config_production}
 #secrets:
 #  MINIO_ROOT_ACCESS_KEY:
 #    external: true
