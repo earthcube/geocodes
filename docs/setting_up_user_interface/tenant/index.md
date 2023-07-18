@@ -115,10 +115,12 @@ Load data Steps Overview:
 If you may want to initially test with a local instance in an IDE.
 After that this is the possible instructions for creating a tennant.
 
+??? note "FACETS_CONFIG_CONFIG"
+    This variable now tells the client which configuraiton to utilize
 
 #### add a config in portainer (facets_config_{project})
     * using namespaces, minio and dns from above
-??? example "config/facets_config_PROJECt"
+??? example "config/$FACETS_CONFIG_CONFIG"
     ```yaml
     ---
     #API_URL: http://localhost:3000
@@ -141,13 +143,16 @@ After that this is the possible instructions for creating a tennant.
     ```
 
 #### setup tenant stack
+    * create a new configutatio with a name
     * add a stack with project name  using  geocodes-compose_named.yaml
     * Before saving,  env var GC_BASE with project name
 
 
+
 ```shell
-HOST=geocodes-dev.earthcube,org
-FACET_SERVICES_FILE=./config/services.js
+HOST=geocodes-dev.earthcube.org
+FACETS_CONFIG_CONFIG=facets_config_name_you_created
+
 GC_CLIENT_DOMAIN=geocodes.{dns}
 MINIO_ROOT_ACCESS_KEY={snip}
 MINIO_ROOT_SECRET_KEY={snip}
