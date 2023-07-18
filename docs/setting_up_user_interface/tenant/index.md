@@ -104,6 +104,8 @@ Load data Steps Overview:
 * `pip3 install earthcube_summarize`
 * [run summarize](https://earthcube.github.io/earthcube_utilities/summarize/#run-summarize_from_graph_namespace) (if installed via package, there should be a command line)
 * `summarize_from_graph--repo {repo} --graphendpoint {endppiont} --summary_namespace {earthcube_summary}`
+* (Optional) Upload the output file to graph if you haven't. You can check whether the file exists by checking:
+  * https://graph.geocodes-dev.earthcube.org/blazegraph/namespace/{PROJECT}/sparql
 
 ### Configure Client
 
