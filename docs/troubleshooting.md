@@ -1,48 +1,41 @@
-## Troubleshooting 
+# Troubleshooting
+* [Containers](#containers)
+    * [Can't seem to connect](#cant-seem-to-connect)
+    * [Complaints about bad certificate](#complaints-about-bad-certificate)
+    * [Cannot connect to (minioadmin,graph,sparqlui)](#cannot-connect-to-minioadmingraphsparqlui)
+    * [Minoadmin/Graph/etc seem to be there, but do not connect](#minoadmingraphetc-seem-to-be-there-but-do-not-connect)
+* [glcon](#glcon)
+* [Blazegraph](#blazegraph)
+    *   [Blazegraph journal truncation](#blazegraph-truncate-journal)
+* [Updating portainer](#updating-portainer-or-treafik)
+* [OS issues](#os-issues)
+    * [Ubuntu docker](#ubuntu-docker)
+    * [Ubuntu 18 and glcon](#ubuntu-18-and-glcon)
+* [Issue with a repository](./data_loading/onboarding_or_testing_a_datasource.md)
 
-Some topics (sorry disorganized notes)
-
-* Containers
-    * can't seem to connect
-    * Complaints about bad certificate
-    * cannot connect to (minioadmin,graph,sparqlui)
-    * Minoadmin/Graph/etc seem to be there, but do not connect
-* glcon/gleaner application
-* Blazegraph
-    *   journal truncation
-* updating portainer
-* OS issues
-    * Ubuntu docker
-    * Ubuntu 16. glcon
-* [issue with a repository](./data_loading/onboarding_or_testing_a_datasource.md)
-* 
-## can't seem to connect;
-are containers running
-`docker ps`
-
-can you connect to portainer and traefik
-
-traefik: 
+## Containers
+### Can't seem to connect
+* Are containers running? use `docker ps`
+* Can you connect to portainer and traefik?
+    * traefik: 
 ```
 https://admin.{HOST}
 ```
-
-portainer: 
+    * portainer: 
 ```
 https://portainer.{host}
 ```
 
-In traefik, are  errors on the https://admin.{host}
+* In traefik, are  errors on the `https://admin.{host}`?
 
 ### Complaints about bad certificate
 
-Initially, we are using letsencypt dev services. THis message will show until you
-rebuild the base containers with the dev line commented out
+Initially, we are using letsencypt dev services. This message will show until you
+rebuild the base containers with the dev line commented out. 
+**But that line is commented out.**
+So, need to delete the acme.json and restart the container.
 
-#### But that line is commented out.
-  need to delete the acme.json and restart the container.
-
-log onto console via portainer, use /bin/sh
+* Log onto console via portainer, use /bin/sh
 ```shell
 / # ls
 acme.json      dev            etc            lib            mnt            proc           run            srv            tmp            var
@@ -62,16 +55,14 @@ bin            entrypoint.sh  home           media          opt            root 
         "uri": "https://acme-v02.api.letsencrypt.org/acme/acct/1030461777"
         
 ```
-
 ```sheel
 rm acme.json
 ```
- 
-some docker command also...
+(some docker command also...)
 
 
 
-### cannot connect to (minioadmin,graph,sparqlui)
+### Cannot connect to (minioadmin,graph,sparqlui)
 
 * is the traefik proxy a SCOPE swarm
 `docker network ls`
@@ -94,9 +85,9 @@ may be two
 
 have also seen something similar for graph.
 
-# glcon
+## glcon
 
-## setup failure 
+### Setup failure 
 
 `./glcon gleaner setup --cfgName {name}`
 
@@ -116,26 +107,22 @@ ubuntu@geocodes-dev:~/indexing$ unset MINIO_ACCESS_KEY
 ```
 
 
-## Blazegraph journal truncation:
+## Blazegraph 
 
-
-### for a container
+### Blazegraph truncate journal
+* For a container
 in newer container, the command is available, but the service needs to be stopped.
 guess running an container with an exec command in a different container might work.
-
 ```
 cd /var/lib/blazegraph ;java -jar /usr/bin/blazegraph.jar com.bigdata.journal.CompactJournalUtility blazegraph.jnl blazegraph.jnl.compact
-
-
 ```
 
-
-### count quads 
+* count quads 
 ```text
 SELECT (COUNT(*) as ?Triples) WHERE {graph ?g {?s ?p ?o}}
 ```
 
-## updating Portainer, or treafik
+## Updating Portainer, or treafik
 
 the latest image needs to be pulled
 
@@ -151,19 +138,18 @@ place where  os issues may be
 If you are running on Ubuntu, you need to remove the provided docker.com version. [Official docker package](https://docs.docker.com/engine/install/ubuntu/)
 We suggest that for others, confirm that you can run
 
-    ```shell
-    docker compose version
-    Docker Compose version v2.13.0
-    ```
+```shell
+docker compose version
+docker Compose version v2.13.0
+```
 
-    If you cannot run `docker compose` then update to the docker.com version
-    This is the version we are presently running.
-
-    ```    
-    Client: Docker Engine - Community
-         Version:           20.10.21
-         API version:       1.41
-    ```
+ If you cannot run `docker compose` then update to the docker.com version
+ This is the version we are presently running.
+```    
+Client: Docker Engine - Community
+Version:           20.10.21
+API version:       1.41
+```
 
 ### Ubuntu 18 and glcon
 there appears to be issues with Ubuntu 18 and the latest versions of the golang library viper.
@@ -179,6 +165,4 @@ version:  v3.0.8-ec
 {"file":"/Users/valentin/development/dev_earthcube/gleanerio/gleaner/pkg/cli/gleaner.go:71","func":"github.com/gleanerio/gleaner/pkg/cli.initGleanerConfig","level":"fatal","msg":"error reading config file While parsing config: yaml: unmarshal errors:\n  line 1: cannot unmarshal !!str `\u003c?xml v...` into map[string]interface {}","time":"2023-02-14T15:58:00Z"}
 ubuntu@geocodes-dev:~/indexing$
  ```
-
-
 
