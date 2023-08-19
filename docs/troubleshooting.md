@@ -110,14 +110,21 @@ ubuntu@geocodes-dev:~/indexing$ unset MINIO_ACCESS_KEY
 ## Blazegraph 
 
 ### Blazegraph truncate journal
-* For a container
-in newer container, the command is available, but the service needs to be stopped.
-guess running an container with an exec command in a different container might work.
+* Steps 
+    * Log into portainer
+    * Log into graph container terminal
+    * Check how big the journal file is
+```
+ls -laSh /var/lib/blazegraph
+```
+    * (Optional) Stop the service
+    * Run command
 ```
 cd /var/lib/blazegraph ;java -jar /usr/bin/blazegraph.jar com.bigdata.journal.CompactJournalUtility blazegraph.jnl blazegraph.jnl.compact
 ```
+    * (Optional) Start the service
 
-* count quads 
+* Count quads 
 ```text
 SELECT (COUNT(*) as ?Triples) WHERE {graph ?g {?s ?p ?o}}
 ```
@@ -164,5 +171,5 @@ ubuntu@geocodes-dev:~/indexing$ ./glcon gleaner batch --cfgName ci
 version:  v3.0.8-ec
 {"file":"/Users/valentin/development/dev_earthcube/gleanerio/gleaner/pkg/cli/gleaner.go:71","func":"github.com/gleanerio/gleaner/pkg/cli.initGleanerConfig","level":"fatal","msg":"error reading config file While parsing config: yaml: unmarshal errors:\n  line 1: cannot unmarshal !!str `\u003c?xml v...` into map[string]interface {}","time":"2023-02-14T15:58:00Z"}
 ubuntu@geocodes-dev:~/indexing$
- ```
+```
 
