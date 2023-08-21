@@ -1,5 +1,8 @@
 # Local or Developer Stacks
 
+**This is not done yet. Currently, the stack is running on a remote server so we can utilize the DNS 
+to handle the multiple routes to containers.**
+
 TODO GRAPH OF STACK... or say see index ;)
 
 
