@@ -1,0 +1,87 @@
+# this is the compose file for a container stack without a portainer.
+# basically a docker-swarm stack that provides the traefik router.
+
+version: '3.6'
+configs:
+  traefik_yml:
+    external: true
+networks:
+  traefik_proxy:
+    external: true
+volumes:
+  traefik_data:
+    external: true
+  logs:
+    external: true
+services:
+  traefik:
+    image: traefik:v2.4
+    # container_name: traefik
+    networks:
+      - traefik_proxy
+    # from https://dockerswarm.rocks/traefik/
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - traefik_data:/etc/traefik
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    configs:
+      - source: traefik_yml
+        target:
+          /etc/traefik/traefik.yml
+    labels:
+      #      - "--entrypoints.web.address=:80"                 #listen port 80, accept requests
+      #      - "--providers.docker.exposedbydefault=false"     #only expose containers that have a traefik.enable=true label
+      #      - "--providers.docker.swarmMode=true"             #enable swarm mode for traefik
+      #      - "--providers.docker.swarmModeRefreshSeconds=30" #refresh swarm events every 30 seconds
+      #      - "--ping=true"                                   #enable traefik healthcheck
+      #      - "--accesslog=true"                              #enable access log
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.entrypoints=http"
+      - "traefik.http.routers.traefik.rule=Host(`${GLEANER_ADMIN_DOMAIN}`)"
+      #      - "traefik.http.middlewares.traefik-auth.basicauth.users=`${TRAEFIK_AUTH}`"
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=admin:$$apr1$$8o8BiXsR$$a2uH18QqyyAO9vM2nk5gq/"
+      - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
+      - "traefik.http.routers.traefik-secure.entrypoints=https"
+      - "traefik.http.routers.traefik-secure.rule=Host(`${GLEANER_ADMIN_DOMAIN}`)"
+      - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
+      - "traefik.http.routers.traefik-secure.tls=true"
+      - "traefik.http.routers.traefik-secure.tls.certresolver=httpresolver"
+      - "traefik.http.routers.traefik-secure.service=api@internal"
+    #      - "--certificatesresolvers.http.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+    #      - "--certificatesresolvers.http.acme.httpchallenge=true"
+    #      - "--certificatesresolvers.http.acme.email=dwvalentine@ucsd.edu"
+    #      - "--certificatesresolvers.http.acme.storage=./traefik-data/acme/acme.json"
+    ### #####
+    # UI for graphstore
+    #######
+  sparqlgui:
+    image: erikap/yasgui
+    restart: unless-stopped
+    environment:
+      DEFAULT_SPARQL_ENDPOINT: "https://`${GLEANER_GRAPH_DOMAIN}/${SPARQL_DEFAULT_SPARQL_ENDPOINT_PATH}`"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sparqlgui.entrypoints=http"
+      - "traefik.http.routers.sparqlgui.priority=92"
+      - "traefik.http.routers.sparqlgui.rule=Host(`${GLEANER_SPARQLGUI_DOMAIN}` )  "
+      - "traefik.http.routers.sparqlgui.service=sparqlgui"
+      - "traefik.http.middlewares.sparqlgui-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.sparqlgui.middlewares=sparqlgui-https-redirect"
+      - "traefik.http.routers.sparqlgui-secure.priority=94"
+      - "traefik.http.routers.sparqlgui-secure.entrypoints=https"
+      - "traefik.http.routers.sparqlgui-secure.rule=Host(`${GLEANER_SPARQLGUI_DOMAIN}`) "
+      - "traefik.http.routers.sparqlgui-secure.tls=true"
+      - "traefik.http.routers.sparqlgui-secure.tls.certresolver=httpresolver"
+      - "traefik.http.routers.sparqlgui-secure.service=sparqlgui"
+      - "traefik.http.services.sparqlgui.loadbalancer.server.port=80"
+      - "traefik.http.middlewares.sparqlgui.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
+      - "traefik.http.middlewares.sparqlgui.headers.accesscontrolalloworigin=*"
+      - "traefik.http.middlewares.sparqlgui.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.sparqlgui.headers.addvaryheader=true"
+      - "traefik.docker.network=traefik_proxy"
+    networks:
+      - traefik_proxy

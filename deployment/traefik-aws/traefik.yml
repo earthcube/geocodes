@@ -1,0 +1,39 @@
+api:
+  dashboard: true
+
+entryPoints:
+  http:
+    address: ":80"
+  https:
+    address: ":443"
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+
+certificatesResolvers:
+  httpresolver:
+    acme:
+      # using staging for testing/development
+      #caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      email: dwvalentine@ucsd.edu
+      storage: /etc/traefik/acme.json
+      httpChallenge:
+        entryPoint: http
+  httpresolver_staging:
+    acme:
+      # using staging for testing/development
+      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      email: dwvalentine@ucsd.edu
+      storage: /etc/traefik/acme.json
+      httpChallenge:
+        entryPoint: http
+  httpresolver_production:
+    acme:
+      # using staging for testing/development
+      #caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      email: dwvalentine@ucsd.edu
+      storage: /etc/traefik/acme.json
+      httpChallenge:
+        entryPoint: http

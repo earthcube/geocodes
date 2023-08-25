@@ -24,6 +24,7 @@
 
 ## Pages:
 
+* [Prodcution UI DNS/Server changes](production_ui_deployment.md)
 * [Creating Configurations for Production](creatingAndLoadingProduction.md)
     * [Production Configuration Fragments](production_configs.md)
 * [Managing Services](managing_services.md)
