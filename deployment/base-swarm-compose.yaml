@@ -15,7 +15,7 @@ volumes:
     external: true
 services:
   traefik:
-    image: traefik:v2.4
+    image: traefik:v2.10
     # container_name: traefik
     networks:
       - traefik_proxy
@@ -79,7 +79,7 @@ services:
       - "traefik.http.routers.sparqlgui-secure.service=sparqlgui"
       - "traefik.http.services.sparqlgui.loadbalancer.server.port=80"
       - "traefik.http.middlewares.sparqlgui.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
-      - "traefik.http.middlewares.sparqlgui.headers.accesscontrolalloworigin=*"
+      - "traefik.http.middlewares.sparqlgui.headers.accessControlAllowOriginList=*"
       - "traefik.http.middlewares.sparqlgui.headers.accesscontrolmaxage=100"
       - "traefik.http.middlewares.sparqlgui.headers.addvaryheader=true"
       - "traefik.docker.network=traefik_proxy"

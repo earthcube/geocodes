@@ -50,7 +50,7 @@ services:
       - "traefik.http.routers.triplestore2-secure.tls.certresolver=httpresolver"
       - "traefik.http.routers.triplestore2-secure.service=triplestore2"
       - "traefik.http.middlewares.triplestore2-secure.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,POST"
-      - "traefik.http.middlewares.triplestore2-secure.headers.accesscontrolalloworigin=*"
+      - "traefik.http.middlewares.triplestore2-secure.headers.accessControlAllowOriginList=*"
       - "traefik.http.middlewares.triplestore2-secure.headers.accesscontrolmaxage=200"
       - "traefik.http.middlewares.triplestore2-secure.headers.addvaryheader=true"
       - "traefik.http.middlewares.triplestore2-secure.headers.accesscontrolallowcredentials=true"
