@@ -18,8 +18,8 @@ services:
 
 
   vue-services:
-    #image: nsfearthcube/ec_facets_api_nodejs:latest
-    build: ./server
+    image: nsfearthcube/ec_facets_api_nodejs:latest
+    #build: ./server
     restart: unless-stopped
     ports:
     - 3000:3000
@@ -30,21 +30,21 @@ services:
       - S3KEY=${MINIO_ROOT_ACCESS_KEY}
       - S3SECRET=${MINIO_ROOT_SECRET_KEY}
       - S3SSL=${S3SSL}
-      - S3PORT=${S3PORT]
-      - BUCKET=${BUCKET]
+      - S3PORT=${S3PORT}
+      - BUCKET=${BUCKET}
       - BUCKETPATH=${BUCKETPATH}
-      - PATHTEMPLATE=${PATHTEMPLATE]
+      - PATHTEMPLATE=${PATHTEMPLATE}
       - TOOLTEMPLATE=${TOOLTEMPLATE}
-      - TOOLPATH=${TOOLPATH]
-      - TOOLREPO=${TOOLREPO]
+      - TOOLPATH=${TOOLPATH}
+      - TOOLREPO=${TOOLREPO}
 
     networks:
       - traefik_proxy
 
   vue-client:
-    #image: nsfearthcube/ec_facets_client:latest
+    image: nsfearthcube/ec_facets_client:latest
     restart: unless-stopped
-    build: ./client
+    #build: ./client
     environment:
       - NODE_ENV=production
       - DOMAIN=http://localhost:8080/

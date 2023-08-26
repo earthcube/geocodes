@@ -15,7 +15,13 @@ version: '3'
 # ${GLEANER_TRAEFIK}
 # ${GLEANER_OBJECTS}
 # ${GLEANER_GRAPH}
-
+volumes:
+  minio:
+    external: true
+  graph:
+    external: true
+  logs:
+    external: true
 services:
   # local, no router needed
 #  traefik:
