@@ -13,14 +13,15 @@ Container Stacks:
 * or copy env.local.example to yourconfig.env
 * `./run_local.sh -e yourconfig.env`
 
+Ports/Services
+see [Stack Machines](../stack_machines.md)
 
 ====
 ## is it Running?
 traefik admin
 
-http://localhost:8888//dashboard/#/
-(admin:1forget)
 
-Graph: http://localhost:8888/blazegraph
+
+Graph: http://localhost:9999/blazegraph
 
 

@@ -15,53 +15,41 @@ version: '3'
 # ${GLEANER_TRAEFIK}
 # ${GLEANER_OBJECTS}
 # ${GLEANER_GRAPH}
-
+volumes:
+  minio:
+    external: true
+  graph:
+    external: true
+  logs:
+    external: true
 services:
-  traefik:
-    image: traefik:v2.4
-    container_name: traefik
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    networks:
-      - traefik_proxy
-    ports:
-      - 8888:80   # can use the
- #     - 8443:443
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./traefik-data:/etc/traefik
-      #      - ./traefik-data/traefik.yml:/traefik.yml:ro
-      # issues with acme.json being created as  directory
-      #      - ./traefik-data/acme/acme.json:/acme.json
-      #      - ./traefik-data/acme:/etc/traefik/acme/
-#      - ./traefik-data/logs:/logs
-#      -  ./traefik-data/traefik.yml:/traefik.yml:ro
-#      - ./traefik-data/acme/acme.json:/acme.json
-      - ${GLEANER_TRAEFIK}/logs:/logs
- #     -  ${GLEANER_TRAEFIK_YML}/traefik.yml:/traefik.yml:ro
-#      - ${GLEANER_TRAEFIK}/acme/acme.json:/acme.json
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.traefik.entrypoints=http"
-      - "traefik.http.routers.traefik.service=api@internal"
-      - "traefik.http.routers.traefik.rule=Host(`${HOST}`) && ( PathPrefix(`/dashboard`) ||  PathPrefix(`/api`) )"
-#      - "traefik.http.middlewares.traefik-auth.basicauth.users=`${TRAEFIK_AUTH}`"
-      - "traefik.http.middlewares.traefik-auth.basicauth.users=admin:$$apr1$$8o8BiXsR$$a2uH18QqyyAO9vM2nk5gq/"
-      - "traefik.http.routers.traefik.middlewares=traefik-auth"
-# uses http, since it is local
-#      - "traefik.http.middlewares.traefik_prefix.StripPrefix.prefixes=/admin"
-#      - "traefik.http.routers.traefik.middlewares=traefik_prefix"
-####  https, if it gets setup with https
-#      - "traefik.http.routers.traefik.middlewares=traefik_prefix"
-#      - "traefik.http.routers.traefik.middlewares=traefik-auth"
-#      - "traefik.http.routers.traefik.tls=false"
+  # local, no router needed
+#  traefik:
+#    image: traefik:v2.10
+#    container_name: traefik
+#    restart: unless-stopped
+#    security_opt:
+#      - no-new-privileges:true
+#    networks:
+#      - traefik_proxy
+#    ports:
+#      - 8888:80   # can use the
+# #     - 8443:443
+#    volumes:
+#      - /etc/localtime:/etc/localtime:ro
+#      - /var/run/docker.sock:/var/run/docker.sock:ro
+#      - ./traefik-data:/etc/traefik
+#      #      - ./traefik-data/traefik.yml:/traefik.yml:ro
+#      # issues with acme.json being created as  directory
+#      #      - ./traefik-data/acme/acme.json:/acme.json
+#      #      - ./traefik-data/acme:/etc/traefik/acme/
+##      - ./traefik-data/logs:/logs
+##      -  ./traefik-data/traefik.yml:/traefik.yml:ro
+##      - ./traefik-data/acme/acme.json:/acme.json
+#      - ${GLEANER_TRAEFIK}/logs:/logs
+# #     -  ${GLEANER_TRAEFIK_YML}/traefik.yml:/traefik.yml:ro
+##      - ${GLEANER_TRAEFIK}/acme/acme.json:/acme.json
 
-#      - "--certificatesresolvers.httpresolver.acme.tlschallenge=true"
-      #- "--certificatesresolvers.httpresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
-#      - "--certificatesresolvers.httpresolver.acme.email=dwvalentine@ucsd.edu"
-#      - "--certificatesresolvers.httpresolver.acme.storage=`${GLEANER_TRAEFIK}`/acme/acme.json"
 
 #########
 # blazegraph proxies well. /blazgraph is the route to the ui, and the services
@@ -73,13 +61,9 @@ services:
       JAVA_XMS: 2g
       JAVA_XMX: 8g
       JAVA_OPTS: -Xmx6g -Xms2g --XX:+UseG1GC
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.triplestore.entrypoints=http"
-      - "traefik.http.routers.triplestore.rule=Host(`${HOST}`) && PathPrefix(`/blazegraph`)"
+    ports:
+    - 9999:9999
 
-      - "traefik.http.services.triplestore.loadbalancer.server.port=9999"
-      - "traefik.docker.network=traefik_proxy"
     volumes:
       - ${GLEANER_GRAPH}:/var/lib/blazegraph
     networks:
@@ -113,22 +97,9 @@ services:
     restart: unless-stopped
     environment:
       DEFAULT_SPARQL_ENDPOINT: "https://`${GLEANER_GRAPH_DOMAIN}/${SPARQL_DEFAULT_SPARQL_ENDPOINT_PATH}`"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.sparqlgui.entrypoints=http"
-      - "traefik.http.routers.sparqlgui.priority=92"
-      - "traefik.http.routers.sparqlgui.rule=Host(`${HOST}` )   && PathPrefix(`/sparqlgui`)"
-# uses http, since it is local
-      - "traefik.http.middlewares.sparqlgui_prefix.StripPrefix.prefixes=/sparqlgui"
-      - "traefik.http.routers.sparqlgui.middlewares=sparqlgui_prefix"
+    ports:
+      - 8888:80
 
-      - "traefik.http.routers.sparqlgui.service=sparqlgui"
-      - "traefik.http.services.sparqlgui.loadbalancer.server.port=80"
-      - "traefik.docker.network=traefik_proxy"
-      - "traefik.http.middlewares.sparqlgui.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
-      - "traefik.http.middlewares.sparqlgui.headers.accessControlAllowOriginList=*"
-      - "traefik.http.middlewares.sparqlgui.headers.accesscontrolmaxage=100"
-      - "traefik.http.middlewares.sparqlgui.headers.addvaryheader=true"
     networks:
       - traefik_proxy
 networks:

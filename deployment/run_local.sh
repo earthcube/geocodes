@@ -23,16 +23,16 @@ do
 done
 
 echo RUN LOCAL GEOCODES AND GECODE SERVICES STACK
-echo minio at port 9000 minioadmin at port 9001
-echo blazegraph at /blazegraph
-echo treafik at /dashboard and /api
-echo geocodes at: /
-echo geocodes api at /ec/api
+echo minio at port http://localhost:9000 minioadmin at port http://localhost:9001
+echo blazegraph at http://localhost:9999
+echo geocodes at:http://localhost:8080
+echo geocodes api at http://localhost:3000/
+echo sparqlgui at http://localhost:8888
 
 
 if [ ! $envfile ]
   then
-     envfile=".env"
+     envfile="env.local"
 #      envfile="portainer.env"
 fi
 
@@ -51,6 +51,7 @@ fi
 
 docker volume create graph
 docker volume create minio
+docker volume create logs
 
 if [ "$detached" = true ]
   then
