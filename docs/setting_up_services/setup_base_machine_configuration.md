@@ -13,10 +13,12 @@ This is what will be needed to create a production server
 
 * base virtual machine for containers
 * ability to request DNS,
-
+ 
+!!! warning "SUMMARY"
+    These are a summary of the steps, The [Step Details](#Step Details) are below.
 
 !!! warning "DOCKER REQUIREMENT"
-    If you are running on Ubuntu, you need to remove the provided docker.com version. [Official docker package](https://docs.docker.com/engine/install/ubuntu/)
+    If you are running on **Ubuntu**, you need to remove the provided docker.com version. [Official docker package](https://docs.docker.com/engine/install/ubuntu/)
     We suggest that for others, confirm that you can run 
 
     ```shell
@@ -61,7 +63,8 @@ This is what will be needed to create a production server
     * `sudo reboot now`
 * create a directory for geocodes, set up permissions and groups
     * `sudo mkdir /data/decoder`
-    * `ln -s /data/geocodes/ decoder`
+    * `ln -s /data/decoder/ decoder`
+    *  `ln -s /data/decoder/ geocodes`
     * `sudo addgroup geocodes`
     * `usermod -a -G geocodes {user}`
     * `sudo chgrp geocodes /data/decoder`
@@ -69,7 +72,9 @@ This is what will be needed to create a production server
 * init docker swarm
     * !!! warning "DOCKER SWARM"
           Docker swarm needs to be init'd with the public ip address.
-    * `docker swarm init --advertise-addr {PUBLIC_IP}`
+    * `nslookup {HOSTNAME}`
+    * `sudo docker swarm init --advertise-addr {PUBLIC_IP}`
+    * save the token to a file (I use NOTES)
 * verify proper base configuration
     * `docker compose --help` shows a -p flag
 * SNAPSHOT and creaate an image
@@ -78,6 +83,8 @@ This is what will be needed to create a production server
     * `cd decoder` or `cd /data/decoder`
     * `git clone https://github.com/earthcube/geocodes.git`
 * configure a base server
+  * base-machine-compose.yaml is the full stack with a portainer, treafik
+  * base-swarm-compose.yaml is just a treakfit. connect with your existing portainer.
 * take a break and wait for the DNS entries.
     * if you cannot wait for the DNS, you can go to the no cert port 
         * https://{HOST}}:9443/
