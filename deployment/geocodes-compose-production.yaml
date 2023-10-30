@@ -65,6 +65,7 @@ services:
         #      - TOOLTEMPLATE=${TOOLTEMPLATE}
         TOOLPATH: ${TOOLPATH}
         TOOLREPO: ${TOOLREPO}
+        URIVERSION: ${URIVERSION:-v2}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.prod-server.entrypoints=http"
@@ -103,6 +104,7 @@ services:
     environment:
       - NODE_ENV=geocodestest
       - DOMAIN=https://${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}/
+      -  URIVERSION=${URIVERSION:-v2}
     configs:
       - source:   facets_config
         target: /usr/src/app/dist/public/config/config.yaml
