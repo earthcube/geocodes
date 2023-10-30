@@ -45,7 +45,7 @@ services:
 
 
   vue-services:
-    image: nsfearthcube/ec_facets_api_nodejs:latest
+    image: nsfearthcube/ec_facets_api_nodejs:${FACETS_SERVICES_TAG:-latest}
     #    profiles: ["geocodes"]
     #build: ./server
     restart: unless-stopped
@@ -65,6 +65,7 @@ services:
         #      - TOOLTEMPLATE=${TOOLTEMPLATE}
         TOOLPATH: ${TOOLPATH}
         TOOLREPO: ${TOOLREPO}
+        URIVERSION: ${URIVERSION:-v2}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.prod-server.entrypoints=http"
@@ -96,13 +97,14 @@ services:
       - traefik_proxy
 
   vue-client:
-    image: nsfearthcube/ec_facets_client:latest
+    image: nsfearthcube/ec_facets_client:${FACETS_CLIENT_TAG:-latest}
     #    profiles: ["geocodes"]
     restart: unless-stopped
     #build: ./client
     environment:
       - NODE_ENV=geocodestest
       - DOMAIN=https://${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}/
+      -  URIVERSION=${URIVERSION:-v1}
     configs:
       - source:   facets_config
         target: /usr/src/app/dist/public/config/config.yaml
