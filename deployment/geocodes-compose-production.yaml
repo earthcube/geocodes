@@ -104,7 +104,7 @@ services:
     environment:
       - NODE_ENV=geocodestest
       - DOMAIN=https://${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}/
-      -  URIVERSION=${URIVERSION:-v2}
+      -  URIVERSION=${URIVERSION:-v1}
     configs:
       - source:   facets_config
         target: /usr/src/app/dist/public/config/config.yaml
