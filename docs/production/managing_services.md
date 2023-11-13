@@ -67,7 +67,15 @@ mc rm dev/gleaner/milled --recursive --older-than 365d00h00m00s
 ```
 
 ## BLAZEGRAPH
-### CLEANING UP THE JOURNAL
+### Uploading the release graphs
+There are several ways to upload release graphs.
+1. curl
+```
+curl -X POST -H 'Content-Type:text/x-nquads' --data-binary '@bcodmo_release.nq' https://graph.geocodes-aws.earthcube.org/blazegraph/namespace/deepoceans/sparql
+```
+2. In the blazegraph UI, the tab `UPDATE` allows you to upload small graphs.  
+
+### Cleaning up the journal
 Blazegraph (and fuseki) will grow as data is added, its a journaled file system so it's not 
 cleaned up.
 
@@ -77,7 +85,7 @@ The steps  are originally from (Medium.com)[https://medium.com/@nvbach91/how-to-
 
 
 
-## deleting:
+### deleting:
 https://www.w3.org/TR/sparql11-update/#clear
 ``` { .text .copy }
 `CLEAR ALL`
