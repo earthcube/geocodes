@@ -1,5 +1,11 @@
 # Setting up Geocodes Services on AWS
 
+??? Note
+    we decided against using both s3 and Neptune.
+    each neptune instnace is one graph namespace, so at $95/month for an instance, that is a bit high.
+    s3 works, but for testing we take buckets up and down, easier to manage in minio that AWS.
+
+
 To do this, we are going to utilize four pieces:
 * s3, replaces Minio Container
 * neptune, replaces Graph Container

@@ -1,5 +1,7 @@
 version: '3.3'
 
+# this can be used to override a config with a local file
+
 configs:
-  facets_config:
+  facets_config_named:
     file: ./facets/config.yaml

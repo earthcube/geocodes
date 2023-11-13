@@ -1,4 +1,7 @@
-version: '3'
+version: '3.9'
+configs:
+  facets_config_named:
+    file: ./facets/config.yaml
 services:
   # the base routes:
   # geocodes /
@@ -50,7 +53,12 @@ services:
       - DOMAIN=http://localhost:8080/
     ports:
       - 8080:8080
-
+    configs:
+      # the config facets_config_named (defined above) has the name facets_config_${GC_BASE}
+      - source:     facets_config_named
+        target: /usr/src/app/dist/public/config/config.yaml
+      - source:    facets_config_named
+        target: /usr/src/app/dist/config/config.yaml
     networks:
       - traefik_proxy
   notebook-proxy:

@@ -4,6 +4,8 @@
 #  IT INCLUDES A FIXED TRAEFIK Routing names: prod-server, prod-client, prod-nb
 # and HOST NAME 'geocodes.earthcube.org'
 #
+# CHANGES:
+# 2023-11 Added URIVERSION to handle different gleanerio uri versions. V2 is latest, v1 is default.
 ##########
 version: '3.9'
 networks:
@@ -65,7 +67,7 @@ services:
         #      - TOOLTEMPLATE=${TOOLTEMPLATE}
         TOOLPATH: ${TOOLPATH}
         TOOLREPO: ${TOOLREPO}
-        URIVERSION: ${URIVERSION:-v2}
+        URIVERSION: ${URIVERSION:-v1}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.prod-server.entrypoints=http"
