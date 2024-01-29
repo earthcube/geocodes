@@ -65,6 +65,7 @@ services:
         #      - TOOLTEMPLATE=${TOOLTEMPLATE}
         TOOLPATH: ${TOOLPATH}
         TOOLREPO: ${TOOLREPO}
+        URIVERSION: ${URIVERSION:-v1}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.prod-server.entrypoints=http"
