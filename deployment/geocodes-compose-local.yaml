@@ -73,7 +73,7 @@ services:
       - GITHUB_TOKEN=${GC_GITHUB_GITHUB_TOKEN}
       #GC_NB_AUTH_MODE=apikey
       - DOMAIN=http://${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}/
-      - VITE_FACETS_CONFIG_FILE=${VITE_FACETS_CONFIG_FILE}
+      - VITE_FACETS_CONFIG_FILE=${VITE_FACETS_CONFIG_FILE:-config/config.yaml}
     ports:
       - 3031:3031
     networks:
