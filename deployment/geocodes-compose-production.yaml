@@ -142,7 +142,7 @@ services:
     networks:
       - traefik_proxy
   notebook-proxy:
-    image: nsfearthcube/mknb:latest
+    image: nsfearthcube/mknb:${FACETS_NOTEBOOK_TAG:-latest}
     #    profiles: ["geocodes"]
     restart: unless-stopped
     #build: ./client
