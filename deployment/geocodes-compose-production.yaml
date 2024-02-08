@@ -68,6 +68,7 @@ services:
         TOOLPATH: ${TOOLPATH}
         TOOLREPO: ${TOOLREPO}
         URIVERSION: ${URIVERSION:-v1}
+        VITE_FACETS_CONFIG_FILE: ${VITE_FACETS_CONFIG_FILE}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.prod-server.entrypoints=http"
