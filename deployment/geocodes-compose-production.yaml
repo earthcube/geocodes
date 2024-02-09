@@ -110,6 +110,7 @@ services:
       -  URIVERSION=${URIVERSION:-v1}
       - VITE_FACETS_CONFIG_FILE=${VITE_FACETS_CONFIG_FILE:-config/config.yaml}
       - VITE_MAPBOX_API_KEY=${VITE_MAPBOX_API_KEY}
+      - VITE_APP_TITLE=${VITE_APP_TITLE}
     configs:
       - source:   facets_config
         target: /usr/src/app/dist/public/config/config.yaml

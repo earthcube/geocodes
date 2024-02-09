@@ -90,6 +90,7 @@ services:
       -  URIVERSION=${URIVERSION:-v2}
       - VITE_FACETS_CONFIG_FILE=${VITE_FACETS_CONFIG_FILE:-config/config.yaml}
       - VITE_MAPBOX_API_KEY=${VITE_MAPBOX_API_KEY}
+      - VITE_APP_TITLE=${VITE_APP_TITLE}
     configs:
   # the config facets_config_named (defined above) has the name facets_config_${GC_BASE}
       - source:     facets_config_named
