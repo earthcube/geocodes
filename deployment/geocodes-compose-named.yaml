@@ -88,8 +88,8 @@ services:
       - NODE_ENV=geocodestest
       - DOMAIN=https://${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}/
       -  URIVERSION=${URIVERSION:-v2}
-      - VITE_FACETS_CONFIG_FILE=${VITE_FACETS_CONFIG_FILE:-config/config.yaml}
-      - VITE_MAPBOX_API_KEY=${VITE_MAPBOX_API_KEY}
+      - VITE_APP_FACETS_CONFIG_FILE=${VITE_APP_FACETS_CONFIG_FILE:-config/config.yaml}
+      - VITE_APP_MAPBOX_API_KEY=${VITE_APP_MAPBOX_API_KEY}
       - VITE_APP_TITLE=${VITE_APP_TITLE}
     configs:
   # the config facets_config_named (defined above) has the name facets_config_${GC_BASE}
