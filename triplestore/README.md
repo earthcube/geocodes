@@ -1,9 +1,8 @@
-# OIH Qlever Test Instance
+# Qlever Test Instance
 
 ## About
 
-This document describes the use of [qlever-control](https://github.com/ad-freiburg/qlever-control)
-to work with the ODIS-OIH graph.
+This document describes the use of [qlever-control](https://github.com/ad-freiburg/qlever-control).
 
 The pre-requisist for using this approach include python and docker.  Once statisfied you
 will need to:
@@ -26,11 +25,11 @@ Then change diretory, cd, into that new directory and run the
 following commands from there.
 
 ```bash
-wget http://ossapi.oceaninfohub.org/public/Qleverfile-odis
-qlever -q Qleverfile-odis get-data         # Download the dataset
-qlever -q Qleverfile-odis index            # Build index data structures for this dataset
-qlever -q Qleverfile-odis start            # Start a QLever server using that index
-qlever -q Qleverfile-odis ui               # Launch the QLever UI
+wget https://raw.githubusercontent.com/earthcube/geocodes/refs/heads/qlever/triplestore/Qleverfile-decoder
+qlever -q Qleverfile-decoder get-data         # Download the dataset
+qlever -q Qleverfile-decoder index            # Build index data structures for this dataset
+qlever -q Qleverfile-decoder start            # Start a QLever server using that index
+qlever -q Qleverfile-decoder ui               # Launch the QLever UI
 ```
 
 The raw SPARQL endpoint should be on port 7019 if you wish to use your own
