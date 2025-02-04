@@ -53,6 +53,7 @@ services:
     environment:
       JAVA_XMS: 8g
       JAVA_XMX: 16g
+      JAVA_TOOL_OPTIONS: "-Dfile.encoding=UTF-8 -Dfile.client.encoding=UTF-8 -Dclient.encoding.override=UTF-8"
    # java_opts not used in nawer/blaszgraph
    #   JAVA_OPTS: -Xmx8g -Xms2g --XX:+UseG1GC
     labels:
