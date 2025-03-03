@@ -62,10 +62,26 @@ and be able to see the UI on port 8176.
 
 ## Update Support
 
-Two important features that are currently still missing, but will be added soon: (1) only a single update per request is allowed, not multiple updates that are treated atomically (that is, they either all succeed or all fail); (2) updates are not yet persistent and need to be remembered outside of QLever in case of a server crash and restart.
+Example SPARQL update
+
+```bash
+curl -X POST \
+  -H "Content-Type: application/sparql-update" \
+  -H "Accept: text/plain" \
+  --data 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX ex: <http://example.org/>
+
+INSERT DATA {
+    ex:john rdf:type foaf:Person ;
+            foaf:name "John Doe" ;
+            foaf:age "30" .
+}' \
+  http://example.lan:7019/api/local\?access-token\=decoder_7643543846_6dMISzlPrD7i
+
+```
 
 
-As of Nov 15, 2024, the following work:
 
 ```
 INSERT DATA { ... }
