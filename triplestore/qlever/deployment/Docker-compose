@@ -7,7 +7,7 @@ services:
     image: docker.io/adfreiburg/qlever:latest
     container_name: qlever.server.odis
     init: true
-    user: "${USER_ID}:${GROUP_ID}"  # Will be set via .env file
+#    user: "${USER_ID}:${GROUP_ID}"  # Will be set via .env file
     working_dir: /index
     ports:
       - "7019:7019"
@@ -16,5 +16,5 @@ services:
       - ./host-index:/index
     entrypoint: bash
     command: >
-          -c 'ServerMain -i odis -j 8 -p 7019 -m 25G -c 20G -e 1G -k 200 -s 240s -a odis_7643543846_6dMISzlPrD7i > odis.server-log.txt 2>&1'
+          -c 'ServerMain -i odis -j 8 -p 7019 -m 25G -c 20G -e 1G -k 200 -s 240s -a decoder_7643543846_6dMISzlPrD7i > qlever.server-log.txt 2>&1'
     restart: unless-stopped
