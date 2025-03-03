@@ -1,0 +1,84 @@
+version: "3.9"
+networks:
+  traefik_proxy:
+    external: true
+
+# Environment variables need to be set in a .env file:
+# USER_ID=$(id -u)
+# GROUP_ID=$(id -g)
+volumes:
+  qlever:
+    external: true
+configs:
+
+  qleversettings:
+    name: ${GLEANERIO_QLEVER_CONFIG:-qlever}
+    external: true
+  qlevermetadata:
+    name: ${GLEANERIO_QLEVER_CONFIG:-qlevermetadata}
+    external: true
+
+services:
+  qlever_server_main:
+    hostname: qlever-server-${PROJECT:-eco}-${SOURCE:-decoder}-main
+    image: docker.io/adfreiburg/qlever:latest
+    #container_name: qlever.server.odis
+    init: true
+    #    user: "${USER_ID}:${GROUP_ID}"  # Will be set via .env file
+    working_dir: /index
+    ports:
+      - "7019:7019"
+    configs: &configs
+      - source: qleversettings
+        target: /index/odis.settings.json
+        # uid: "103"
+        # gid: "103"
+        mode:
+          0444
+      - source: qlevermetadata
+        target: /index/odis.meta-data.json
+        # uid: "103"
+        # gid: "103"
+        mode:
+          0444
+    volumes:
+      - type: bind
+        source: /etc/localtime
+        target: /etc/localtime
+        read_only: true
+      - type: volume
+        source: qlever
+        target: /index
+        volume:
+          nocopy: true
+          subpath: ${SOURCE:-decoder}/main
+    entrypoint: bash
+    command: >
+      -c 'ServerMain -i odis -j 8 -p 7019 -m 25G -c 20G -e 1G -k 200 -s 240s -a decoder_7643543846_6dMISzlPrD7i 2>&1'
+    restart: unless-stopped
+  qlever_server_summary:
+    hostname: qlever-server-${PROJECT:-eco}-${SOURCE:-decoder}-summary
+    image: docker.io/adfreiburg/qlever:latest
+    #container_name: qlever.server.odis
+    init: true
+    #    user: "${USER_ID}:${GROUP_ID}"  # Will be set via .env file
+    working_dir: /index
+    ports:
+      - "7020:7019"
+    configs: *configs
+
+    volumes:
+      - type: bind
+        source: /etc/localtime
+        target: /etc/localtime
+      #- qlever/${SOURCE:-decoder}/summary:/index
+      - type: volume
+        source: qlever
+        target: /index
+        volume:
+          nocopy: true
+          subpath: ${SOURCE:-decoder}/summary
+    entrypoint: bash
+    command: >
+      -c 'ServerMain -i odis -j 8 -p 7019 -m 25G -c 20G -e 1G -k 200 -s 240s -a decoder_7643543846_6dMISzlPrD7i  2>&1'
+    restart: unless-stopped
