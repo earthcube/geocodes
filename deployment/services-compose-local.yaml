@@ -56,7 +56,7 @@ services:
 #  localhost:8888/blazegraph
 #############
   graph:
-    image: nawer/blazegraph
+    image: nsfearthcube/blazegraph
     environment:
       JAVA_XMS: 2g
       JAVA_XMX: 8g
