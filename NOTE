@@ -1,0 +1,2 @@
+You need to add any new documents to mkdocs.yaml if you want them to appear in the nav
+They will be generated, but will be blind unless linked from a page or the nav section.
