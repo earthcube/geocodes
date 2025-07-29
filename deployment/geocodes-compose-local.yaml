@@ -21,7 +21,7 @@ services:
 
 
   vue-services:
-    image: nsfearthcube/ec_facets_api_nodejs:latest
+    image: nsfearthcube/ec_facets_api_nodejs:${FACETS_SERVICES_TAG:-latest}
     #build: ./server
     restart: unless-stopped
     ports:
@@ -45,7 +45,7 @@ services:
       - traefik_proxy
 
   vue-client:
-    image: nsfearthcube/ec_facets_client:latest
+    image: nsfearthcube/ec_facets_client:${FACETS_CLIENT_TAG:-latest}
     restart: unless-stopped
     #build: ./client
     environment:

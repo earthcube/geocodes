@@ -12,7 +12,7 @@ volumes:
 configs:
 
   qleversettings:
-    name: ${GLEANERIO_QLEVER_CONFIG:-qlever}
+    name: ${GLEANERIO_QLEVER_CONFIG:-qleversettings}
     external: true
   qlevermetadata:
     name: ${GLEANERIO_QLEVER_CONFIG:-qlevermetadata}
@@ -30,13 +30,13 @@ services:
       - "7019:7019"
     configs: &configs
       - source: qleversettings
-        target: /index/odis.settings.json
+        target: /index/${SOURCE:-decoder}.settings.json
         # uid: "103"
         # gid: "103"
         mode:
           0444
       - source: qlevermetadata
-        target: /index/odis.meta-data.json
+        target: /index/${SOURCE:-decoder}.meta-data.json
         # uid: "103"
         # gid: "103"
         mode:
@@ -54,7 +54,7 @@ services:
           subpath: ${SOURCE:-decoder}/main
     entrypoint: bash
     command: >
-      -c 'ServerMain -i odis -j 8 -p 7019 -m 25G -c 20G -e 1G -k 200 -s 240s -a decoder_7643543846_6dMISzlPrD7i 2>&1'
+      -c 'ServerMain -i ${SOURCE:-decoder} -j 8 -p 7019 -m 25G -c 20G -e 1G -k 200 -s 240s -a decoder_7643543846_6dMISzlPrD7i 2>&1'
     restart: unless-stopped
   qlever_server_summary:
     hostname: qlever-server-${PROJECT:-eco}-${SOURCE:-decoder}-summary
@@ -80,5 +80,5 @@ services:
           subpath: ${SOURCE:-decoder}/summary
     entrypoint: bash
     command: >
-      -c 'ServerMain -i odis -j 8 -p 7019 -m 25G -c 20G -e 1G -k 200 -s 240s -a decoder_7643543846_6dMISzlPrD7i  2>&1'
+      -c 'ServerMain -i ${SOURCE:-decoder} -j 8 -p 7019 -m 25G -c 20G -e 1G -k 200 -s 240s -a decoder_7643543846_6dMISzlPrD7i  2>&1'
     restart: unless-stopped
