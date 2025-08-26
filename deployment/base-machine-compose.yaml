@@ -11,7 +11,7 @@ volumes:
     external: true
 services:
   traefik:
-    image: traefik:v2.10
+    image: traefik:v3
     container_name: traefik
     restart: unless-stopped
     security_opt:
@@ -54,7 +54,7 @@ services:
 #      - "--certificatesresolvers.http.acme.email=dwvalentine@ucsd.edu"
 #      - "--certificatesresolvers.http.acme.storage=./traefik-data/acme/acme.json"
   portainer:
-    image: portainer/portainer-ce:latest
+    image: portainer/portainer-${PORTAINER-EDITION:-ce}:lts
     container_name: portainer
     restart: unless-stopped
     ports:
