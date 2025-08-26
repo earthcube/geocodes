@@ -54,7 +54,7 @@ services:
 #      - "--certificatesresolvers.http.acme.email=dwvalentine@ucsd.edu"
 #      - "--certificatesresolvers.http.acme.storage=./traefik-data/acme/acme.json"
   portainer:
-    image: portainer/portainer-${PORTAINER-EDITION:-ce}:lts
+    image: portainer/portainer-${PORTAINER_EDITION:-ce}:lts
     container_name: portainer
     restart: unless-stopped
     ports:
