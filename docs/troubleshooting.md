@@ -2,6 +2,7 @@
 
 Some topics (sorry disorganized notes)
 
+
 * Containers
     * can't seem to connect
     * Complaints about bad certificate
@@ -15,6 +16,7 @@ Some topics (sorry disorganized notes)
     * Ubuntu docker
     * Ubuntu 16. glcon
 * [issue with a repository](./data_loading/onboarding_or_testing_a_datasource.md)
+* rebuild 
 * 
 ## can't seem to connect;
 are containers running
