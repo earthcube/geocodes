@@ -3,7 +3,7 @@
 #
 # THIS can be used mtultiple times, by setting a variable
 #  ${GC_HOST}
-#  IT INCLUDES A  TRAEFIK Routing names: tennant${GC_BASE}`-server, tennant${GC_BASE}`-client, tennant${GC_BASE}`-nb
+#  IT INCLUDES A  TRAEFIK Routing names: tennant${COMMUNITY}`-server, tennant${COMMUNITY}`-client, tennant${COMMUNITY}`-nb
 # and HOST NAME ${GC_CLIENT_DOMAIN}
 #
 # IT DOES NOT USE SECRETS
@@ -42,40 +42,40 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=produdction
-      - S3ADDRESS=${GLEANER_OSS_DOMAIN}
+      - S3ADDRESS=${S3_NAME:-oss}.${HOST}
       - S3KEY=${MINIO_ROOT_ACCESS_KEY}
       - S3SECRET=${MINIO_ROOT_SECRET_KEY}
-      - S3SSL=${S3SSL}
-      - S3PORT=${S3PORT}
-      - BUCKET=${BUCKET}
-      - BUCKETPATH=${BUCKETPATH}
+      - S3SSL=${S3SSL:-true}
+      - S3PORT=${S3PORT:-443}
+      - BUCKET=${BUCKET:-decoder}
+      - BUCKETPATH=${BUCKETPATH:-summoned}
 #      - PATHTEMPLATE=${PATHTEMPLATE}
 #      - TOOLTEMPLATE=${TOOLTEMPLATE}
-      - TOOLPATH=${TOOLPATH}
-      - TOOLREPO=${TOOLREPO}
-      - URIVERSION=${URIVERSION:-v1}
+      - TOOLPATH=${TOOLPATH:-ecrr}
+      - TOOLREPO=${TOOLREPO:-summoned}
+      - URIVERSION=${URIVERSION:-v2}
 
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.`tennant${GC_BASE}`-server.entrypoints=http"
-      - "traefik.http.routers.`tennant${GC_BASE}`-server.priority=90"
-      - "traefik.http.routers.`tennant${GC_BASE}`-server.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`) && PathPrefix(`/ec/api`)"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`-server-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.`tennant${GC_BASE}`-server.middlewares=`tennant${GC_BASE}`-server-https-redirect"
-      - "traefik.http.routers.`tennant${GC_BASE}`-server-secure.priority=91"
-      - "traefik.http.routers.`tennant${GC_BASE}`-server-secure.entrypoints=https"
-      - "traefik.http.routers.`tennant${GC_BASE}`-server-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment is required}`) && PathPrefix(`/ec/api`)"
-      - "traefik.http.routers.`tennant${GC_BASE}`-server-secure.tls=true"
-      - "traefik.http.routers.`tennant${GC_BASE}`-server-secure.tls.certresolver=httpresolver"
-      - "traefik.http.routers.`tennant${GC_BASE}`-server-secure.service=`tennant${GC_BASE}`-server"
-      - "traefik.http.services.`tennant${GC_BASE}`-server.loadbalancer.server.port=3000"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-server.entrypoints=http"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-server.priority=90"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-server.rule=Host(`${COMMUNITY}.${HOST}`) && PathPrefix(`/ec/api`)"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`-server-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-server.middlewares=`tennant${COMMUNITY}`-server-https-redirect"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-server-secure.priority=91"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-server-secure.entrypoints=https"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-server-secure.rule=Host(`${COMMUNITY}.${HOST}`) && PathPrefix(`/ec/api`)"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-server-secure.tls=true"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-server-secure.tls.certresolver=httpresolver"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-server-secure.service=`tennant${COMMUNITY}`-server"
+      - "traefik.http.services.`tennant${COMMUNITY}`-server.loadbalancer.server.port=3000"
       - "traefik.docker.network=traefik_proxy"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`-server.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`-server.headers.accessControlAllowOriginList=*"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`-server.headers.accesscontrolmaxage=100"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`-server.headers.addvaryheader=true"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`-server.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`-server.headers.accessControlAllowOriginList=*"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`-server.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`-server.headers.addvaryheader=true"
       - "traefik.http.middlewares.ecapi_prefix_b.StripPrefix.prefixes=/ec/api"
-      - "traefik.http.routers.`tennant${GC_BASE}`-server-secure.middlewares=ecapi_prefix_b"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-server-secure.middlewares=ecapi_prefix_b"
     networks:
       - traefik_proxy
 
@@ -85,14 +85,14 @@ services:
     restart: unless-stopped
     #build: ./client
     environment:
-      - NODE_ENV=geocodestest
-      - DOMAIN=https://${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}/
+      - NODE_ENV=production
+      - DOMAIN=https://${COMMUNITY}.${HOST}/
       -  URIVERSION=${URIVERSION:-v2}
       - VITE_APP_FACETS_CONFIG_FILE=${VITE_APP_FACETS_CONFIG_FILE:-config/config.yaml}
-      - VITE_APP_MAPBOX_API_KEY=${VITE_APP_MAPBOX_API_KEY}
-      - VITE_APP_TITLE=${VITE_APP_TITLE}
+      - VITE_APP_MAPBOX_API_KEY=${MAPBOX_API_KEY}
+      - VITE_APP_TITLE=${COMMUNITY_NAME:-${COMMUNITY}}
     configs:
-  # the config facets_config_named (defined above) has the name facets_config_${GC_BASE}
+  # the config facets_config_named (defined above) has the name facets_config_${COMMUNITY}
       - source:     facets_config_named
         target: /usr/src/app/dist/public/config/config.yaml
       - source:    facets_config_named
@@ -103,27 +103,27 @@ services:
   #      mode: 0440
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.`tennant${GC_BASE}`.entrypoints=http"
-      - "traefik.http.routers.`tennant${GC_BASE}`.priority=13"
-      - "traefik.http.routers.`tennant${GC_BASE}`.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`)"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.`tennant${GC_BASE}`.middlewares=`tennant${GC_BASE}`-https-redirect"
-      - "traefik.http.routers.`tennant${GC_BASE}`-secure.entrypoints=https"
-      - "traefik.http.routers.`tennant${GC_BASE}`-secure.priority=12"
-      - "traefik.http.routers.`tennant${GC_BASE}`-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`)"
-      - "traefik.http.routers.`tennant${GC_BASE}`-secure.tls=true"
-      - "traefik.http.routers.`tennant${GC_BASE}`-secure.tls.certresolver=httpresolver"
-      - "traefik.http.routers.`tennant${GC_BASE}`-secure.service=`tennant${GC_BASE}`"
-      - "traefik.http.services.`tennant${GC_BASE}`.loadbalancer.server.port=8080"
+      - "traefik.http.routers.`tennant${COMMUNITY}`.entrypoints=http"
+      - "traefik.http.routers.`tennant${COMMUNITY}`.priority=13"
+      - "traefik.http.routers.`tennant${COMMUNITY}`.rule=Host(`${COMMUNITY}.${HOST}`)"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.`tennant${COMMUNITY}`.middlewares=`tennant${COMMUNITY}`-https-redirect"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-secure.entrypoints=https"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-secure.priority=12"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-secure.rule=Host(`${COMMUNITY}.${HOST}`)"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-secure.tls=true"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-secure.tls.certresolver=httpresolver"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-secure.service=`tennant${COMMUNITY}`"
+      - "traefik.http.services.`tennant${COMMUNITY}`.loadbalancer.server.port=8080"
       - "traefik.docker.network=traefik_proxy"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`.headers.accessControlAllowOriginList=*"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`.headers.accesscontrolmaxage=100"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`.headers.addvaryheader=true"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`.headers.accessControlAllowOriginList=*"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`.headers.addvaryheader=true"
     networks:
       - traefik_proxy
   notebook-proxy:
-    image: nsfearthcube/mknb:${FACETS_NOTEBOOK_TAG:-latest}
+    image: nsfearthcube/mknb:${FACETS_NOTEBOOK_TAG:-master}
 #    profiles: ["geocodes"]
     restart: unless-stopped
     #build: ./client
@@ -134,28 +134,28 @@ services:
       - GITHUB_USER==${GC_GITHUB_USER}
       - GITHUB_TOKEN=${GC_GITHUB_GITHUB_TOKEN}
       #GC_NB_AUTH_MODE=apikey
-      - DOMAIN=https://${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}/
+      - DOMAIN=https://https://${COMMUNITY}.${HOST}/}/
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.`tennant${GC_BASE}`nb.entrypoints=http"
-      - "traefik.http.routers.`tennant${GC_BASE}`nb.priority=90"
-      - "traefik.http.routers.`tennant${GC_BASE}`nb.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`) && PathPrefix(`/notebook`)"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`nb-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.`tennant${GC_BASE}`nb.middlewares=`tennant${GC_BASE}`nb-https-redirect"
-      - "traefik.http.routers.`tennant${GC_BASE}`nb-secure.entrypoints=https"
-      - "traefik.http.routers.`tennant${GC_BASE}`nb-secure.priority=90"
-      - "traefik.http.routers.`tennant${GC_BASE}`nb-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`) && PathPrefix(`/notebook`)"
-      - "traefik.http.routers.`tennant${GC_BASE}`nb-secure.tls=true"
-      - "traefik.http.routers.`tennant${GC_BASE}`nb-secure.tls.certresolver=httpresolver"
-      - "traefik.http.routers.`tennant${GC_BASE}`nb-secure.service=`tennant${GC_BASE}`nb"
-      - "traefik.http.services.`tennant${GC_BASE}`nb.loadbalancer.server.port=3031"
+      - "traefik.http.routers.`tennant${COMMUNITY}`nb.entrypoints=http"
+      - "traefik.http.routers.`tennant${COMMUNITY}`nb.priority=90"
+      - "traefik.http.routers.`tennant${COMMUNITY}`nb.rule=Host(`${COMMUNITY}.${HOST}`) && PathPrefix(`/notebook`)"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`nb-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.`tennant${COMMUNITY}`nb.middlewares=`tennant${COMMUNITY}`nb-https-redirect"
+      - "traefik.http.routers.`tennant${COMMUNITY}`nb-secure.entrypoints=https"
+      - "traefik.http.routers.`tennant${COMMUNITY}`nb-secure.priority=90"
+      - "traefik.http.routers.`tennant${COMMUNITY}`nb-secure.rule=Host(`${COMMUNITY}.${HOST}`) && PathPrefix(`/notebook`)"
+      - "traefik.http.routers.`tennant${COMMUNITY}`nb-secure.tls=true"
+      - "traefik.http.routers.`tennant${COMMUNITY}`nb-secure.tls.certresolver=httpresolver"
+      - "traefik.http.routers.`tennant${COMMUNITY}`nb-secure.service=`tennant${COMMUNITY}`nb"
+      - "traefik.http.services.`tennant${COMMUNITY}`nb.loadbalancer.server.port=3031"
       - "traefik.docker.network=traefik_proxy"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`nb.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`nb.headers.accessControlAllowOriginList=*"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`nb.headers.accesscontrolmaxage=100"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`nb.headers.addvaryheader=true"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`nb_prefix.StripPrefix.prefixes=/notebook"
-      - "traefik.http.routers.`tennant${GC_BASE}`nb-secure.middlewares=`tennant${GC_BASE}`nb_prefix"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`nb.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`nb.headers.accessControlAllowOriginList=*"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`nb.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`nb.headers.addvaryheader=true"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`nb_prefix.StripPrefix.prefixes=/notebook"
+      - "traefik.http.routers.`tennant${COMMUNITY}`nb-secure.middlewares=`tennant${COMMUNITY}`nb_prefix"
     networks:
       - traefik_proxy
 
