@@ -15,7 +15,7 @@ networks:
 configs:
   facets_config_named:
     external: true
-    name:   ${FACETS_CONFIG_CONFIG}
+    name:   ${FACETS_CONFIG_CONFIG:-facets_config_default}
 
 services:
   # the base routes:
@@ -128,7 +128,7 @@ services:
     restart: unless-stopped
     #build: ./client
     environment:
-      - AUTH_MODE=${GC_NB_AUTH_MODE}
+      - AUTH_MODE=${GC_NB_AUTH_MODE:-service}
       - GITHUB_SECRET=${GC_GITHUB_SECRET}
       - GITHUB_CLIENTID=${GC_GITHUB_CLIENTID}
       - GITHUB_USER==${GC_GITHUB_USER}
