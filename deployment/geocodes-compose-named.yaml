@@ -36,7 +36,7 @@ services:
 
 
   vue-services:
-    image: nsfearthcube/ec_facets_api_nodejs:${FACETS_SERVICES_TAG:-latest}
+    image: nsfearthcube/ec_facets_api_nodejs:${FACETS_SERVICES_TAG:-master}
 #    profiles: ["geocodes"]
     #build: ./server
     restart: unless-stopped
