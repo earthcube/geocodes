@@ -1,0 +1,161 @@
+#####################
+# THIS DOES NOT USE SECRETS
+#
+# THIS can be used mtultiple times, by setting a variable
+#  ${GC_HOST}
+#  IT INCLUDES A  TRAEFIK Routing names: tennant${COMMUNITY}`-server, tennant${COMMUNITY}`-client, tennant${COMMUNITY}`-nb
+# and HOST NAME ${GC_CLIENT_DOMAIN}
+#
+# IT DOES NOT USE SECRETS
+##########
+version: '3.5'
+networks:
+  traefik_proxy:
+    external: true
+configs:
+  facets_config_named:
+    external: true
+    name: ${FACETS_CONFIG_CONFIG:-facets_config_${COMMUNITY}}
+
+services:
+  # the base routes:
+  # geocodes /
+  # vue services: /ec/api
+  # notebook proxy: /notebook
+
+  # this needs to be run with the services-compose file
+  # docker-compose --.env-file .env.{yourcongig} -f service-compose.yaml -f geocodes-compose.yaml up -d
+  # .env needs to contain
+  ## GC_CLIENT_DOMAIN
+  ## MINIO_SERVICE_ACCESS_KEY
+  ## MINIO_SERVICE_SECRET_KEY
+  # for Nobebook proxy
+  ## GC_GITHUB_SECRET=OAUTH SECRET
+  ## GC_GITHUB_CLIENTID=OAUTH APP ID
+  ## GC_NB_AUTH_MODE=service
+
+
+  vue-services:
+    image: nsfearthcube/ec_facets_api_nodejs:${FACETS_SERVICES_TAG:-master}
+#    profiles: ["geocodes"]
+    #build: ./server
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=produdction
+      - S3ADDRESS=${S3_NAME:-oss}.{{HOST}}
+      - S3KEY={{MINIO_ROOT_ACCESS_KEY}}
+      - S3SECRET={{MINIO_ROOT_SECRET_KEY}}
+      - S3SSL=${S3SSL:-true}
+      - S3PORT=${S3PORT:-443}
+      - BUCKET={{BUCKET}}
+      - BUCKETPATH=${BUCKETPATH:-summoned}
+#      - PATHTEMPLATE=${PATHTEMPLATE}
+#      - TOOLTEMPLATE=${TOOLTEMPLATE}
+      - TOOLPATH=${TOOLPATH:-ecrr}
+      - TOOLREPO=${TOOLREPO:-summoned}
+      - URIVERSION=${URIVERSION:-v2}
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-server.entrypoints=http"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-server.priority=90"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-server.rule=Host(`{{COMMUNITY}}.{{HOST}}`) && PathPrefix(`/ec/api`)"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`-server-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-server.middlewares=`tennant${COMMUNITY}`-server-https-redirect"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-server-secure.priority=91"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-server-secure.entrypoints=https"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-server-secure.rule=Host(`{{COMMUNITY}}.{{HOST}}`) && PathPrefix(`/ec/api`)"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-server-secure.tls=true"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-server-secure.tls.certresolver=httpresolver"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-server-secure.service=`tennant${COMMUNITY}`-server"
+      - "traefik.http.services.`tennant${COMMUNITY}`-server.loadbalancer.server.port=3000"
+      - "traefik.docker.network=traefik_proxy"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`-server.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`-server.headers.accessControlAllowOriginList=*"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`-server.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`-server.headers.addvaryheader=true"
+      - "traefik.http.middlewares.ecapi_prefix_b.StripPrefix.prefixes=/ec/api"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-server-secure.middlewares=ecapi_prefix_b"
+    networks:
+      - traefik_proxy
+
+  vue-client:
+    image: nsfearthcube/ec_facets_client:${FACETS_CLIENT_TAG:-latest}
+#    profiles: ["geocodes"]
+    restart: unless-stopped
+    #build: ./client
+    environment:
+      - NODE_ENV=production
+      - DOMAIN=https://{{COMMUNITY}}.{{HOST}}/
+      -  URIVERSION=${URIVERSION:-v2}
+      - VITE_APP_FACETS_CONFIG_FILE=${VITE_APP_FACETS_CONFIG_FILE:-config/config.yaml}
+      - VITE_APP_MAPBOX_API_KEY=${MAPBOX_API_KEY}
+      - VITE_APP_TITLE=${COMMUNITY_NAME:-${COMMUNITY}}
+    configs:
+  # the config facets_config_named (defined above) has the name facets_config_${COMMUNITY}
+      - source:     facets_config_named
+        target: /usr/src/app/dist/public/config/config.yaml
+      - source:    facets_config_named
+        target: /usr/src/app/dist/config/config.yaml
+
+  #      uid: '103'
+  #      gid: '103'
+  #      mode: 0440
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.`tennant${COMMUNITY}`.entrypoints=http"
+      - "traefik.http.routers.`tennant${COMMUNITY}`.priority=13"
+      - "traefik.http.routers.`tennant${COMMUNITY}`.rule=Host(`{{COMMUNITY}}.{{HOST}}`)"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.`tennant${COMMUNITY}`.middlewares=`tennant${COMMUNITY}`-https-redirect"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-secure.entrypoints=https"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-secure.priority=12"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-secure.rule=Host(`{{COMMUNITY}}.{{HOST}}`)"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-secure.tls=true"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-secure.tls.certresolver=httpresolver"
+      - "traefik.http.routers.`tennant${COMMUNITY}`-secure.service=`tennant${COMMUNITY}`"
+      - "traefik.http.services.`tennant${COMMUNITY}`.loadbalancer.server.port=8080"
+      - "traefik.docker.network=traefik_proxy"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`.headers.accessControlAllowOriginList=*"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`.headers.addvaryheader=true"
+    networks:
+      - traefik_proxy
+  notebook-proxy:
+    image: nsfearthcube/mknb:${FACETS_NOTEBOOK_TAG:-master}
+#    profiles: ["geocodes"]
+    restart: unless-stopped
+    #build: ./client
+    environment:
+      - AUTH_MODE=${GC_NB_AUTH_MODE:-service}
+      - GITHUB_SECRET=${GC_GITHUB_SECRET}
+      - GITHUB_CLIENTID=${GC_GITHUB_CLIENTID}
+      - GITHUB_USER==${GC_GITHUB_USER}
+      - GITHUB_TOKEN=${GC_GITHUB_GITHUB_TOKEN}
+      #GC_NB_AUTH_MODE=apikey
+      - DOMAIN=https://{{COMMUNITY}}.{{HOST}}/}/
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.`tennant${COMMUNITY}`nb.entrypoints=http"
+      - "traefik.http.routers.`tennant${COMMUNITY}`nb.priority=90"
+      - "traefik.http.routers.`tennant${COMMUNITY}`nb.rule=Host(`{{COMMUNITY}}.{{HOST}}`) && PathPrefix(`/notebook`)"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`nb-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.`tennant${COMMUNITY}`nb.middlewares=`tennant${COMMUNITY}`nb-https-redirect"
+      - "traefik.http.routers.`tennant${COMMUNITY}`nb-secure.entrypoints=https"
+      - "traefik.http.routers.`tennant${COMMUNITY}`nb-secure.priority=90"
+      - "traefik.http.routers.`tennant${COMMUNITY}`nb-secure.rule=Host(`{{COMMUNITY}}.{{HOST}}`) && PathPrefix(`/notebook`)"
+      - "traefik.http.routers.`tennant${COMMUNITY}`nb-secure.tls=true"
+      - "traefik.http.routers.`tennant${COMMUNITY}`nb-secure.tls.certresolver=httpresolver"
+      - "traefik.http.routers.`tennant${COMMUNITY}`nb-secure.service=`tennant${COMMUNITY}`nb"
+      - "traefik.http.services.`tennant${COMMUNITY}`nb.loadbalancer.server.port=3031"
+      - "traefik.docker.network=traefik_proxy"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`nb.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`nb.headers.accessControlAllowOriginList=*"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`nb.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`nb.headers.addvaryheader=true"
+      - "traefik.http.middlewares.`tennant${COMMUNITY}`nb_prefix.StripPrefix.prefixes=/notebook"
+      - "traefik.http.routers.`tennant${COMMUNITY}`nb-secure.middlewares=`tennant${COMMUNITY}`nb_prefix"
+    networks:
+      - traefik_proxy
+
