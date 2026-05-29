@@ -96,7 +96,7 @@ services:
       - source:     facets_config_named
         target: /app/public/config/config.yaml
       - source:    facets_config_named
-        target: /app/config/config.yaml
+        target: /app/dist/config/config.yaml
 
   #      uid: '103'
   #      gid: '103'
