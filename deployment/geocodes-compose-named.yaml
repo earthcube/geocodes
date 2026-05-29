@@ -94,9 +94,9 @@ services:
     configs:
   # the config facets_config_named (defined above) has the name facets_config_${GC_BASE}
       - source:     facets_config_named
-        target: /app/dist/public/config/config.yaml
+        target: /app/public/config/config.yaml
       - source:    facets_config_named
-        target: /app/dist/config/config.yaml
+        target: /app/config/config.yaml
 
   #      uid: '103'
   #      gid: '103'
