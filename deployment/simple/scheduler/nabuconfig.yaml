@@ -1,0 +1,73 @@
+# Nabu configuration for Qlever deployment.
+#
+# KEY DIFFERENCE FROM BLAZEGRAPH DEPLOYMENT:
+#   The `endpoints:` section is intentionally ABSENT.
+#   Without it, Nabu's release step only writes *_release.nq files to
+#   S3 (graphs/latest/) and does NOT attempt a SPARQL Update upload.
+#   Qlever rebuilds its index from those S3 files on container restart,
+#   triggered by the qlever_index_rebuild Dagster asset.
+#
+# S3 credentials are injected by gleanerio.py as container environment
+# variables; leave the minio section blank here.
+#
+# The `objects:` prefixes must cover all active sources in gleanerconfig.yaml.
+# When you add a new source, add its summoned/ and prov/ prefixes here.
+
+minio:
+  bucket:
+  address:
+  port:
+  accesskey:
+  secretkey:
+  ssl: true
+
+context:
+  cache: true
+  strict: false
+
+contextmaps:
+  - prefix: "https://schema.org/"
+    file: "/assets/schemaorg-current-https.jsonld"
+  - prefix: "http://schema.org/"
+    file: "/assets/schemaorg-current-http.jsonld"
+
+implementation_network:
+  orgname: geocodes
+
+# NOTE: No `endpoints:` section here.
+# Adding an endpoints block with a Blazegraph URL would cause Nabu to
+# POST N-Quads to that SPARQL endpoint after writing to S3 — which is
+# not desired in a Qlever deployment.
+
+objects:
+  domain: us-east-1
+  prefix:
+    # demo / test
+    - summoned/geocodes_demo_datasets
+    - prov/geocodes_demo_datasets
+    # production sources — add a pair for each source you set active: true
+    # in gleanerconfig.yaml
+    - summoned/iris
+    - prov/iris
+    - summoned/opentopography
+    - prov/opentopography
+    - summoned/hydroshare
+    - prov/hydroshare
+    - summoned/bcodmo
+    - prov/bcodmo
+    - summoned/earthchem
+    - prov/earthchem
+    - summoned/edi
+    - prov/edi
+    - summoned/r2r
+    - prov/r2r
+    - summoned/unavco
+    - prov/unavco
+    - summoned/obis
+    - prov/obis
+    - summoned/osmc
+    - prov/osmc
+    - summoned/neon4cast
+    - prov/neon4cast
+    - summoned/hydrography90m
+    - prov/hydrography90m

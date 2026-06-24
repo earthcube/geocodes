@@ -1,0 +1,302 @@
+# Gleaner configuration template for simplified geocodes deployment.
+#
+# SETUP:
+#   1. Set active: true for the sources you want to crawl.
+#   2. Upload to S3 before first Dagster run:
+#        bash scripts/upload-configs.sh
+#
+# S3 credentials are injected by the Dagster scheduler (gleanerio.py) as
+# container environment variables; leave the minio section blank here.
+#
+# Full source catalog: see dagster/implnets/configs/eco/gleanerconfig.yaml
+# in the earthcube/scheduler repository.
+
+context:
+  cache: true
+  strict: false
+contextmaps:
+  - prefix: "https://schema.org/"
+    file: "/assets/schemaorg-current-https.jsonld"
+  - prefix: "http://schema.org/"
+    file: "/assets/schemaorg-current-http.jsonld"
+gleaner:
+  mill: true
+  runid: runX
+  summon: true
+summoner:
+  after: ""
+  delay:
+  headless: http://headless:9222
+  mode: full
+  threads: 5
+millers:
+  graph: true
+minio:
+  address:
+  port:
+  ssl:
+  accessKey:
+  secretKey:
+  bucket:
+sources:
+  # ── Demo / test sources (small, good for initial verification) ──────────────
+  - sourcetype: sitemap
+    name: geocodes_demo_datasets
+    logo: ""
+    url: https://earthcube.github.io/GeoCODES-Metadata/metadata/Dataset/allgood/sitemap.xml
+    headless: false
+    pid: https://github.com/earthcube/GeoCODES-Metadata/metadata/OtherResources
+    propername: Geocodes Demo Datasets
+    domain: https://www.earthcube.org/datasets/
+    active: true        # small demo dataset — good for first run verification
+    credentialsfile: ""
+    other: {}
+    headlesswait: 0
+    delay: 0
+    identifierpath: ""
+    apipagelimit: 0
+    identifiertype: identifiersha
+    fixcontextoption: 0
+    acceptcontenttype: application/ld+json, text/html
+    jsonprofile: application/ld+json
+
+  # ── Production sources (set active: true to include) ────────────────────────
+  - sourcetype: sitemap
+    name: iris
+    logo: http://ds.iris.edu/static/img/layout/logos/iris_logo_shadow.png
+    url: http://ds.iris.edu/files/sitemap.xml
+    headless: false
+    pid: https://www.re3data.org/repository/r3d100010268
+    propername: IRIS
+    domain: http://iris.edu
+    active: false
+    credentialsfile: ""
+    other: {}
+    headlesswait: 0
+    delay: 0
+    identifierpath: ""
+    apipagelimit: 0
+    identifiertype: identifiersha
+    fixcontextoption: 0
+    acceptcontenttype: application/ld+json, text/html
+    jsonprofile: application/ld+json
+
+  - sourcetype: sitemap
+    name: opentopography
+    logo: https://opentopography.org/sites/opentopography.org/files/ot_transp_logo_2.png
+    url: https://portal.opentopography.org/sitemap.xml
+    headless: false
+    pid: https://www.re3data.org/repository/r3d100010655
+    propername: OpenTopography
+    domain: http://www.opentopography.org/
+    active: false
+    credentialsfile: ""
+    other: {}
+    headlesswait: 0
+    delay: 0
+    identifierpath: ""
+    apipagelimit: 0
+    identifiertype: identifiersha
+    fixcontextoption: 0
+    acceptcontenttype: application/ld+json, text/html
+    jsonprofile: application/ld+json
+
+  - sourcetype: sitemap
+    name: hydroshare
+    logo: https://www.hydroshare.org/static/img/logo-lg.png
+    url: https://www.hydroshare.org/sitemap-resources.xml
+    headless: false
+    pid: https://www.re3data.org/repository/r3d100012625
+    propername: Consortium of Universities for the Advancement of Hydrologic Science (CUAHSI)
+    domain: https://www.cuahsi.org/
+    active: false
+    credentialsfile: ""
+    other: {}
+    headlesswait: -1
+    delay: 0
+    identifierpath: ""
+    apipagelimit: 0
+    identifiertype: identifiersha
+    fixcontextoption: 0
+    acceptcontenttype: application/ld+json, text/html
+    jsonprofile: application/ld+json
+
+  - sourcetype: sitemap
+    name: bcodmo
+    logo: https://www.bco-dmo.org/sites/all/themes/bcodmo/logo.png
+    url: https://www.bco-dmo.org/sitemap.xml
+    headless: false
+    pid: https://www.re3data.org/repository/r3d100000012
+    propername: Biological and Chemical Oceanography Data Management Office
+    domain: http://www.bco-dmo.org/
+    active: false
+    credentialsfile: ""
+    other: {}
+    headlesswait: 0
+    delay: 0
+    identifierpath: ""
+    apipagelimit: 0
+    identifiertype: identifiersha
+    fixcontextoption: 0
+    acceptcontenttype: application/ld+json, text/html
+    jsonprofile: application/ld+json
+
+  - sourcetype: sitemap
+    name: earthchem
+    logo: http://www.earthchem.org/sites/default/files/files/EC_0-1.png
+    url: https://ecl.earthchem.org/sitemap.xml
+    headless: false
+    pid: https://www.re3data.org/repository/r3d100011538
+    propername: EarthChem
+    domain: https://ecl.earthchem.org/home.php
+    active: false
+    credentialsfile: ""
+    other: {}
+    headlesswait: 0
+    delay: 0
+    identifierpath: $.sameAs
+    apipagelimit: 0
+    identifiertype: identifiersha
+    fixcontextoption: 0
+    acceptcontenttype: application/ld+json, text/html
+    jsonprofile: application/ld+json
+
+  - sourcetype: sitemap
+    name: edi
+    logo: https://portal.edirepository.org/nis/images/EDI-logo-300DPI_5.png
+    url: https://portal.edirepository.org/sitemap_index.xml
+    headless: false
+    pid: https://www.re3data.org/repository/r3d100010272
+    propername: Environmental Data Initiative
+    domain: http://environmentaldatainitiative.org/
+    active: false
+    credentialsfile: ""
+    other: {}
+    headlesswait: 0
+    delay: 0
+    identifierpath: ""
+    apipagelimit: 0
+    identifiertype: identifiersha
+    fixcontextoption: 0
+    acceptcontenttype: application/ld+json, text/html
+    jsonprofile: application/ld+json
+
+  - sourcetype: sitemap
+    name: r2r
+    logo: https://www.rvdata.us/images/Logo.4b1519be.png
+    url: https://service-dev.rvdata.us/api/sitemap/
+    headless: true
+    pid: http://www.re3data.org/repository/r3d100010735
+    propername: Rolling Deck to Repository Program (R2R)
+    domain: https://www.rvdata.us/
+    active: false
+    credentialsfile: ""
+    other: {}
+    headlesswait: 5
+    delay: 0
+    identifierpath: ""
+    apipagelimit: 0
+    identifiertype: identifiersha
+    fixcontextoption: 0
+    acceptcontenttype: application/ld+json, text/html
+    jsonprofile: application/ld+json
+
+  - sourcetype: sitemap
+    name: unavco
+    logo: https://www.unavco.org/lib/images/banner/uv-logo.png
+    url: https://www.unavco.org/data/doi/sitemap.xml
+    headless: false
+    pid: http://www.re3data.org/repository/r3d100010872
+    propername: UNAVCO
+    domain: http://www.unavco.org/
+    active: false
+    credentialsfile: ""
+    other: {}
+    headlesswait: 0
+    delay: 0
+    identifierpath: ""
+    apipagelimit: 0
+    identifiertype: identifiersha
+    fixcontextoption: 0
+    acceptcontenttype: application/ld+json, text/html
+    jsonprofile: application/ld+json
+
+  - sourcetype: sitemap
+    name: obis
+    logo: https://obis.org/images/logo.png
+    url: https://obis-sitemaps.s3.amazonaws.com/sitemap_datasets.xml
+    headless: false
+    pid: https://catalogue.odis.org/view/343
+    propername: Ocean Biodiversity Information System (OBIS)
+    domain: https://obis.org
+    active: false
+    credentialsfile: ""
+    other: {}
+    headlesswait: -1
+    delay: 0
+    identifierpath: ""
+    apipagelimit: 0
+    identifiertype: identifiersha
+    fixcontextoption: 0
+    acceptcontenttype: application/ld+json, text/html
+    jsonprofile: application/ld+json
+
+  - sourcetype: sitemap
+    name: osmc
+    logo: ""
+    url: https://osmc.noaa.gov/erddap/sitemap.xml
+    headless: false
+    pid: https://osmc.noaa.gov/erddap
+    propername: Observing System Monitoring Center (OSMC)
+    domain: https://osmc.noaa.gov/erddap
+    active: false
+    credentialsfile: ""
+    other: {}
+    headlesswait: 0
+    delay: 0
+    identifierpath: ""
+    apipagelimit: 0
+    identifiertype: identifiersha
+    fixcontextoption: 0
+    acceptcontenttype: application/ld+json, text/html
+    jsonprofile: application/ld+json
+
+  - sourcetype: sitemap
+    name: neon4cast
+    logo: ""
+    url: https://raw.githubusercontent.com/earthcube/stacIndexer/yl_dv/data/output/sitemap/sitemap_neon4cast.xml
+    headless: false
+    pid: https://projects.ecoforecast.org/neon4cast-ci/
+    propername: NEON Ecological Forecast Challenge
+    domain: https://projects.ecoforecast.org/neon4cast-ci/
+    active: false
+    credentialsfile: ""
+    other: {}
+    headlesswait: 0
+    delay: 0
+    identifierpath: ""
+    apipagelimit: 0
+    identifiertype: identifiersha
+    fixcontextoption: 0
+    acceptcontenttype: application/ld+json, text/html
+    jsonprofile: application/ld+json
+
+  - sourcetype: sitemap
+    name: hydrography90m
+    logo: ""
+    url: https://raw.githubusercontent.com/earthcube/communityCollections/master/collection/hydrography90m/sitemaps/hydrography90m.xml
+    headless: false
+    pid: https://hydrography.org/hydrography90m/hydrography90m_layers
+    propername: Hydrography90m
+    domain: https://hydrography.org/hydrography90m/hydrography90m_layers
+    active: false
+    credentialsfile: ""
+    other: {}
+    headlesswait: 0
+    delay: 0
+    identifierpath: ""
+    apipagelimit: 0
+    identifiertype: identifiersha
+    fixcontextoption: 0
+    acceptcontenttype: application/ld+json, text/html
+    jsonprofile: application/ld+json

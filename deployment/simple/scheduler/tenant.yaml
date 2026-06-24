@@ -1,0 +1,41 @@
+# Tenant configuration for single-tenant geocodes deployment.
+#
+# This file is served from S3 and loaded by the FacetSearch client.
+# TENANT_URL in facetsearch/config.yaml points here.
+#
+# For a simplified single-tenant deployment:
+#   - Set community to a short identifier for your deployment
+#   - Set hostname to your public hostname (used for display only)
+#   - List all source names that you have set active: true in gleanerconfig.yaml
+#
+# The graph.main_namespace / summary_namespace fields are Blazegraph-specific
+# and are ignored in Qlever deployments.
+
+tenant:
+  - community: geocodes
+    hostname: your-hostname.example.com    # update to your actual hostname
+    description: >-
+      A geocodes deployment providing faceted search over harvested scientific
+      dataset metadata.
+    name: Geocodes Science on Schema
+    url: https://www.earthcube.org
+    logo: https://www.earthcube.org/sites/default/files/doc-repository/logo_earthcube_full_horizontal.png
+    graph:
+      main_namespace: geocodes       # not used with Qlever; keep for compatibility
+      summary_namespace: geocodes_summary
+    sources:
+      # List the name: values from gleanerconfig.yaml for sources with active: true
+      - geocodes_demo_datasets
+      # Add more sources here as you enable them in gleanerconfig.yaml:
+      # - iris
+      # - opentopography
+      # - hydroshare
+      # - bcodmo
+      # - earthchem
+      # - edi
+      # - r2r
+      # - unavco
+      # - obis
+      # - osmc
+      # - neon4cast
+      # - hydrography90m
