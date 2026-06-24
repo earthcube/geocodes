@@ -1,0 +1,42 @@
+# Qleverfile for the geocodes simplified deployment
+#
+# CONFIGURE BEFORE FIRST RUN:
+#
+# 1. Set SOURCES to the list of source names that Nabu has written release
+#    files for. Each source must have a corresponding file at:
+#      ${BASE_URL}/${source}_release.nq
+#
+# 2. Set BASE_URL to the public HTTPS path to your S3 release files.
+#    For a standard AWS S3 bucket with public-read objects:
+#      https://<bucket>.s3.amazonaws.com/<prefix>/graphs/latest
+#    For an S3 bucket behind a CDN or custom domain:
+#      https://oss.example.org/<prefix>/graphs/latest
+#
+# After editing, restart the Qlever container to trigger a rebuild:
+#   docker compose restart qlever
+
+[docker]
+IMAGE         = docker.io/adfreiburg/qlever:latest
+
+[data]
+NAME          = geocodes
+# Space-separated list of source identifiers (must match Nabu release file names)
+SOURCES       = source1 source2
+# Base URL for downloading *_release.nq files from S3
+BASE_URL      = https://CHANGE_ME.s3.amazonaws.com/graphs/latest
+GET_DATA_CMD  = for source in ${SOURCES}; do echo "Downloading ${source}..."; curl -fsSLo ${source}_release.nq ${BASE_URL}/${source}_release.nq && echo "  OK: $(wc -l < ${source}_release.nq) lines"; done
+
+[index]
+INPUT_FILES       = *_release.nq
+CAT_INPUT_FILES   = cat ${INPUT_FILES}
+SETTINGS_JSON     = { "add-text-index": true, "ascii-prefixes-only": false, "num-triples-per-batch": 100000 }
+
+[server]
+PORT                     = 7019
+ACCESS_TOKEN             =
+MEMORY_FOR_QUERIES       = 10G
+TIMEOUT                  = 60s
+NUM_SIMULTANEOUS_QUERIES = 8
+
+[runtime]
+SYSTEM = docker

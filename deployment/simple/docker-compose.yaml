@@ -1,0 +1,254 @@
+# Simplified geocodes stack — single VM deployment
+#
+# Stack: Qlever triplestore + Dagster scheduler + FacetSearch UI + Nginx
+# Storage: AWS S3 (crawled data), EBS/local volumes (Qlever index + Dagster SQLite)
+#
+# Prerequisites (one-time host setup):
+#   docker swarm init
+#   docker network create -d overlay --attachable headless_gleanerio
+#
+# Getting started:
+#   cp .env.example .env
+#   # Edit .env — fill in AWS credentials, S3 bucket, QLEVERUI_SECRET_KEY
+#   # Edit qlever/Qleverfile — set SOURCES and BASE_URL for your data
+#   # Edit facetsearch/config.yaml — set TRIPLESTORE_URL and API_URL to your hostname
+#   docker compose up -d
+
+networks:
+  geocodes:
+    name: geocodes_network
+
+volumes:
+  dagster-home:
+    name: geocodes_dagster_home
+  qlever-data:
+    name: geocodes_qlever_data
+  qlever-ui-db:
+    name: geocodes_qlever_ui_db
+
+services:
+
+  # ─────────────────────────────────────────────
+  # Qlever SPARQL triplestore
+  #
+  # On container restart: get-data (downloads *_release.nq from S3)
+  #                     → index (builds Qlever index from scratch)
+  #                     → start --run-in-foreground
+  #
+  # Dagster's qlever_index_rebuild asset triggers a restart after every
+  # full crawl cycle, causing the index to be rebuilt with fresh data.
+  # Index build takes ~5-30 minutes depending on corpus size.
+  # ─────────────────────────────────────────────
+  qlever:
+    image: docker.io/adfreiburg/qlever:latest
+    container_name: qlever-${PROJECT:-geocodes}
+    restart: on-failure:3
+    user: "root:root"
+    working_dir: /data
+    entrypoint: /qlever/docker-entrypoint.sh
+    command: >
+      'qlever get-data --log-level DEBUG && qlever index && qlever start --run-in-foreground'
+    environment:
+      - LANG=C.UTF-8
+      - LC_ALL=C.UTF-8
+      - QLEVER_IS_RUNNING_IN_CONTAINER=1
+    volumes:
+      - qlever-data:/data
+      - ./qlever/Qleverfile:/data/Qleverfile:ro
+    networks:
+      - geocodes
+    expose:
+      - "7019"
+    logging:
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  # ─────────────────────────────────────────────
+  # Qlever UI
+  # Accessible directly on port 7000
+  # ─────────────────────────────────────────────
+  qlever-ui:
+    image: docker.io/adfreiburg/qlever-ui:latest
+    restart: unless-stopped
+    command:
+      - gunicorn
+      - "--bind"
+      - ":7000"
+      - "--workers"
+      - "3"
+      - "--limit-request-line"
+      - "10000"
+      - "qlever.wsgi:application"
+    environment:
+      QLEVER_HOST: "http://qlever:7019"
+      QLEVERUI_ALLOWED_HOSTS: "*"
+      QLEVERUI_CSRF_TRUSTED_ORIGINS: ${QLEVERUI_CSRF_TRUSTED_ORIGINS:-http://localhost}
+      QLEVERUI_SECRET_KEY: ${QLEVERUI_SECRET_KEY:?QLEVERUI_SECRET_KEY is required}
+      QLEVERUI_DATABASE_URL: "sqlite:////app/db/qleverui.sqlite3"
+    volumes:
+      - qlever-ui-db:/app/db
+    networks:
+      - geocodes
+    ports:
+      - "7000:7000"
+    depends_on:
+      - qlever
+
+  # ─────────────────────────────────────────────
+  # Dagster webserver (Dagit UI)
+  # Accessible directly on port 3001
+  #
+  # The ingest package is loaded in-process (python_package workspace).
+  # Both webserver and daemon share dagster-home volume for SQLite state.
+  # ─────────────────────────────────────────────
+  dagster-webserver:
+    image: docker.io/nsfearthcube/dagster-gleanerio:${DAGSTER_TAG:-latest}
+    restart: unless-stopped
+    command:
+      - dagster-webserver
+      - "-w"
+      - /dagster/workspace.yaml
+      - "-h"
+      - "0.0.0.0"
+      - "-p"
+      - "3000"
+    environment: &dagster-env
+      DAGSTER_HOME: /dagster/home
+      PROJECT: ${PROJECT:?PROJECT is required}
+      # ── AWS S3 ──────────────────────────────────
+      GLEANERIO_MINIO_ADDRESS: ${GLEANERIO_MINIO_ADDRESS:-s3.amazonaws.com}
+      GLEANERIO_MINIO_PORT: ${GLEANERIO_MINIO_PORT:-443}
+      GLEANERIO_MINIO_USE_SSL: ${GLEANERIO_MINIO_USE_SSL:-true}
+      GLEANERIO_MINIO_BUCKET: ${S3_BUCKET:?S3_BUCKET is required}
+      GLEANERIO_MINIO_ACCESS_KEY: ${AWS_ACCESS_KEY_ID:?AWS_ACCESS_KEY_ID is required}
+      GLEANERIO_MINIO_SECRET_KEY: ${AWS_SECRET_ACCESS_KEY:?AWS_SECRET_ACCESS_KEY is required}
+      # ── Docker (direct socket, no Portainer) ────
+      GLEANERIO_DOCKER_URL: unix:///var/run/docker.sock
+      GLEANERIO_PORTAINER_APIKEY: "not-used"
+      GLEANERIO_DOCKER_CONTAINER_WAIT_TIMEOUT: ${GLEANERIO_DOCKER_CONTAINER_WAIT_TIMEOUT:-300}
+      GLEANERIO_DOCKER_HEADLESS_NETWORK: ${GLEANERIO_HEADLESS_NETWORK:-headless_gleanerio}
+      GLEANERIO_HEADLESS_ENDPOINT: ${GLEANERIO_HEADLESS_ENDPOINT:-http://headless:9222}
+      # ── Gleaner / Nabu images ───────────────────
+      GLEANERIO_GLEANER_IMAGE: ${GLEANERIO_GLEANER_IMAGE:-nsfearthcube/gleaner:latest}
+      GLEANERIO_NABU_IMAGE: ${GLEANERIO_NABU_IMAGE:-nsfearthcube/nabu:latest}
+      # ── Config paths in S3 ──────────────────────
+      GLEANERIO_DAGSTER_CONFIG_PATH: ${GLEANERIO_CONFIG_PATH:-scheduler/configs/}
+      GLEANERIO_LOG_PREFIX: scheduler/logs/
+      GLEANERIO_DEFAULT_SCHEDULE: ${GLEANERIO_DEFAULT_SCHEDULE:-@weekly}
+      GLEANERIO_DEFAULT_SCHEDULE_TIMEZONE: ${GLEANERIO_DEFAULT_SCHEDULE_TIMEZONE:-America/Los_Angeles}
+      # ── Triplestore (Qlever replaces Blazegraph) -
+      # Leave GLEANERIO_GRAPH_URL empty so Nabu skips SPARQL upload;
+      # Qlever rebuilds its index from S3 release files on container restart.
+      GLEANERIO_GRAPH_URL: ""
+      GLEANERIO_GRAPH_NAMESPACE: ""
+      # ── Qlever resource ─────────────────────────
+      QLEVER_CONTAINER_NAME: qlever-${PROJECT:-geocodes}
+      QLEVER_SPARQL_ENDPOINT: http://qlever:7019
+      QLEVER_HEALTH_TIMEOUT: ${QLEVER_HEALTH_TIMEOUT:-600}
+      PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION: python
+    volumes:
+      - dagster-home:/dagster/home
+      - ./dagster/workspace.yaml:/dagster/workspace.yaml:ro
+      - ./dagster/dagster.yaml:/dagster/home/dagster.yaml:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - geocodes
+    ports:
+      - "${DAGSTER_PORT:-3001}:3000"
+    depends_on:
+      - qlever
+
+  # ─────────────────────────────────────────────
+  # Dagster daemon
+  # Runs schedules (@weekly crawl), sensors, and backfill coordination.
+  # Also executes op code for triggered runs, so needs Docker socket
+  # to spawn Gleaner/Nabu containers and restart Qlever.
+  # ─────────────────────────────────────────────
+  dagster-daemon:
+    image: docker.io/nsfearthcube/dagster-gleanerio:${DAGSTER_TAG:-latest}
+    restart: unless-stopped
+    command:
+      - dagster-daemon
+      - run
+      - "-w"
+      - /dagster/workspace.yaml
+    environment: *dagster-env
+    volumes:
+      - dagster-home:/dagster/home
+      - ./dagster/workspace.yaml:/dagster/workspace.yaml:ro
+      - ./dagster/dagster.yaml:/dagster/home/dagster.yaml:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - geocodes
+    depends_on:
+      - dagster-webserver
+
+  # ─────────────────────────────────────────────
+  # FacetSearch API server (Node.js/Express)
+  # Reads dataset JSON-LD from S3 for detail pages.
+  # Served at /ec/api (Nginx strips prefix before forwarding).
+  # ─────────────────────────────────────────────
+  facetsearch-server:
+    image: nsfearthcube/ec_facets_api_nodejs:${FACETS_TAG:-latest}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      S3ADDRESS: ${GLEANERIO_MINIO_ADDRESS:-s3.amazonaws.com}
+      S3KEY: ${AWS_ACCESS_KEY_ID:?AWS_ACCESS_KEY_ID is required}
+      S3SECRET: ${AWS_SECRET_ACCESS_KEY:?AWS_SECRET_ACCESS_KEY is required}
+      S3SSL: "true"
+      S3PORT: ""
+      BUCKET: ${S3_BUCKET:?S3_BUCKET is required}
+      BUCKETPATH: ${BUCKETPATH:-summoned}
+      URIVERSION: ${URIVERSION:-v2}
+      TOOLPATH: ${TOOLPATH:-summoned}
+      TOOLREPO: ${TOOLREPO:-ecrr_submitted}
+    networks:
+      - geocodes
+    expose:
+      - "3000"
+
+  # ─────────────────────────────────────────────
+  # FacetSearch client (Vue 3 SPA)
+  # config.yaml is bind-mounted from ./facetsearch/config.yaml.
+  # Edit that file to set TRIPLESTORE_URL (Qlever SPARQL endpoint)
+  # and API_URL (FacetSearch server URL) for your deployment.
+  # ─────────────────────────────────────────────
+  facetsearch-client:
+    image: nsfearthcube/ec_facets_client:${FACETS_TAG:-latest}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      VITE_APP_FACETS_CONFIG_FILE: config/config.yaml
+      VITE_APP_TITLE: ${SITE_TITLE:-Geocodes}
+    volumes:
+      - ./facetsearch/config.yaml:/usr/src/app/dist/public/config/config.yaml:ro
+      - ./facetsearch/config.yaml:/usr/src/app/dist/config/config.yaml:ro
+    networks:
+      - geocodes
+    expose:
+      - "8080"
+    depends_on:
+      - facetsearch-server
+
+  # ─────────────────────────────────────────────
+  # Nginx reverse proxy
+  # Port 80:  / → FacetSearch client
+  #           /ec/api/ → FacetSearch server (strips prefix)
+  #           /sparql  → Qlever SPARQL endpoint
+  # Port 3001: Dagster Dagit (exposed directly)
+  # Port 7000: Qlever UI (exposed directly)
+  # ─────────────────────────────────────────────
+  nginx:
+    image: nginx:stable-alpine
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-80}:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - geocodes
+    depends_on:
+      - facetsearch-client
+      - facetsearch-server

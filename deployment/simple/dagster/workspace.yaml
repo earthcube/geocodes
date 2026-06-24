@@ -1,0 +1,11 @@
+# Dagster workspace — loads the ingest code location in-process.
+# Both dagster-webserver and dagster-daemon use this file.
+#
+# The ingest package must be installed in the dagster-gleanerio image.
+# To reload code after a config change, restart the containers:
+#   docker compose restart dagster-webserver dagster-daemon
+
+load_from:
+  - python_package:
+      package_name: ingest
+      location_name: ingest

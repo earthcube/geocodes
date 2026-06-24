@@ -1,0 +1,174 @@
+# FacetSearch configuration for Qlever-backed simplified deployment.
+#
+# CONFIGURE BEFORE FIRST RUN:
+#
+# 1. Replace ALL occurrences of YOUR_HOSTNAME with your server's hostname
+#    or IP address (e.g. geocodes.example.org or 1.2.3.4).
+#
+# 2. Set TENANT_URL to the S3 URL of your tenant.yaml file:
+#    https://<bucket>.s3.amazonaws.com/scheduler/configs/tenant.yaml
+#
+# This file is bind-mounted into the facetsearch-client container.
+# After editing, restart the client: docker compose restart facetsearch-client
+---
+COMMUNITY: geocodes
+TENANT_URL: https://CHANGE_ME_S3_BUCKET.s3.amazonaws.com/scheduler/configs/tenant.yaml
+API_URL: http://YOUR_HOSTNAME/ec/api
+
+# Qlever SPARQL endpoint — proxied by Nginx at /sparql
+TRIPLESTORE_URL: http://YOUR_HOSTNAME/sparql
+SUMMARYSTORE_URL: http://YOUR_HOSTNAME/sparql
+
+# Query engine flag — enables Qlever-specific optimizations in FacetSearch
+QUERY_ENGINE: qlever
+
+BLAZEGRAPH_TIMEOUT: 20s
+
+# Mapbox API key for the spatial filter map (optional — leave blank to disable)
+MAPBOX_API_KEY:
+
+JSONLD_PROXY: "http://YOUR_HOSTNAME/ec/api/${o}"
+SPARQL_NB: http://YOUR_HOSTNAME/notebook/mkQ?q=${q}
+SPARQL_YASGUI: https://sparqlui.geocodes.earthcube.org/?
+
+ECRR_TRIPLESTORE_URL: http://YOUR_HOSTNAME/sparql
+ECRR_GRAPH: http://earthcube.org/gleaner-summoned
+
+THROUGHPUTDB_URL: https://throughputdb.com/api/ccdrs/annotations
+
+# SPARQL query files (relative to client/public/)
+SPARQL_QUERY: sparql_query.rq
+SPARQL_HASTOOLS: sparql_hastools.rq
+SPARQL_TOOLS_WEBSERVICE: sparql_gettools_webservice.rq
+SPARQL_TOOLS_DOWNLOAD: sparql_gettools_download.rq
+SPARQL_RELATED_DATA: sparql_relateddatafilename.rq
+
+S3_REPORTS_URL: https://CHANGE_ME_S3_BUCKET.s3.amazonaws.com/decoder/reports/
+
+ORDER_BY_DEFAULT: score
+ORDER_BY_OPTIONS:
+  - field: name
+    title: Name
+    sort: asc
+  - field: pubname
+    title: Publisher
+    sort: asc
+  - field: date
+    title: Date
+    sort: asc
+  - field: score
+    title: Relevance
+    sort: asc
+
+LIMIT_DEFAULT: 100
+LIMIT_OPTIONS:
+  - 10
+  - 50
+  - 100
+  - 1000
+  - 5000
+
+RELATEDDATA_COUNT: 10
+
+COLLECTION_FACETS:
+  - field: unassigned
+    title: All Items
+    sort: acs
+    open: false
+    type: unassigned
+    collections:
+      - data
+      - query
+      - tool
+    items:
+      - id: data
+        count: 0
+        isActive: false
+        name: data
+      - id: query
+        count: 0
+        isActive: false
+        name: query
+      - id: tool
+        count: 0
+        isActive: false
+        name: tool
+  - field: all
+    title: All Collections
+    sort: acs
+    open: false
+    type: all
+    collections:
+      - data
+      - query
+      - tool
+    items:
+      - id: data
+        count: 0
+        isActive: false
+        name: data
+      - id: query
+        count: 0
+        isActive: false
+        name: query
+      - id: tool
+        count: 0
+        isActive: false
+        name: tool
+    names: []
+    assigned: []
+
+FACETS:
+  - field: resourceType
+    title: Resource Type
+    sort: acs
+    open: false
+    type: text
+  - field: kw
+    title: Keywords
+    sort: acs
+    open: true
+    type: text
+  - field: placenames
+    title: Place
+    sort: acs
+    open: true
+    type: text
+  - field: pubname
+    title: Publisher/Repo
+    sort: acs
+    open: false
+    type: text
+  - field: datep
+    title: Year Published Range
+    sort: acs
+    open: true
+    type: rangeyear
+  - field: minDepth
+    range_fields:
+      - minDepth
+      - maxDepth
+    title: Depth Range
+    sort: acs
+    open: true
+    type: rangedepth
+  - field: temporalCoverage
+    title: Temporal Coverage
+    sort: acs
+    open: true
+    type: rangeyear
+  - field: spatialCoverage
+    title: Spatial Filter
+    sort: acs
+    open: true
+    type: geo
+
+NOTEBOOKS:
+  - name: Collab-Service
+    badge: https://camo.githubusercontent.com/84f0493939e0c4de4e6dbe113251b4bfb5353e57134ffd9fcab6b8714514d4d1/68747470733a2f2f636f6c61622e72657365617263682e676f6f676c652e636f6d2f6173736574732f636f6c61622d62616467652e737667
+    baseurl: http://YOUR_HOSTNAME/notebook/mknb
+    binderEncodeParameters: false
+    contentQuery: url=${contentUrl}&ext=${format}&urn=${urn}&encoding=${format}
+    pageTemplate: ''
+    formats:
+      - "*"

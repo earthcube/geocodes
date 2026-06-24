@@ -1,0 +1,25 @@
+# Dagster configuration for single-tenant simplified deployment.
+# Uses SQLite for all state (runs, events, schedules) — no Postgres needed.
+# DAGSTER_HOME env var (set in docker-compose.yaml) determines the storage dir.
+
+run_coordinator:
+  module: dagster.core.run_coordinator
+  class: QueuedRunCoordinator
+  config:
+    max_concurrent_runs: 6
+    tag_concurrency_limits:
+      # At most 3 simultaneous Gleaner/Nabu Docker containers
+      - key: "ingest"
+        value: "docker"
+        limit: 3
+      # At most 2 simultaneous report/prov runs
+      - key: "ingest"
+        value: "report"
+        limit: 2
+      # Only one Qlever index rebuild at a time
+      - key: "tenant_load"
+        value: "graph"
+        limit: 1
+
+telemetry:
+  enabled: false
