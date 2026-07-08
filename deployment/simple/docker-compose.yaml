@@ -129,10 +129,11 @@ services:
       GLEANERIO_DOCKER_CONTAINER_WAIT_TIMEOUT: ${GLEANERIO_DOCKER_CONTAINER_WAIT_TIMEOUT:-300}
       GLEANERIO_DOCKER_HEADLESS_NETWORK: ${GLEANERIO_HEADLESS_NETWORK:-headless_gleanerio}
       GLEANERIO_HEADLESS_ENDPOINT: ${GLEANERIO_HEADLESS_ENDPOINT:-http://headless:9222}
-      # ── Gleaner / Nabu images ───────────────────
+      # ── Gleaner image (Nabu image only needed by the legacy ingest workspace) ─
       GLEANERIO_GLEANER_IMAGE: ${GLEANERIO_GLEANER_IMAGE:-nsfearthcube/gleaner:latest}
       GLEANERIO_NABU_IMAGE: ${GLEANERIO_NABU_IMAGE:-nsfearthcube/nabu:latest}
       # ── Config paths in S3 ──────────────────────
+      GLEANERIO_CONFIG_PATH: ${GLEANERIO_CONFIG_PATH:-scheduler/configs/}
       GLEANERIO_DAGSTER_CONFIG_PATH: ${GLEANERIO_CONFIG_PATH:-scheduler/configs/}
       GLEANERIO_LOG_PREFIX: scheduler/logs/
       GLEANERIO_DEFAULT_SCHEDULE: ${GLEANERIO_DEFAULT_SCHEDULE:-@weekly}

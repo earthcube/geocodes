@@ -1,0 +1,35 @@
+# Per-source pipeline step configuration for the phased ingest pipeline.
+#
+# Uploaded to s3://{bucket}/scheduler/configs/pipelineconfig.yaml by
+# scripts/upload-configs.sh. This file is OPTIONAL — when absent, every
+# source runs the default steps.
+#
+# Sources differ: some need context repair and blank-node skolemization,
+# some need extra enhancement steps, some need none at all. Configure that
+# here, per source, without touching code.
+#
+# Available steps (registered in workflows/pipeline/pipeline/steps.py):
+#   fix_context   normalize/inject the schema.org @context
+#   skolemize     mint deterministic IRIs for blank nodes from their
+#                 attributes (name, url, title, value, @type)
+#
+# Settings per source:
+#   steps:    ordered list of enhancement steps ([] = pass through untouched)
+#   reports:  false to skip the phase 2.1 community reports for this source
+
+defaults:
+  steps: [fix_context, skolemize]
+  reports: true
+
+sources:
+  # use defaults unless listed here; examples:
+  #
+  # a source whose JSON-LD is already clean and fully identified:
+  # some_clean_source:
+  #   steps: []
+  #
+  # a source that only needs context repair, and no reports:
+  # some_other_source:
+  #   steps: [fix_context]
+  #   reports: false
+  geocodes_demo_datasets: {}

@@ -1,11 +1,21 @@
-# Dagster workspace — loads the ingest code location in-process.
+# Dagster workspace — loads the phased pipeline code location in-process.
 # Both dagster-webserver and dagster-daemon use this file.
 #
-# The ingest package must be installed in the dagster-gleanerio image.
-# To reload code after a config change, restart the containers:
+# The pipeline package (earthcube/scheduler workflows/pipeline) must be
+# installed in the dagster-gleanerio image. To reload code after a change,
+# restart the containers:
 #   docker compose restart dagster-webserver dagster-daemon
+#
+# Phases: 1 harvest -> 2 enhance/skolemize -> 2.1 reports -> 3 RDF release
+# + DataCatalog -> 4 Qlever index rebuild. Per-source steps are configured
+# in scheduler/configs/pipelineconfig.yaml in S3 (scripts/upload-configs.sh).
+#
+# To run the legacy monolithic ingest instead, swap in:
+#   - python_package:
+#       package_name: ingest
+#       location_name: ingest
 
 load_from:
-  - python_package:
-      package_name: ingest
-      location_name: ingest
+  - python_module:
+      module_name: pipeline.definitions
+      location_name: pipeline

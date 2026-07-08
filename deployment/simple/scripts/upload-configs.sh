@@ -49,6 +49,7 @@ FILES=(
     "gleanerconfig.yaml"
     "nabuconfig.yaml"
     "tenant.yaml"
+    "pipelineconfig.yaml"
 )
 
 log "Target: s3://${S3_BUCKET}/${CONFIG_PATH}/"
