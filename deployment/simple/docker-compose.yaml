@@ -17,6 +17,11 @@
 networks:
   geocodes:
     name: geocodes_network
+  # pre-created overlay (see prerequisites above); shared with
+  # Gleaner/Nabu Swarm service jobs
+  headless_gleanerio:
+    external: true
+    name: headless_gleanerio
 
 volumes:
   dagster-home:
@@ -184,6 +189,23 @@ services:
       - geocodes
     depends_on:
       - dagster-webserver
+
+  # ─────────────────────────────────────────────
+  # Headless chromium (CDP on 9222)
+  # Used by the pysummon summoner (Playwright connect_over_cdp) and by
+  # Gleaner for sources flagged headless: true in gleanerconfig.yaml.
+  # On geocodes_network for pysummon; also on the headless_gleanerio
+  # overlay so gleaner-fallback Swarm jobs can reach it.
+  # ─────────────────────────────────────────────
+  headless:
+    image: chromedp/headless-shell:latest
+    restart: unless-stopped
+    shm_size: 1g
+    networks:
+      - geocodes
+      - headless_gleanerio
+    expose:
+      - "9222"
 
   # ─────────────────────────────────────────────
   # FacetSearch API server (Node.js/Express)

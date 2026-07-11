@@ -9,17 +9,30 @@
 # here, per source, without touching code.
 #
 # Available steps (registered in workflows/pipeline/pipeline/steps.py):
-#   fix_context   normalize/inject the schema.org @context
-#   skolemize     mint deterministic IRIs for blank nodes from their
-#                 attributes (name, url, title, value, @type)
+#   fix_context          normalize/inject the schema.org @context
+#   promote_identifiers  typed nodes without @id get a known persistent
+#                        identifier (ORCID/ROR/DOI/re3data/wikidata) found in
+#                        their own identifier/sameAs/url values
+#   split_keywords       break comma/semicolon-packed keyword strings into
+#                        arrays in the JSON-LD
+#   skolemize            mint deterministic IRIs for the blank nodes left,
+#                        from their attributes (name, url, title, value, @type)
 #
-# Settings per source:
+# Settings:
 #   steps:    ordered list of enhancement steps ([] = pass through untouched)
-#   reports:  false to skip the phase 2.1 community reports for this source
+#   reports:  false to skip the community reports for this source
+#   defaults.sparql_endpoint:  optional SPARQL bulk-update URL; when set, the
+#             pysummon sparql_update_load asset POSTs each source's release
+#             N-Quads there (Blazegraph/Fuseki). Leave unset for Qlever.
+#
+# This file is read by BOTH code locations. When defaults.steps is omitted,
+# the gleaner pipeline uses [fix_context, skolemize] and pysummon uses
+# [fix_context, promote_identifiers, split_keywords, skolemize].
 
 defaults:
-  steps: [fix_context, skolemize]
   reports: true
+  # steps: [fix_context, promote_identifiers, split_keywords, skolemize]
+  # sparql_endpoint: https://graph.example.org/blazegraph/namespace/x/sparql
 
 sources:
   # use defaults unless listed here; examples:

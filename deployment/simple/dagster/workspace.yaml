@@ -1,21 +1,22 @@
-# Dagster workspace — loads the phased pipeline code location in-process.
-# Both dagster-webserver and dagster-daemon use this file.
+# Dagster workspace — two code locations running in PARALLEL:
 #
-# The pipeline package (earthcube/scheduler workflows/pipeline) must be
-# installed in the dagster-gleanerio image. To reload code after a change,
-# restart the containers:
-#   docker compose restart dagster-webserver dagster-daemon
+#   pipeline  — phased ingest using the Gleaner container for harvest
+#               (writes summoned/, enhanced/, graphs/latest/, ...)
+#   pysummon  — python-native summoner (headless-capable, no Gleaner/Swarm)
+#               writing under PYSUMMON_DATA_PREFIX (default pysummon/)
 #
-# Phases: 1 harvest -> 2 enhance/skolemize -> 2.1 reports -> 3 RDF release
-# + DataCatalog -> 4 Qlever index rebuild. Per-source steps are configured
-# in scheduler/configs/pipelineconfig.yaml in S3 (scripts/upload-configs.sh).
+# Both read the same S3 configs (gleanerconfig/tenant/pipelineconfig.yaml)
+# and crawl the same source list; outputs are isolated so results can be
+# compared. To promote pysummon: set PYSUMMON_DATA_PREFIX="" in .env and
+# pause the pipeline project's schedule in the Dagster UI.
 #
-# To run the legacy monolithic ingest instead, swap in:
-#   - python_package:
-#       package_name: ingest
-#       location_name: ingest
+# Both packages must be installed in the dagster-gleanerio image. To reload
+# code: docker compose restart dagster-webserver dagster-daemon
 
 load_from:
   - python_module:
       module_name: pipeline.definitions
       location_name: pipeline
+  - python_module:
+      module_name: pysummon.definitions
+      location_name: pysummon
