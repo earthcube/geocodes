@@ -1,0 +1,202 @@
+### basic services and a single container for qlver
+# PROJECT MUST BE A DNS COMPLAINT NAME. NO UNDER_SCORES
+# Environment variables need to be set in a .env file:
+#  QLEVER_CONTAINER_TAG=latest
+#  HOST=geocodes-aws-dev.earthcube.org
+#  PROJECT=services
+#  S3_TYPE=s3
+#  S3_PROVIDER=Minio
+#  S3_ACCESS_KEY_ID=
+#  S3_SECRET_ACCESS_KEY=
+#  S3_ENDPOINT=oss.geocodes-aws-dev.earthcube.org
+#  S3_REGION=eu-central-1
+#  S3_BUCKET=geocodes
+#  S3_PATH=graphs/latest
+#  QLEVER_CONFIG=services
+# create a config named qlever-config-${QLEVER_CONFIG:-services} using  qlever-config-services.yaml
+version: '3.9'
+networks:
+  qlever_network:
+    name: qlever_network_${QLEVER_NET:-base}
+    external: true
+  traefik_proxy:
+    name: traefik_proxy
+    external: true
+#export USER_ID=$(id -u)
+#export GROUP_ID=$(id -g)
+volumes:
+  qleverflow_data:
+    name: qleverflow_data_${PROJECT:-services}
+    #name: qlever
+  release_data:
+    name: release_data
+    external: true
+
+configs:
+  qlever_config:
+    name: qlever-config-${QLEVER_CONFIG:-services}
+    #file: /Users/valentin/development/dev_earthcube/qleverflow/catalogues/data-geocodesexamples/Qleverfile.geocodesexamples
+    external: true
+services:
+  qlever-sync-data:
+    # prevent continuous restarting... it may restart due to a crash
+    # without this a data load will run and pull data (and create a big bill)
+    restart: on-failure:3
+    image: docker.io/rclone/rclone:master
+    hostname: qlever-sync-${PROJECT:-services}
+    user: "${CURRENT_UID}:${CURRENT_GID}"
+    #user: "1011:1011"
+    networks:
+      - traefik_proxy
+    working_dir: /release
+    environment:
+      # rclone remote config via env vars (remote name: S3REMOTE)
+      - RCLONE_CONFIG_S3REMOTE_TYPE=s3
+      - RCLONE_CONFIG_S3REMOTE_PROVIDER=${S3_PROVIDER:-Minio}
+      - RCLONE_CONFIG_S3REMOTE_ACCESS_KEY_ID=${S3_ACCESS_KEY_ID}
+      - RCLONE_CONFIG_S3REMOTE_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY}
+      - RCLONE_CONFIG_S3REMOTE_ENDPOINT=${S3_ENDPOINT:-minio:9000}
+      - RCLONE_CONFIG_S3REMOTE_REGION=${S3_REGION:-eu-central-1}
+      # source path: S3_BUCKET/S3_PATH  →  /data
+      - S3_BUCKET=${S3_BUCKET:-decoder}
+      - S3_PATH=${S3_PATH:-graphs/latest}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      # - /home/fils/scratch/qleverflow/configs/marineregions:/data
+      - type: volume
+        source: release_data
+        target: /release
+    entrypoint: /bin/sh
+    command: >
+      -c "rclone sync S3REMOTE:$$S3_BUCKET/$$S3_PATH /release --progress"
+  # PROJECT MUST BE A DNS COMPLAINT NAME. NO UNDER_SCORES
+  qlever-server-base:
+    # prevent continuous restarting... it may restart due to a crash
+    # withouth this a data load will run and pull data (and create a big bill)
+    restart: on-failure:3
+    depends_on:
+      - qlever-sync-data
+    image: docker.io/adfreiburg/qlever:${QLEVER_CONTAINER_TAG:-latest}
+    hostname: qlever-server-${PROJECT:-services}
+    #user: "root:root"  # Will be set via .env file
+    user: "${CURRENT_UID}:${CURRENT_GID}"
+    working_dir: /data
+    #    ports:
+    #      - "7019:7019"
+    environment:
+      - PATH="/qlever:/qlever/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+      - LANG="C.UTF-8"
+      - LC_ALL="C.UTF-8"
+      - LC_CTYPE="C.UTF-8"
+      - DEBIAN_FRONTEND="noninteractive"
+      - QLEVER_PROFILE="/etc/profile.d/qlever.sh"
+      - QLEVER_ARGCOMPLETE_ENABLED="1"
+      - QLEVER_IS_RUNNING_IN_CONTAINER="1"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      # - /home/fils/scratch/qleverflow/configs/marineregions:/data
+      - type: volume
+        source: release_data
+        target: /release
+
+    configs:
+      - source: qlever_config
+        target: /data/Qleverfile
+    entrypoint: /qlever/docker-entrypoint.sh
+    command: >
+      ' ls -l /release && qlever index --text-index from_text_records_and_literals && qlever start --use-text-index yes --run-in-foreground '
+
+    # run in forground, otherwise docker thinks run is complete.
+    # 'qlever setup-config ${PROJECT:-geocodesexamples} && qlever get-data && qlever index &&  qlever start'
+    # -c 'ServerMain -i ${PROJECT:-geocodesexamples} -j 8 -p 7019 -m 25G -c 20G -e 1G -k 200 -s 240s'
+    #restart: unless-stopped
+    networks: &network
+      - qlever_network
+      - traefik_proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.qlever-base-${PROJECT:-services}.entrypoints=http"
+      - "traefik.http.routers.qlever-base-${PROJECT:-services}.rule=Host(`qlever.${HOST}`) && PathPrefix(`/graphspace/${PROJECT:-services}`)"
+      - "traefik.http.middlewares.qlever-base-${PROJECT:-services}-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.qlever-base-${PROJECT:-services}.middlewares=qlever-base-${PROJECT:-services}-https-redirect"
+      - "traefik.http.routers.qlever-base-${PROJECT:-services}-secure.entrypoints=https"
+      - "traefik.http.routers.qlever-base-${PROJECT:-services}-secure.rule=Host(`qlever.${HOST}`) && PathPrefix(`/graphspace/${PROJECT:-services}`)"
+      - "traefik.http.routers.qlever-base-${PROJECT:-services}-secure.tls=true"
+      - "traefik.http.routers.qlever-base-${PROJECT:-services}-secure.tls.certresolver=httpresolver"
+      - "traefik.http.routers.qlever-base-${PROJECT:-services}-secure.service=qlever-base-${PROJECT:-services}"
+      - "traefik.http.services.qlever-base-${PROJECT:-services}.loadbalancer.server.port=7019"
+      - "traefik.docker.network=traefik_proxy"
+      - "traefik.http.middlewares.qlever-stripprefix-${PROJECT:-services}.stripprefix.prefixes=/graphspace/${PROJECT:-services}"
+      - "traefik.http.routers.qlever-project-${PROJECT:-services}-secure.middlewares=qlever-stripprefix-${PROJECT:-services}"
+
+
+  qlever-ui-base:
+    image: ghcr.io/earthcube/qlever-ui-new:org-decoder
+    hostname: qlever-ui-${PROJECT:-services}
+    user: "${CURRENT_UID}:${CURRENT_GID}"
+    #init: true
+    volumes:
+      - type: volume
+        source: qleverflow_data
+        target: /app/data
+    #   - qleverflow_data:/app/db
+    # ports:
+    #   - "8176:7000"
+    environment:
+      # this will hopefully be a hostname from the above service
+      QLEVER_HOST: "http://qlever-server-${PROJECT:-services}:7007"
+      QLEVERUI_ALLOWED_HOSTS: "*"
+      QLEVERUI_CSRF_TRUSTED_ORIGINS: ${QLEVERUI_CSRF_TRUSTED_ORIGINS:-https://*.geocodes-aws-dev.earthcube.org}
+      QLEVERUI_SECRET_KEY: ${QLEVERUI_SECRET_KEY:-!!super_secret!!}
+      QLEVERUI_DATABASE_URL: "sqlite:////app/db/qleverui.sqlite3"
+      CORS_ORIGINS: ${QLEVERUI_CORS_ORIGINS:-https://*.geocodes-aws-dev.earthcube.org}
+      CONFIG_FILE: ${QLEVERUI_CONFIG_FILE:-config.yaml}
+      EXAMPLES_DIR: ${QLEVERUI_EXAMPLES_DIR:-examples}
+      DB_FILE: ${QLEVERUI_DB_FILE:-data/data.db}
+    #      QLEVER_HOST: "http://0.0.0.0:7007"
+    #    entrypoint: bash
+    # command:
+    #   - gunicorn
+    #   - "--bind"
+    #   - ":7000"
+    #   - "--workers"
+    #   - "3"
+    #   - "--limit-request-line"
+    #   - "10000"
+    #   - "qlever.wsgi:application"
+    #restart: unless-stopped
+    networks: *network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.qlever-ui-${PROJECT:-services}.entrypoints=http"
+      - "traefik.http.routers.qlever-ui-${PROJECT:-services}.rule=Host(`qlever-ui.${HOST}`)"
+      - "traefik.http.middlewares.qlever-ui-${PROJECT:-services}-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.qlever-ui-${PROJECT:-services}.middlewares=qlever-ui-${PROJECT:-services}-https-redirect"
+      - "traefik.http.routers.qlever-ui-${PROJECT:-services}-secure.entrypoints=https"
+      - "traefik.http.routers.qlever-ui-${PROJECT:-services}-secure.rule=Host(`qlever-ui.${HOST}`)"
+      - "traefik.http.routers.qlever-ui-${PROJECT:-services}-secure.tls=true"
+      - "traefik.http.routers.qlever-ui-${PROJECT:-services}-secure.tls.certresolver=httpresolver"
+      - "traefik.http.routers.qlever-ui-${PROJECT:-services}-secure.service=qlever-ui-${PROJECT:-services}"
+      - "traefik.http.services.qlever-ui-${PROJECT:-services}.loadbalancer.server.port=7000"
+      - "traefik.docker.network=traefik_proxy"
+
+  qlever-petrimaps-base:
+    image: docker.io/adfreiburg/qlever-petrimaps:latest
+    hostname: qlever-petrimaps
+    user: "${CURRENT_UID}:${CURRENT_GID}"
+    # ports:
+    #   - "9090:9090"
+    networks: *network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.qlever-petrimaps-${PROJECT:-services}.entrypoints=http"
+      - "traefik.http.routers.qlever-petrimaps-${PROJECT:-services}.rule=Host(`qlever-petrimaps.${HOST}`)"
+      - "traefik.http.middlewares.qlever-petrimaps-${PROJECT:-services}-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.qlever-petrimaps-${PROJECT:-services}.middlewares=qlever-petrimaps-${PROJECT:-services}-https-redirect"
+      - "traefik.http.routers.qlever-petrimaps-${PROJECT:-services}-secure.entrypoints=https"
+      - "traefik.http.routers.qlever-petrimaps-${PROJECT:-services}-secure.rule=Host(`qlever-petrimaps.${HOST}`)"
+      - "traefik.http.routers.qlever-petrimaps-${PROJECT:-services}-secure.tls=true"
+      - "traefik.http.routers.qlever-petrimaps-${PROJECT:-services}-secure.tls.certresolver=httpresolver"
+      - "traefik.http.routers.qlever-petrimaps-${PROJECT:-services}-secure.service=qlever-petrimaps-${PROJECT:-services}"
+      - "traefik.http.services.qlever-petrimaps-${PROJECT:-services}.loadbalancer.server.port=9090"
+      - "traefik.docker.network=traefik_proxy"
