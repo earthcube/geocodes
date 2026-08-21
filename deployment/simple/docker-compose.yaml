@@ -108,7 +108,7 @@ services:
   # Both webserver and daemon share dagster-home volume for SQLite state.
   # ─────────────────────────────────────────────
   dagster-webserver:
-    image: docker.io/nsfearthcube/dagster-gleanerio:${DAGSTER_TAG:-latest}
+    image: docker.io/nsfearthcube/dagster-summon:${DAGSTER_TAG:-latest}
     restart: unless-stopped
     command:
       - dagster-webserver
@@ -172,7 +172,7 @@ services:
   # to spawn Gleaner/Nabu containers and restart Qlever.
   # ─────────────────────────────────────────────
   dagster-daemon:
-    image: docker.io/nsfearthcube/dagster-gleanerio:${DAGSTER_TAG:-latest}
+    image: docker.io/nsfearthcube/dagster-summon:${DAGSTER_TAG:-latest}
     restart: unless-stopped
     command:
       - dagster-daemon

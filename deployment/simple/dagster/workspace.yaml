@@ -10,8 +10,9 @@
 # compared. To promote pysummon: set PYSUMMON_DATA_PREFIX="" in .env and
 # pause the pipeline project's schedule in the Dagster UI.
 #
-# Both packages must be installed in the dagster-gleanerio image. To reload
-# code: docker compose restart dagster-webserver dagster-daemon
+# Both packages are pip-installed in the nsfearthcube/dagster-summon image
+# (scheduler: build/Dockerfile_summon). To reload code:
+# docker compose restart dagster-webserver dagster-daemon
 
 load_from:
   - python_module:
