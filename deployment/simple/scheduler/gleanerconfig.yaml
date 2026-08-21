@@ -29,6 +29,10 @@ summoner:
   headless: http://headless:9222
   mode: full
   threads: 5
+  # pysummon fetch engine: crawl4ai (default; HTTP-only strategy or CDP
+  # browser, retries on 429/503) or native (requests + Playwright). Can be
+  # overridden per source with `fetcher: native`. Ignored by gleaner.
+  engine: crawl4ai
 millers:
   graph: true
 minio:
