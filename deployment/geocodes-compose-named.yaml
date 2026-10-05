@@ -57,25 +57,25 @@ services:
 
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.`tennant${GC_BASE}`-server.entrypoints=http"
-      - "traefik.http.routers.`tennant${GC_BASE}`-server.priority=90"
-      - "traefik.http.routers.`tennant${GC_BASE}`-server.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`) && PathPrefix(`/ec/api`)"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`-server-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.`tennant${GC_BASE}`-server.middlewares=`tennant${GC_BASE}`-server-https-redirect"
-      - "traefik.http.routers.`tennant${GC_BASE}`-server-secure.priority=91"
-      - "traefik.http.routers.`tennant${GC_BASE}`-server-secure.entrypoints=https"
-      - "traefik.http.routers.`tennant${GC_BASE}`-server-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment is required}`) && PathPrefix(`/ec/api`)"
-      - "traefik.http.routers.`tennant${GC_BASE}`-server-secure.tls=true"
-      - "traefik.http.routers.`tennant${GC_BASE}`-server-secure.tls.certresolver=httpresolver"
-      - "traefik.http.routers.`tennant${GC_BASE}`-server-secure.service=`tennant${GC_BASE}`-server"
-      - "traefik.http.services.`tennant${GC_BASE}`-server.loadbalancer.server.port=3000"
+      - "traefik.http.routers.tennant${GC_BASE}-server.entrypoints=http"
+      - "traefik.http.routers.tennant${GC_BASE}-server.priority=90"
+      - "traefik.http.routers.tennant${GC_BASE}-server.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`) && PathPrefix(`/ec/api`)"
+      - "traefik.http.middlewares.tennant${GC_BASE}-server-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.tennant${GC_BASE}-server.middlewares=tennant${GC_BASE}-server-https-redirect"
+      - "traefik.http.routers.tennant${GC_BASE}-server-secure.priority=91"
+      - "traefik.http.routers.tennant${GC_BASE}-server-secure.entrypoints=https"
+      - "traefik.http.routers.tennant${GC_BASE}-server-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment is required}`) && PathPrefix(`/ec/api`)"
+      - "traefik.http.routers.tennant${GC_BASE}-server-secure.tls=true"
+      - "traefik.http.routers.tennant${GC_BASE}-server-secure.tls.certresolver=httpresolver"
+      - "traefik.http.routers.tennant${GC_BASE}-server-secure.service=tennant${GC_BASE}-server"
+      - "traefik.http.services.tennant${GC_BASE}-server.loadbalancer.server.port=3000"
       - "traefik.docker.network=traefik_proxy"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`-server.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`-server.headers.accessControlAllowOriginList=*"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`-server.headers.accesscontrolmaxage=100"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`-server.headers.addvaryheader=true"
+      - "traefik.http.middlewares.tennant${GC_BASE}-server.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
+      - "traefik.http.middlewares.tennant${GC_BASE}-server.headers.accessControlAllowOriginList=*"
+      - "traefik.http.middlewares.tennant${GC_BASE}-server.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.tennant${GC_BASE}-server.headers.addvaryheader=true"
       - "traefik.http.middlewares.ecapi_prefix_b.StripPrefix.prefixes=/ec/api"
-      - "traefik.http.routers.`tennant${GC_BASE}`-server-secure.middlewares=ecapi_prefix_b"
+      - "traefik.http.routers.tennant${GC_BASE}-server-secure.middlewares=ecapi_prefix_b"
     networks:
       - traefik_proxy
 
@@ -94,32 +94,32 @@ services:
     configs:
   # the config facets_config_named (defined above) has the name facets_config_${GC_BASE}
       - source:     facets_config_named
-        target: /usr/src/app/dist/public/config/config.yaml
+        target: /app/public/config/config.yaml
       - source:    facets_config_named
-        target: /usr/src/app/dist/config/config.yaml
+        target: /app/dist/config/config.yaml
 
   #      uid: '103'
   #      gid: '103'
   #      mode: 0440
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.`tennant${GC_BASE}`.entrypoints=http"
-      - "traefik.http.routers.`tennant${GC_BASE}`.priority=13"
-      - "traefik.http.routers.`tennant${GC_BASE}`.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`)"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.`tennant${GC_BASE}`.middlewares=`tennant${GC_BASE}`-https-redirect"
-      - "traefik.http.routers.`tennant${GC_BASE}`-secure.entrypoints=https"
-      - "traefik.http.routers.`tennant${GC_BASE}`-secure.priority=12"
-      - "traefik.http.routers.`tennant${GC_BASE}`-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`)"
-      - "traefik.http.routers.`tennant${GC_BASE}`-secure.tls=true"
-      - "traefik.http.routers.`tennant${GC_BASE}`-secure.tls.certresolver=httpresolver"
-      - "traefik.http.routers.`tennant${GC_BASE}`-secure.service=`tennant${GC_BASE}`"
-      - "traefik.http.services.`tennant${GC_BASE}`.loadbalancer.server.port=8080"
+      - "traefik.http.routers.tennant${GC_BASE}.entrypoints=http"
+      - "traefik.http.routers.tennant${GC_BASE}.priority=13"
+      - "traefik.http.routers.tennant${GC_BASE}.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`)"
+      - "traefik.http.middlewares.tennant${GC_BASE}-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.tennant${GC_BASE}.middlewares=tennant${GC_BASE}-https-redirect"
+      - "traefik.http.routers.tennant${GC_BASE}-secure.entrypoints=https"
+      - "traefik.http.routers.tennant${GC_BASE}-secure.priority=12"
+      - "traefik.http.routers.tennant${GC_BASE}-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`)"
+      - "traefik.http.routers.tennant${GC_BASE}-secure.tls=true"
+      - "traefik.http.routers.tennant${GC_BASE}-secure.tls.certresolver=httpresolver"
+      - "traefik.http.routers.tennant${GC_BASE}-secure.service=tennant${GC_BASE}"
+      - "traefik.http.services.tennant${GC_BASE}.loadbalancer.server.port=8080"
       - "traefik.docker.network=traefik_proxy"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`.headers.accessControlAllowOriginList=*"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`.headers.accesscontrolmaxage=100"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`.headers.addvaryheader=true"
+      - "traefik.http.middlewares.tennant${GC_BASE}.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
+      - "traefik.http.middlewares.tennant${GC_BASE}.headers.accessControlAllowOriginList=*"
+      - "traefik.http.middlewares.tennant${GC_BASE}.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.tennant${GC_BASE}.headers.addvaryheader=true"
     networks:
       - traefik_proxy
   notebook-proxy:
@@ -137,25 +137,25 @@ services:
       - DOMAIN=https://${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}/
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.`tennant${GC_BASE}`nb.entrypoints=http"
-      - "traefik.http.routers.`tennant${GC_BASE}`nb.priority=90"
-      - "traefik.http.routers.`tennant${GC_BASE}`nb.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`) && PathPrefix(`/notebook`)"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`nb-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.`tennant${GC_BASE}`nb.middlewares=`tennant${GC_BASE}`nb-https-redirect"
-      - "traefik.http.routers.`tennant${GC_BASE}`nb-secure.entrypoints=https"
-      - "traefik.http.routers.`tennant${GC_BASE}`nb-secure.priority=90"
-      - "traefik.http.routers.`tennant${GC_BASE}`nb-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`) && PathPrefix(`/notebook`)"
-      - "traefik.http.routers.`tennant${GC_BASE}`nb-secure.tls=true"
-      - "traefik.http.routers.`tennant${GC_BASE}`nb-secure.tls.certresolver=httpresolver"
-      - "traefik.http.routers.`tennant${GC_BASE}`nb-secure.service=`tennant${GC_BASE}`nb"
-      - "traefik.http.services.`tennant${GC_BASE}`nb.loadbalancer.server.port=3031"
+      - "traefik.http.routers.tennant${GC_BASE}nb.entrypoints=http"
+      - "traefik.http.routers.tennant${GC_BASE}nb.priority=90"
+      - "traefik.http.routers.tennant${GC_BASE}nb.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`) && PathPrefix(`/notebook`)"
+      - "traefik.http.middlewares.tennant${GC_BASE}nb-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.tennant${GC_BASE}nb.middlewares=tennant${GC_BASE}nb-https-redirect"
+      - "traefik.http.routers.tennant${GC_BASE}nb-secure.entrypoints=https"
+      - "traefik.http.routers.tennant${GC_BASE}nb-secure.priority=90"
+      - "traefik.http.routers.tennant${GC_BASE}nb-secure.rule=Host(`${GC_CLIENT_DOMAIN:?GC_CLIENT_DOMAIN environment variable is required}`) && PathPrefix(`/notebook`)"
+      - "traefik.http.routers.tennant${GC_BASE}nb-secure.tls=true"
+      - "traefik.http.routers.tennant${GC_BASE}nb-secure.tls.certresolver=httpresolver"
+      - "traefik.http.routers.tennant${GC_BASE}nb-secure.service=tennant${GC_BASE}nb"
+      - "traefik.http.services.tennant${GC_BASE}nb.loadbalancer.server.port=3031"
       - "traefik.docker.network=traefik_proxy"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`nb.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`nb.headers.accessControlAllowOriginList=*"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`nb.headers.accesscontrolmaxage=100"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`nb.headers.addvaryheader=true"
-      - "traefik.http.middlewares.`tennant${GC_BASE}`nb_prefix.StripPrefix.prefixes=/notebook"
-      - "traefik.http.routers.`tennant${GC_BASE}`nb-secure.middlewares=`tennant${GC_BASE}`nb_prefix"
+      - "traefik.http.middlewares.tennant${GC_BASE}nb.headers.accesscontrolallowmethods=GET,OPTIONS,POST"
+      - "traefik.http.middlewares.tennant${GC_BASE}nb.headers.accessControlAllowOriginList=*"
+      - "traefik.http.middlewares.tennant${GC_BASE}nb.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.tennant${GC_BASE}nb.headers.addvaryheader=true"
+      - "traefik.http.middlewares.tennant${GC_BASE}nb_prefix.StripPrefix.prefixes=/notebook"
+      - "traefik.http.routers.tennant${GC_BASE}nb-secure.middlewares=tennant${GC_BASE}nb_prefix"
     networks:
       - traefik_proxy
 

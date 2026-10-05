@@ -1,0 +1,110 @@
+<https://doi.org/10.1594/PANGAEA.883585> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/Dataset> .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/abstract> "To facilitate earth system modeling and inventory-based studies, we developed a spatially explicit time-series data set of nitrogen (N) fertilizer use in agricultural land of the continental U.S. during 1850 to 2015. The spatial resolution of this data set is 5km × 5km, and the time step is annually. Through gap-filling, we reconstructed the state-level crop-specific N fertilizer use history by harmonizing national and state-level N fertilizer use data from multiple data sources. We then spatialized and resampled N fertilizer use data to 5km × 5km gridded maps based on historical land cover data of the continental U.S. developed by Yu and Lu (2017). This data indicated that N fertilizer use rates of the U.S. increased by 34 times from 1940 to 2015. Geospatial analysis revealed that the hotspots of N fertilizer use have shifted from the southeastern and eastern US to the Midwest and the Great Plains during the past century." .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/additionalType> "dataset" .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/conditionsOfAccess> "unrestricted" .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/creator> <https://orcid.org/0000-0002-1526-0513> .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/creator> <https://orcid.org/0000-0002-5032-1991> .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/creator> <https://orcid.org/0000-0002-7729-249X> .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/datePublished> "2017-11-27" .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/description> "To facilitate earth system modeling and inventory-based studies, we developed a spatially explicit time-series data set of nitrogen (N) fertilizer use in agricultural land of the continental U.S. during 1850 to 2015. The spatial resolution of this data set is 5km × 5km, and the time step is annually. Through gap-filling, we reconstructed the state-level crop-specific N fertilizer use history by harmonizing national and state-level N fertilizer use data from multiple data sources. We then spatialized and resampled N fertilizer use data to 5km × 5km gridded maps based on historical land cover data of the continental U.S. developed by Yu and Lu (2017). This data indicated that N fertilizer use rates of the U.S. increased by 34 times from 1940 to 2015. Geospatial analysis revealed that the hotspots of N fertilizer use have shifted from the southeastern and eastern US to the Midwest and the Great Plains during the past century." .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/distribution> _:b1 .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/distribution> _:b2 .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/identifier> "https://doi.org/10.1594/PANGAEA.883585" .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/inLanguage> "en" .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/includedInDataCatalog> _:b3 .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/isAccessibleForFree> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/license> "https://creativecommons.org/licenses/by/3.0/" .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/name> "Agricultural nitrogen fertilizer uses in the continental U.S. during 1850-2015: a set of gridded time-series data" .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/publisher> _:b4 .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/size> _:b5 .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/spatialCoverage> _:b6 .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/temporalCoverage> "1850-01-01T00:00:00/2015-12-31T00:00:00" .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/url> "https://doi.pangaea.de/10.1594/PANGAEA.883585" .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/variableMeasured> _:b10 .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/variableMeasured> _:b11 .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/variableMeasured> _:b13 .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/variableMeasured> _:b8 .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/variableMeasured> _:b9 .
+<https://doi.org/10.1594/PANGAEA.883585> <https://schema.org/workExample> <https://store.pangaea.de/Publications/CaoP-etal_2017/N_fer_use_data_1850-2015.zip> .
+<https://doi.org/10.5194/essd-10-969-2018> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/CreativeWork> .
+<https://doi.org/10.5194/essd-10-969-2018> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/ScholarlyArticle> .
+<https://doi.org/10.5194/essd-10-969-2018> <https://schema.org/additionalType> "journal article" .
+<https://doi.org/10.5194/essd-10-969-2018> <https://schema.org/creator> <https://orcid.org/0000-0002-1526-0513> .
+<https://doi.org/10.5194/essd-10-969-2018> <https://schema.org/creator> <https://orcid.org/0000-0002-5032-1991> .
+<https://doi.org/10.5194/essd-10-969-2018> <https://schema.org/creator> <https://orcid.org/0000-0002-7729-249X> .
+<https://doi.org/10.5194/essd-10-969-2018> <https://schema.org/datePublished> "2018" .
+<https://doi.org/10.5194/essd-10-969-2018> <https://schema.org/identifier> "https://doi.org/10.5194/essd-10-969-2018" .
+<https://doi.org/10.5194/essd-10-969-2018> <https://schema.org/isBasedOn> <https://doi.org/10.1594/PANGAEA.883585> .
+<https://doi.org/10.5194/essd-10-969-2018> <https://schema.org/isPartOf> _:b0 .
+<https://doi.org/10.5194/essd-10-969-2018> <https://schema.org/name> "Historical nitrogen fertilizer use in agricultural ecosystems of the contiguous United States during 1850–2015: application rate, timing, and fertilizer types" .
+<https://doi.org/10.5194/essd-10-969-2018> <https://schema.org/pagination> "969-984" .
+<https://doi.org/10.5194/essd-10-969-2018> <https://schema.org/url> "https://doi.org/10.5194/essd-10-969-2018" .
+<https://orcid.org/0000-0002-1526-0513> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/Person> .
+<https://orcid.org/0000-0002-1526-0513> <https://schema.org/email> "clu@iastate.edu" .
+<https://orcid.org/0000-0002-1526-0513> <https://schema.org/familyName> "Lu" .
+<https://orcid.org/0000-0002-1526-0513> <https://schema.org/givenName> "Chaoqun" .
+<https://orcid.org/0000-0002-1526-0513> <https://schema.org/identifier> "https://orcid.org/0000-0002-1526-0513" .
+<https://orcid.org/0000-0002-1526-0513> <https://schema.org/name> "Chaoqun Lu" .
+<https://orcid.org/0000-0002-1526-0513> <https://schema.org/url> "http://clu.public.iastate.edu/chaoqun_lu.html" .
+<https://orcid.org/0000-0002-5032-1991> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/Person> .
+<https://orcid.org/0000-0002-5032-1991> <https://schema.org/email> "pycao@iastate.edu" .
+<https://orcid.org/0000-0002-5032-1991> <https://schema.org/familyName> "Cao" .
+<https://orcid.org/0000-0002-5032-1991> <https://schema.org/givenName> "Peiyu" .
+<https://orcid.org/0000-0002-5032-1991> <https://schema.org/identifier> "https://orcid.org/0000-0002-5032-1991" .
+<https://orcid.org/0000-0002-5032-1991> <https://schema.org/name> "Peiyu Cao" .
+<https://orcid.org/0000-0002-5032-1991> <https://schema.org/url> "http://clu.public.iastate.edu/peiyu_cao.html" .
+<https://orcid.org/0000-0002-7729-249X> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/Person> .
+<https://orcid.org/0000-0002-7729-249X> <https://schema.org/email> "zyu@iastate.edu" .
+<https://orcid.org/0000-0002-7729-249X> <https://schema.org/familyName> "Yu" .
+<https://orcid.org/0000-0002-7729-249X> <https://schema.org/givenName> "Zhen" .
+<https://orcid.org/0000-0002-7729-249X> <https://schema.org/identifier> "https://orcid.org/0000-0002-7729-249X" .
+<https://orcid.org/0000-0002-7729-249X> <https://schema.org/name> "Zhen Yu" .
+<https://orcid.org/0000-0002-7729-249X> <https://schema.org/url> "http://clu.public.iastate.edu/zhen_yu.html" .
+<https://store.pangaea.de/Publications/CaoP-etal_2017/N_fer_use_data_1850-2015.zip> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/CreativeWork> .
+<https://store.pangaea.de/Publications/CaoP-etal_2017/N_fer_use_data_1850-2015.zip> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<https://store.pangaea.de/Publications/CaoP-etal_2017/N_fer_use_data_1850-2015.zip> <https://schema.org/identifier> "https://store.pangaea.de/Publications/CaoP-etal_2017/N_fer_use_data_1850-2015.zip" .
+<https://store.pangaea.de/Publications/CaoP-etal_2017/N_fer_use_data_1850-2015.zip> <https://schema.org/name> "Nitrogen fertilizer uses 1850-2015 (Download all)" .
+<https://store.pangaea.de/Publications/CaoP-etal_2017/N_fer_use_data_1850-2015.zip> <https://schema.org/url> "https://store.pangaea.de/Publications/CaoP-etal_2017/N_fer_use_data_1850-2015.zip" .
+<urn:obo:pato:term:0000117> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/DefinedTerm> .
+<urn:obo:pato:term:0000117> <https://schema.org/identifier> "urn:obo:pato:term:0000117" .
+<urn:obo:pato:term:0000117> <https://schema.org/name> "size" .
+<urn:obo:pato:term:0000117> <https://schema.org/url> "http://purl.obolibrary.org/obo/PATO_0000117" .
+_:b0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/Periodical> .
+_:b0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/PublicationVolume> .
+_:b0 <https://schema.org/name> "Earth System Science Data" .
+_:b0 <https://schema.org/volumeNumber> "10(2)" .
+_:b1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/DataDownload> .
+_:b1 <https://schema.org/contentUrl> "https://doi.pangaea.de/10.1594/PANGAEA.883585?format=html" .
+_:b1 <https://schema.org/encodingFormat> "text/html" .
+_:b10 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/PropertyValue> .
+_:b10 <https://schema.org/name> "File format" .
+_:b11 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/PropertyValue> .
+_:b11 <https://schema.org/name> "File size" .
+_:b11 <https://schema.org/subjectOf> _:b12 .
+_:b11 <https://schema.org/unitText> "kByte" .
+_:b12 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/DefinedTermSet> .
+_:b12 <https://schema.org/hasDefinedTerm> <urn:obo:pato:term:0000117> .
+_:b13 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/PropertyValue> .
+_:b13 <https://schema.org/name> "Uniform resource locator/link to file" .
+_:b2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/DataDownload> .
+_:b2 <https://schema.org/contentUrl> "https://doi.pangaea.de/10.1594/PANGAEA.883585?format=textfile" .
+_:b2 <https://schema.org/encodingFormat> "text/tab-separated-values" .
+_:b3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/DataCatalog> .
+_:b3 <https://schema.org/disambiguatingDescription> "Data Publisher for Earth & Environmental Science" .
+_:b3 <https://schema.org/name> "PANGAEA" .
+_:b3 <https://schema.org/url> "https://www.pangaea.de/" .
+_:b4 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/Organization> .
+_:b4 <https://schema.org/disambiguatingDescription> "Data Publisher for Earth & Environmental Science" .
+_:b4 <https://schema.org/name> "PANGAEA" .
+_:b4 <https://schema.org/url> "https://www.pangaea.de/" .
+_:b5 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/QuantitativeValue> .
+_:b5 <https://schema.org/unitText> "data points" .
+_:b5 <https://schema.org/value> "835"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:b6 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/Place> .
+_:b6 <https://schema.org/geo> _:b7 .
+_:b7 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/GeoShape> .
+_:b7 <https://schema.org/box> "25.0 -126.0 49.0 -81.0" .
+_:b8 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/PropertyValue> .
+_:b8 <https://schema.org/name> "File content" .
+_:b9 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/PropertyValue> .
+_:b9 <https://schema.org/name> "File name" .

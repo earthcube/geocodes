@@ -1,0 +1,91 @@
+---
+
+# export USER_ID=$(id -u)
+#  export  GROUP_ID=$(id -g)
+
+services:
+
+ yasgui:
+     image: mathiasvda/yasgui
+     container_name: yasgui
+     ports:
+         - 8080:8080
+
+
+ qlever.server.odis:
+    image: docker.io/adfreiburg/qlever:latest
+    container_name: qlever.server.odis
+    init: true
+    user: "${USER_ID}:${GROUP_ID}"  # Will be set via .env file
+    working_dir: /index
+    ports:
+      - "7019:7019"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./configs/ODIS-OIH:/index
+    entrypoint: bash
+    command: >
+          -c 'ServerMain -i odis -j 8 -p 7019 -m 12G -c 8G -e 2G -k 200 -s 240s -a odis_7643543846_6dMISzlPrD7i > odis.server-log.txt 2>&1'
+    restart: unless-stopped
+
+# qlever.ui.odis:
+#    image: docker.io/adfreiburg/qlever-ui:latest
+#    container_name: qlever.ui.odis
+#    volumes:
+#      - ./db:/app/db
+#    ports:
+#      - "7000:7000"
+##    entrypoint: bash
+##    command: >
+##          -c 'python manage.py configure default http://workstation.lan:7019'
+#    restart: unless-stopped
+
+ qlever.server.doos:
+    image: docker.io/adfreiburg/qlever:latest
+    container_name: qlever.server.doos
+    init: true
+    user: "${USER_ID}:${GROUP_ID}"  # Will be set via .env file
+    working_dir: /index
+    ports:
+      - "7029:7029"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./configs/doos:/index
+    entrypoint: bash
+    command: >
+          -c 'ServerMain -i doos -j 8 -p 7029 -m 12G -c 8G -e 2G -k 200 -s 240s -a doos_7643543846_6dMISzlPrD7i > doos.server-log.txt 2>&1'
+    restart: unless-stopped
+
+ qlever.server.decoder:
+    image: docker.io/adfreiburg/qlever:latest
+    container_name: qlever.server.decoder
+    init: true
+    user: "${USER_ID}:${GROUP_ID}"  # Will be set via .env file
+    working_dir: /index
+    ports:
+      - "7039:7039"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./configs/decoder:/index
+    entrypoint: bash
+    command: >
+          -c 'ServerMain -i decoder -j 8 -p 7039 -m 12G -c 8G -e 2G -k 200 -s 240s -a decoder_7643543846_6dMISzlPrD7i > decoder.server-log.txt 2>&1'
+    restart: unless-stopped
+
+
+ qlever.server.testinglocal:
+    image: docker.io/adfreiburg/qlever:latest
+    container_name: qlever.server.testinglocal
+    init: true
+    user: "${USER_ID}:${GROUP_ID}"  # Will be set via .env file
+    working_dir: /index
+    ports:
+      - "7049:7049"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./configs/local:/index
+    entrypoint: bash
+    command: >
+          -c 'ServerMain -i local -j 8 -p 7049 -m 12G -c 8G -e 2G -k 200 -s 240s -a local_7643543846_6dMISzlPrD7i > local.server-log.txt 2>&1'
+    restart: unless-stopped
+
