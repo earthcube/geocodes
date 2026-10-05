@@ -46,7 +46,7 @@ def _(StringIO, pl, requests):
     def query_mode(source,   query):
         params = {
             "timeout": "600s",
-            "access-token": "doos_7643543846_6dMISzlPrD7i"
+            "access-token": ""
         }
         headers = {
             "Accept": "text/csv",
