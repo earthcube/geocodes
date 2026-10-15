@@ -1,0 +1,89 @@
+{{- if .Values.geocodes.api.enabled }}
+{{- $a := .Values.geocodes.api }}
+{{- $name := include "geocodes.componentName" (dict "root" . "component" "api") }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "api") | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "geocodes.selectorLabels" (dict "root" . "component" "api") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "geocodes.selectorLabels" (dict "root" . "component" "api") | nindent 8 }}
+    spec:
+      {{- with $.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: vue-services
+          image: {{ include "geocodes.image" $a.image }}
+          imagePullPolicy: {{ $a.image.pullPolicy }}
+          env:
+            - name: NODE_ENV
+              value: {{ $a.nodeEnv | quote }}
+            - name: S3ADDRESS
+              value: {{ default (include "geocodes.s3.serviceHost" .) $a.s3.address | quote }}
+            - name: S3PORT
+              value: {{ $a.s3.port | quote }}
+            - name: S3SSL
+              value: {{ $a.s3.ssl | quote }}
+            {{- include "geocodes.s3CredentialEnv" (dict "root" . "existingSecret" $a.s3.existingSecret "accessVar" "S3KEY" "secretVar" "S3SECRET") | trim | nindent 12 }}
+            - name: BUCKET
+              value: {{ $a.bucket | quote }}
+            - name: BUCKETPATH
+              value: {{ $a.bucketPath | quote }}
+            - name: TOOLPATH
+              value: {{ $a.toolPath | quote }}
+            - name: TOOLREPO
+              value: {{ $a.toolRepo | quote }}
+            - name: URIVERSION
+              value: {{ .Values.geocodes.uriVersion | quote }}
+            {{- with $a.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 3000
+          readinessProbe:
+            tcpSocket:
+              port: http
+          {{- with $a.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "api") | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "geocodes.selectorLabels" (dict "root" . "component" "api") | nindent 4 }}
+  ports:
+    - name: http
+      port: 3000
+      targetPort: http
+{{- if $a.ingress.enabled }}
+---
+# https://<geocodes host>/ec/api, with the prefix stripped
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "api") | nindent 4 }}
+  {{- include "geocodes.ingress.annotations" (dict "root" . "annotations" $a.ingress.annotations "middlewares" (list (printf "%s-api-stripprefix" (include "geocodes.fullname" .)))) | nindent 2 }}
+spec:
+  {{- include "geocodes.ingress.spec" (dict "root" . "host" (include "geocodes.host.geocodes" .) "path" "/ec/api" "service" $name "port" 3000 "tlsSecret" (printf "%s-geocodes-tls" (include "geocodes.fullname" .))) | nindent 2 }}
+{{- end }}
+{{- end }}

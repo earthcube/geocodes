@@ -1,0 +1,130 @@
+{{- if and .Values.qlever.enabled .Values.qlever.ui.enabled }}
+{{- $ui := .Values.qlever.ui }}
+{{- $name := include "geocodes.componentName" (dict "root" . "component" "qlever-ui") }}
+{{- $project := default (include "geocodes.qlever.defaultProject" .) $ui.project }}
+{{- $backend := include "geocodes.componentName" (dict "root" . "component" (printf "qlever-%s" $project)) }}
+{{- $origins := printf "https://*.%s" .Values.global.host }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "qlever-ui") | nindent 4 }}
+type: Opaque
+data:
+  secretKey: {{ include "geocodes.secretValue" (dict "root" . "secret" $name "key" "secretKey" "value" $ui.secretKey "length" 50) | b64enc | quote }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "qlever-ui") | nindent 4 }}
+  annotations:
+    helm.sh/resource-policy: keep
+spec:
+  accessModes: [ReadWriteOnce]
+  {{- with $ui.persistence.storageClass }}
+  storageClassName: {{ . }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ $ui.persistence.size }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "qlever-ui") | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "geocodes.selectorLabels" (dict "root" . "component" "qlever-ui") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "geocodes.selectorLabels" (dict "root" . "component" "qlever-ui") | nindent 8 }}
+    spec:
+      {{- with $.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.qlever.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: qlever-ui
+          image: {{ include "geocodes.image" $ui.image }}
+          imagePullPolicy: {{ $ui.image.pullPolicy }}
+          env:
+            - name: QLEVER_HOST
+              value: {{ printf "http://%s:%v" $backend .Values.qlever.port | quote }}
+            - name: QLEVERUI_ALLOWED_HOSTS
+              value: "*"
+            - name: QLEVERUI_CSRF_TRUSTED_ORIGINS
+              value: {{ default $origins $ui.csrfTrustedOrigins | quote }}
+            - name: CORS_ORIGINS
+              value: {{ default $origins $ui.corsOrigins | quote }}
+            - name: QLEVERUI_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $name }}
+                  key: secretKey
+            - name: QLEVERUI_DATABASE_URL
+              value: sqlite:////app/db/qleverui.sqlite3
+            - name: CONFIG_FILE
+              value: config.yaml
+            - name: EXAMPLES_DIR
+              value: examples
+            - name: DB_FILE
+              value: data/data.db
+          ports:
+            - name: http
+              containerPort: 7000
+          readinessProbe:
+            tcpSocket:
+              port: http
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+          {{- with $ui.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ $name }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "qlever-ui") | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "geocodes.selectorLabels" (dict "root" . "component" "qlever-ui") | nindent 4 }}
+  ports:
+    - name: http
+      port: 7000
+      targetPort: http
+{{- if $ui.ingress.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "qlever-ui") | nindent 4 }}
+  {{- include "geocodes.ingress.annotations" (dict "root" . "annotations" $ui.ingress.annotations) | nindent 2 }}
+spec:
+  {{- include "geocodes.ingress.spec" (dict "root" . "host" (include "geocodes.host" (dict "root" . "values" $ui)) "path" "/" "service" $name "port" 7000 "tlsSecret" (printf "%s-tls" $name)) | nindent 2 }}
+{{- end }}
+{{- end }}

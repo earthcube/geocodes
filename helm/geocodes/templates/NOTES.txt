@@ -1,0 +1,43 @@
+GeoCodes has been deployed as release {{ .Release.Name }}.
+
+Endpoints:
+{{- if .Values.geocodes.client.enabled }}
+  Facet search:   https://{{ include "geocodes.host.geocodes" . }}/
+{{- end }}
+{{- if .Values.geocodes.api.enabled }}
+  API:            https://{{ include "geocodes.host.geocodes" . }}/ec/api
+{{- end }}
+{{- if .Values.geocodes.notebook.enabled }}
+  Notebook proxy: https://{{ include "geocodes.host.geocodes" . }}/notebook
+{{- end }}
+{{- if .Values.qlever.enabled }}
+{{- range .Values.qlever.projects }}
+  SPARQL ({{ .name }}): https://{{ include "geocodes.host.qlever" $ }}/graphspace/{{ .name }}
+{{- end }}
+{{- if .Values.qlever.ui.enabled }}
+  QLever UI:      https://{{ include "geocodes.host" (dict "root" . "values" .Values.qlever.ui) }}/
+{{- end }}
+{{- end }}
+{{- if .Values.sparqlgui.enabled }}
+  YASGUI:         https://{{ include "geocodes.host.sparqlgui" . }}/
+{{- end }}
+{{- if .Values.s3.enabled }}
+  S3 (SeaweedFS): https://{{ include "geocodes.host.oss" . }}/
+{{- if .Values.s3.admin.enabled }}
+  S3 admin UI:    https://{{ include "geocodes.host" (dict "root" . "values" .Values.s3.admin) }}/  (user {{ .Values.s3.admin.user }})
+{{- end }}
+
+S3 credentials{{ if .Values.s3.admin.enabled }} and admin UI password{{ end }}:
+  kubectl -n {{ .Release.Namespace }} get secret {{ include "geocodes.s3.secretName" . }} -o jsonpath='{.data.accessKey}' | base64 -d
+  kubectl -n {{ .Release.Namespace }} get secret {{ include "geocodes.s3.secretName" . }} -o jsonpath='{.data.secretKey}' | base64 -d
+{{- if .Values.s3.admin.enabled }}
+  kubectl -n {{ .Release.Namespace }} get secret {{ include "geocodes.s3.secretName" . }} -o jsonpath='{.data.adminPassword}' | base64 -d
+{{- end }}
+{{- end }}
+{{- if .Values.qlever.enabled }}
+
+QLever downloads release graphs from S3 and rebuilds its index each time a pod
+starts. Until the bucket has data, the qlever pods will fail to start. Watch
+progress with:
+  kubectl -n {{ .Release.Namespace }} logs -f statefulset/{{ include "geocodes.componentName" (dict "root" . "component" (printf "qlever-%s" (include "geocodes.qlever.defaultProject" .))) }} -c qlever
+{{- end }}

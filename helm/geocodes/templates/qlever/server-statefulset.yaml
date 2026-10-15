@@ -1,0 +1,145 @@
+{{- if .Values.qlever.enabled }}
+{{- range .Values.qlever.projects }}
+{{- $component := printf "qlever-%s" .name }}
+{{- $name := include "geocodes.componentName" (dict "root" $ "component" $component) }}
+{{- $s3Endpoint := default (include "geocodes.s3.endpoint" $) $.Values.qlever.s3.endpoint }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" $ "component" $component) | nindent 4 }}
+spec:
+  serviceName: {{ $name }}
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "geocodes.selectorLabels" (dict "root" $ "component" $component) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "geocodes.selectorLabels" (dict "root" $ "component" $component) | nindent 8 }}
+      annotations:
+        checksum/qleverfile: {{ include (print $.Template.BasePath "/qlever/qleverfile-secret.yaml") $ | sha256sum }}
+    spec:
+      {{- with $.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.qlever.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        # Download the release graphs from S3 (was the qlever-sync-data service)
+        - name: sync-data
+          image: {{ include "geocodes.image" $.Values.qlever.sync.image }}
+          args:
+            - sync
+            - "S3REMOTE:$(S3_BUCKET)/$(S3_PATH)"
+            - /release
+            - --progress
+          env:
+            - name: RCLONE_CONFIG_S3REMOTE_TYPE
+              value: s3
+            - name: RCLONE_CONFIG_S3REMOTE_PROVIDER
+              value: {{ $.Values.qlever.s3.provider | quote }}
+            - name: RCLONE_CONFIG_S3REMOTE_ENDPOINT
+              value: {{ $s3Endpoint | quote }}
+            - name: RCLONE_CONFIG_S3REMOTE_REGION
+              value: {{ $.Values.qlever.s3.region | quote }}
+            {{- include "geocodes.s3CredentialEnv" (dict "root" $ "existingSecret" $.Values.qlever.s3.existingSecret "accessVar" "RCLONE_CONFIG_S3REMOTE_ACCESS_KEY_ID" "secretVar" "RCLONE_CONFIG_S3REMOTE_SECRET_ACCESS_KEY") | trim | nindent 12 }}
+            - name: S3_BUCKET
+              value: {{ .s3Bucket | quote }}
+            - name: S3_PATH
+              value: {{ .s3Path | quote }}
+          volumeMounts:
+            - name: release
+              mountPath: /release
+      containers:
+        - name: qlever
+          image: {{ include "geocodes.image" $.Values.qlever.image }}
+          imagePullPolicy: {{ $.Values.qlever.image.pullPolicy }}
+          workingDir: /data
+          # Run through a login shell so /etc/profile.d/qlever.sh is sourced. This
+          # bypasses /qlever/docker-entrypoint.sh, whose UID/GID remapping relies on
+          # sudo and doesn't fit runAsUser.
+          command: ["/bin/bash", "--login", "-c"]
+          args:
+            - >-
+              ls -l /release &&
+              qlever index --text-index from_text_records_and_literals &&
+              qlever start --use-text-index yes --run-in-foreground
+          env:
+            - name: LANG
+              value: C.UTF-8
+            - name: LC_ALL
+              value: C.UTF-8
+            - name: QLEVER_IS_RUNNING_IN_CONTAINER
+              value: "1"
+          ports:
+            - name: sparql
+              containerPort: {{ $.Values.qlever.port }}
+          # Indexing can take a long time, so readiness only gates traffic and
+          # liveness waits for the server to come up.
+          readinessProbe:
+            tcpSocket:
+              port: sparql
+            periodSeconds: 15
+          startupProbe:
+            tcpSocket:
+              port: sparql
+            periodSeconds: 30
+            failureThreshold: 240
+          livenessProbe:
+            tcpSocket:
+              port: sparql
+            periodSeconds: 60
+          volumeMounts:
+            - name: index
+              mountPath: /data
+            - name: qleverfile
+              mountPath: /data/Qleverfile
+              subPath: Qleverfile
+              readOnly: true
+            - name: release
+              mountPath: /release
+          {{- with .resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: qleverfile
+          secret:
+            secretName: {{ $name }}
+        - name: index
+          emptyDir:
+            {{- with .indexStorage.sizeLimit }}
+            sizeLimit: {{ . }}
+            {{- end }}
+      {{- with $.Values.qlever.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.qlever.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.qlever.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: release
+      spec:
+        accessModes: [ReadWriteOnce]
+        {{- with .releaseStorage.storageClass }}
+        storageClassName: {{ . }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .releaseStorage.size }}
+{{- end }}
+{{- end }}

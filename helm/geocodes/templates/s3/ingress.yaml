@@ -1,0 +1,26 @@
+{{- if .Values.s3.enabled }}
+{{- $name := include "geocodes.componentName" (dict "root" . "component" "s3") }}
+{{- if .Values.s3.api.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "s3") | nindent 4 }}
+  {{- include "geocodes.ingress.annotations" (dict "root" . "annotations" .Values.s3.api.ingress.annotations) | nindent 2 }}
+spec:
+  {{- include "geocodes.ingress.spec" (dict "root" . "host" (include "geocodes.host.oss" .) "path" "/" "service" $name "port" 8333 "tlsSecret" (printf "%s-tls" $name)) | nindent 2 }}
+{{- end }}
+{{- if and .Values.s3.admin.enabled .Values.s3.admin.ingress.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $name }}-admin
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "s3") | nindent 4 }}
+  {{- include "geocodes.ingress.annotations" (dict "root" . "annotations" .Values.s3.admin.ingress.annotations) | nindent 2 }}
+spec:
+  {{- include "geocodes.ingress.spec" (dict "root" . "host" (include "geocodes.host" (dict "root" . "values" .Values.s3.admin)) "path" "/" "service" $name "port" 23646 "tlsSecret" (printf "%s-admin-tls" $name)) | nindent 2 }}
+{{- end }}
+{{- end }}

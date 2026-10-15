@@ -1,0 +1,68 @@
+{{- if .Values.sparqlgui.enabled }}
+{{- $sg := .Values.sparqlgui }}
+{{- $name := include "geocodes.componentName" (dict "root" . "component" "sparqlgui") }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "sparqlgui") | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "geocodes.selectorLabels" (dict "root" . "component" "sparqlgui") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "geocodes.selectorLabels" (dict "root" . "component" "sparqlgui") | nindent 8 }}
+    spec:
+      {{- with $.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: yasgui
+          image: {{ include "geocodes.image" $sg.image }}
+          imagePullPolicy: {{ $sg.image.pullPolicy }}
+          env:
+            - name: DEFAULT_SPARQL_ENDPOINT
+              value: {{ default (include "geocodes.qlever.defaultEndpoint" .) $sg.defaultEndpoint | quote }}
+          ports:
+            - name: http
+              containerPort: 80
+          readinessProbe:
+            tcpSocket:
+              port: http
+          {{- with $sg.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "sparqlgui") | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "geocodes.selectorLabels" (dict "root" . "component" "sparqlgui") | nindent 4 }}
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+{{- if $sg.ingress.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "sparqlgui") | nindent 4 }}
+  {{- include "geocodes.ingress.annotations" (dict "root" . "annotations" $sg.ingress.annotations) | nindent 2 }}
+spec:
+  {{- include "geocodes.ingress.spec" (dict "root" . "host" (include "geocodes.host.sparqlgui" .) "path" "/" "service" $name "port" 80 "tlsSecret" (printf "%s-tls" $name)) | nindent 2 }}
+{{- end }}
+{{- end }}

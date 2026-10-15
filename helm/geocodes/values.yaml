@@ -1,0 +1,311 @@
+# Default values for the geocodes chart.
+#
+# Hostnames are built as <subdomain>.<global.host> unless a component sets `host`
+# explicitly. This replaces the GLEANER_*_DOMAIN / GC_CLIENT_DOMAIN variables from
+# the Portainer env files.
+
+global:
+  # Base domain, e.g. geocodes-dev.earthcube.org
+  host: geocodes.example.org
+  imagePullSecrets: []
+  ingress:
+    # Ingress controller class. The stack was built around Traefik.
+    className: traefik
+    # Annotations added to every Ingress, e.g. cert-manager:
+    #   cert-manager.io/cluster-issuer: letsencrypt-prod
+    annotations: {}
+    tls:
+      enabled: true
+    # Create Traefik Middleware CRs for the path prefixes the apps expect stripped
+    # (/ec/api, /notebook, /graphspace/<project>). If you use a different ingress
+    # controller, set this to false and add equivalent rewrite annotations through
+    # each component's ingress.annotations.
+    traefikMiddlewares: true
+
+nameOverride: ""
+fullnameOverride: ""
+
+#######################################################################
+# S3 object store: SeaweedFS (replaces MinIO / s3system in services-compose.yaml)
+# Runs `weed server -s3` (master, volume server, filer and S3 gateway in one pod).
+#######################################################################
+s3:
+  enabled: true
+  image:
+    repository: docker.io/chrislusf/seaweedfs
+    tag: "4.48"
+    pullPolicy: IfNotPresent
+  auth:
+    # S3 admin credentials. Leave empty to generate them on first install
+    # (kept across upgrades). Passed to SeaweedFS as AWS_ACCESS_KEY_ID /
+    # AWS_SECRET_ACCESS_KEY, which it only uses while no identities have been
+    # configured through `weed shell`.
+    accessKey: ""
+    secretKey: ""
+    # Use an existing Secret with keys `accessKey` and `secretKey` instead
+    # (and `adminPassword` when admin.enabled).
+    existingSecret: ""
+  # Each bucket is a SeaweedFS collection with its own volumes, so keep volumes
+  # small enough that every bucket can get some on a single disk.
+  volumeSizeLimitMB: 1024
+  extraArgs: []
+  persistence:
+    size: 100Gi
+    storageClass: ""
+    accessModes: [ReadWriteOnce]
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  # Buckets, public-read policies and CORS, applied by a post-install/upgrade Job.
+  buckets:
+    enabled: true
+    image:
+      repository: docker.io/amazon/aws-cli
+      tag: latest
+    names:
+      - gleaner
+      - sites
+      - forms
+      - geocodes
+    # Objects the browser and QLever read anonymously over https://<oss host>/,
+    # e.g. the tenant config and reports in the facets config.
+    publicRead:
+      - bucket: geocodes
+        prefixes:
+          - scheduler/configs/
+          - reports/
+          - graphs/
+    corsAllowedOrigins: ["*"]
+  api:
+    subdomain: oss
+    host: ""
+    ingress:
+      enabled: true
+      annotations: {}
+  # SeaweedFS web admin UI (`weed admin`): cluster status and a file browser.
+  admin:
+    enabled: true
+    subdomain: s3admin
+    host: ""
+    user: admin
+    # Empty = generated and stored in the S3 Secret as `adminPassword`
+    password: ""
+    ingress:
+      enabled: true
+      annotations: {}
+
+#######################################################################
+# QLever triplestore (replaces blazegraph)
+#######################################################################
+qlever:
+  enabled: true
+
+  # Shared by all graphspaces
+  subdomain: qlever
+  host: ""
+  image:
+    repository: docker.io/adfreiburg/qlever
+    tag: commit-cba194e
+    pullPolicy: IfNotPresent
+  port: 7019
+  podSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+  ingress:
+    enabled: true
+    annotations: {}
+
+  # Before QLever starts, an rclone initContainer downloads each graphspace's
+  # release graphs (.nq) from S3.
+  sync:
+    image:
+      repository: docker.io/rclone/rclone
+      tag: master
+  s3:
+    # rclone provider: SeaweedFS, Minio, AWS, ...
+    provider: SeaweedFS
+    # Empty = the in-cluster SeaweedFS (http://<release>-s3:8333)
+    endpoint: ""
+    region: eu-central-1
+    # Secret with keys `accessKey` and `secretKey`. Empty = use the in-cluster
+    # S3 credentials.
+    existingSecret: ""
+
+  # One QLever server per graphspace. Each graphspace is served at
+  # https://<qlever host>/graphspace/<name>
+  projects:
+    - name: facetsearch
+      s3Bucket: geocodes
+      s3Path: graphs/latest
+      # Release files are expected at /release/<source>_*.nq
+      sources:
+        - geocodes_examples
+        - geocodes_demo_datasets
+      description: GeoCodes release graph
+      memoryForQueries: 1G
+      cacheMaxSize: 1G
+      timeout: 240s
+      # Empty = generated and stored in a Secret
+      accessToken: ""
+      # Replace the generated Qleverfile entirely (rendered with tpl)
+      qleverfile: ""
+      releaseStorage:
+        size: 20Gi
+        storageClass: ""
+      # The index is rebuilt every time the pod starts (same as the compose
+      # stack), so it lives in an emptyDir.
+      indexStorage:
+        sizeLimit: 50Gi
+      resources: {}
+    # - name: ecrr
+    #   s3Bucket: geocodes
+    #   s3Path: graphs/ecrr
+    #   sources: [ecrr]
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  ui:
+    enabled: true
+    image:
+      repository: ghcr.io/earthcube/qlever-ui-new
+      tag: org-decoder
+      pullPolicy: IfNotPresent
+    subdomain: qlever-ui
+    host: ""
+    # Graphspace the UI queries. Empty = first entry in qlever.projects.
+    project: ""
+    # Empty = generated and kept in a Secret
+    secretKey: ""
+    # Empty = https://*.<global.host>
+    csrfTrustedOrigins: ""
+    corsOrigins: ""
+    persistence:
+      size: 1Gi
+      storageClass: ""
+    resources: {}
+    ingress:
+      enabled: true
+      annotations: {}
+
+  petrimaps:
+    enabled: true
+    image:
+      repository: docker.io/adfreiburg/qlever-petrimaps
+      tag: latest
+      pullPolicy: IfNotPresent
+    subdomain: qlever-petrimaps
+    host: ""
+    resources: {}
+    ingress:
+      enabled: true
+      annotations: {}
+
+#######################################################################
+# YASGUI SPARQL UI
+#######################################################################
+sparqlgui:
+  enabled: true
+  image:
+    repository: erikap/yasgui
+    tag: latest
+    pullPolicy: IfNotPresent
+  subdomain: sparqlui
+  host: ""
+  # Empty = https://<qlever host>/graphspace/<first project>
+  defaultEndpoint: ""
+  resources: {}
+  ingress:
+    enabled: true
+    annotations: {}
+
+#######################################################################
+# GeoCodes facet search app (geocodes-compose-named.yaml)
+# All three components share one host: / , /ec/api , /notebook
+#######################################################################
+geocodes:
+  subdomain: geocodes
+  host: ""
+  uriVersion: v2
+
+  client:
+    enabled: true
+    image:
+      repository: nsfearthcube/ec_facets_client
+      tag: latest
+      pullPolicy: Always
+    nodeEnv: geocodestest
+    title: GeoCodes
+    mapboxApiKey: ""
+    facetsConfigFile: config/config.yaml
+    # Override the whole facets config.yaml. Empty = files/facets-config.yaml
+    # rendered with tpl, so URLs follow the configured hosts.
+    facetsConfig: ""
+    # Where the image reads config.yaml (from geocodes-compose-named.yaml)
+    configMountPaths:
+      - /app/public/config/config.yaml
+      - /app/dist/config/config.yaml
+    resources: {}
+    ingress:
+      enabled: true
+      annotations: {}
+
+  api:
+    enabled: true
+    image:
+      repository: nsfearthcube/ec_facets_api_nodejs
+      tag: master
+      pullPolicy: Always
+    nodeEnv: production
+    s3:
+      # Empty address = the in-cluster SeaweedFS over plain HTTP. To match the
+      # old compose stack, set address to the public OSS host, port 443, ssl true.
+      address: ""
+      port: 8333
+      ssl: false
+      # Secret with keys `accessKey` and `secretKey`. Empty = use the in-cluster
+      # S3 credentials.
+      existingSecret: ""
+    bucket: gleaner
+    bucketPath: summoned
+    toolPath: summoned
+    toolRepo: ""
+    extraEnv: []
+    resources: {}
+    ingress:
+      enabled: true
+      annotations: {}
+
+  notebook:
+    enabled: true
+    image:
+      repository: nsfearthcube/mknb
+      tag: latest
+      pullPolicy: Always
+    # "service" (GitHub OAuth app) or "apikey" (single user token)
+    authMode: service
+    github:
+      clientId: ""
+      secret: ""
+      user: ""
+      token: ""
+      # Secret with keys clientId, secret, user, token
+      existingSecret: ""
+    resources: {}
+    ingress:
+      enabled: true
+      annotations: {}
+
+#######################################################################
+# Headless Chrome for the gleaner harvester (gleaner-compose.yaml)
+#######################################################################
+headless:
+  enabled: false
+  image:
+    repository: chromedp/headless-shell
+    tag: latest
+    pullPolicy: IfNotPresent
+  shmSize: 512Mi
+  resources: {}

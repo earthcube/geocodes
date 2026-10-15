@@ -1,0 +1,20 @@
+{{- if .Values.qlever.enabled }}
+{{- range .Values.qlever.projects }}
+{{- $component := printf "qlever-%s" .name }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "geocodes.componentName" (dict "root" $ "component" $component) }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" $ "component" $component) | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "geocodes.selectorLabels" (dict "root" $ "component" $component) | nindent 4 }}
+  ports:
+    - name: sparql
+      port: {{ $.Values.qlever.port }}
+      targetPort: sparql
+{{- end }}
+{{- end }}

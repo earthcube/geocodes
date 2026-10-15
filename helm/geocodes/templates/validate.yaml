@@ -1,0 +1,11 @@
+{{- if and .Values.qlever.enabled (not .Values.qlever.projects) }}
+{{- fail "qlever.projects must have at least one graphspace when qlever.enabled is true" }}
+{{- end }}
+{{- if not .Values.s3.enabled }}
+{{- if and .Values.geocodes.api.enabled (or (not .Values.geocodes.api.s3.address) (not .Values.geocodes.api.s3.existingSecret)) }}
+{{- fail "s3.enabled is false: set geocodes.api.s3.address and geocodes.api.s3.existingSecret" }}
+{{- end }}
+{{- if and .Values.qlever.enabled (or (not .Values.qlever.s3.endpoint) (not .Values.qlever.s3.existingSecret)) }}
+{{- fail "s3.enabled is false: set qlever.s3.endpoint and qlever.s3.existingSecret" }}
+{{- end }}
+{{- end }}

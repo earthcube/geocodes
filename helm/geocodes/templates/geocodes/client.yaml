@@ -1,0 +1,102 @@
+{{- if .Values.geocodes.client.enabled }}
+{{- $c := .Values.geocodes.client }}
+{{- $name := include "geocodes.componentName" (dict "root" . "component" "client") }}
+{{- $config := ternary (tpl $c.facetsConfig .) (tpl (.Files.Get "files/facets-config.yaml") .) (ne $c.facetsConfig "") }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $name }}-facets
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "client") | nindent 4 }}
+data:
+  config.yaml: |
+    {{- $config | nindent 4 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "client") | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "geocodes.selectorLabels" (dict "root" . "component" "client") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "geocodes.selectorLabels" (dict "root" . "component" "client") | nindent 8 }}
+      annotations:
+        checksum/facets-config: {{ $config | sha256sum }}
+    spec:
+      {{- with $.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: vue-client
+          image: {{ include "geocodes.image" $c.image }}
+          imagePullPolicy: {{ $c.image.pullPolicy }}
+          env:
+            - name: NODE_ENV
+              value: {{ $c.nodeEnv | quote }}
+            - name: DOMAIN
+              value: {{ printf "https://%s/" (include "geocodes.host.geocodes" .) | quote }}
+            - name: URIVERSION
+              value: {{ .Values.geocodes.uriVersion | quote }}
+            - name: VITE_APP_FACETS_CONFIG_FILE
+              value: {{ $c.facetsConfigFile | quote }}
+            - name: VITE_APP_MAPBOX_API_KEY
+              value: {{ $c.mapboxApiKey | quote }}
+            - name: VITE_APP_TITLE
+              value: {{ $c.title | quote }}
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            tcpSocket:
+              port: http
+          volumeMounts:
+            {{- range $c.configMountPaths }}
+            - name: facets-config
+              mountPath: {{ . }}
+              subPath: config.yaml
+              readOnly: true
+            {{- end }}
+          {{- with $c.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: facets-config
+          configMap:
+            name: {{ $name }}-facets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "client") | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "geocodes.selectorLabels" (dict "root" . "component" "client") | nindent 4 }}
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+{{- if $c.ingress.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "client") | nindent 4 }}
+  {{- include "geocodes.ingress.annotations" (dict "root" . "annotations" $c.ingress.annotations) | nindent 2 }}
+spec:
+  {{- include "geocodes.ingress.spec" (dict "root" . "host" (include "geocodes.host.geocodes" .) "path" "/" "service" $name "port" 8080 "tlsSecret" (printf "%s-geocodes-tls" (include "geocodes.fullname" .))) | nindent 2 }}
+{{- end }}
+{{- end }}

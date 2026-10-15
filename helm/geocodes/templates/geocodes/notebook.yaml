@@ -1,0 +1,95 @@
+{{- if .Values.geocodes.notebook.enabled }}
+{{- $n := .Values.geocodes.notebook }}
+{{- $name := include "geocodes.componentName" (dict "root" . "component" "notebook") }}
+{{- $secretName := default $name $n.github.existingSecret }}
+{{- if not $n.github.existingSecret }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "notebook") | nindent 4 }}
+type: Opaque
+stringData:
+  clientId: {{ $n.github.clientId | quote }}
+  secret: {{ $n.github.secret | quote }}
+  user: {{ $n.github.user | quote }}
+  token: {{ $n.github.token | quote }}
+---
+{{- end }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "notebook") | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "geocodes.selectorLabels" (dict "root" . "component" "notebook") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "geocodes.selectorLabels" (dict "root" . "component" "notebook") | nindent 8 }}
+    spec:
+      {{- with $.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: notebook-proxy
+          image: {{ include "geocodes.image" $n.image }}
+          imagePullPolicy: {{ $n.image.pullPolicy }}
+          env:
+            - name: AUTH_MODE
+              value: {{ $n.authMode | quote }}
+            - name: DOMAIN
+              value: {{ printf "https://%s/" (include "geocodes.host.geocodes" .) | quote }}
+            {{- range $env, $key := dict "GITHUB_CLIENTID" "clientId" "GITHUB_SECRET" "secret" "GITHUB_USER" "user" "GITHUB_TOKEN" "token" }}
+            - name: {{ $env }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName }}
+                  key: {{ $key }}
+                  optional: true
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 3031
+          readinessProbe:
+            tcpSocket:
+              port: http
+          {{- with $n.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "notebook") | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "geocodes.selectorLabels" (dict "root" . "component" "notebook") | nindent 4 }}
+  ports:
+    - name: http
+      port: 3031
+      targetPort: http
+{{- if $n.ingress.enabled }}
+---
+# https://<geocodes host>/notebook, with the prefix stripped
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "notebook") | nindent 4 }}
+  {{- include "geocodes.ingress.annotations" (dict "root" . "annotations" $n.ingress.annotations "middlewares" (list (printf "%s-notebook-stripprefix" (include "geocodes.fullname" .)))) | nindent 2 }}
+spec:
+  {{- include "geocodes.ingress.spec" (dict "root" . "host" (include "geocodes.host.geocodes" .) "path" "/notebook" "service" $name "port" 3031 "tlsSecret" (printf "%s-geocodes-tls" (include "geocodes.fullname" .))) | nindent 2 }}
+{{- end }}
+{{- end }}

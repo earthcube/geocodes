@@ -1,0 +1,56 @@
+{{- if and .Values.s3.enabled .Values.s3.buckets.enabled .Values.s3.buckets.names }}
+{{- $b := .Values.s3.buckets }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "geocodes.componentName" (dict "root" . "component" "s3-buckets") }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "s3-buckets") | nindent 4 }}
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 6
+  template:
+    metadata:
+      labels:
+        {{- include "geocodes.selectorLabels" (dict "root" . "component" "s3-buckets") | nindent 8 }}
+    spec:
+      {{- with $.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: OnFailure
+      containers:
+        - name: aws
+          image: {{ include "geocodes.image" $b.image }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -e
+              s3() { aws --endpoint-url "$S3_ENDPOINT" s3api "$@"; }
+              until s3 list-buckets >/dev/null 2>&1; do
+                echo "waiting for s3"; sleep 5
+              done
+              {{- range $b.names }}
+              s3 head-bucket --bucket {{ . }} 2>/dev/null || s3 create-bucket --bucket {{ . }}
+              {{- end }}
+              {{- range $b.publicRead }}
+              {{- $bucket := .bucket }}
+              {{- $resources := list }}
+              {{- range .prefixes }}
+              {{- $resources = append $resources (printf "arn:aws:s3:::%s/%s*" $bucket .) }}
+              {{- end }}
+              {{- $policy := dict "Version" "2012-10-17" "Statement" (list (dict "Effect" "Allow" "Principal" "*" "Action" (list "s3:GetObject") "Resource" $resources)) }}
+              {{- $cors := dict "CORSRules" (list (dict "AllowedOrigins" $b.corsAllowedOrigins "AllowedMethods" (list "GET" "HEAD") "AllowedHeaders" (list "*"))) }}
+              s3 put-bucket-policy --bucket {{ $bucket }} --policy {{ toJson $policy | squote }}
+              s3 put-bucket-cors --bucket {{ $bucket }} --cors-configuration {{ toJson $cors | squote }}
+              {{- end }}
+              echo "s3 buckets ready"
+          env:
+            - name: S3_ENDPOINT
+              value: {{ include "geocodes.s3.endpoint" . | quote }}
+            - name: AWS_DEFAULT_REGION
+              value: us-east-1
+            {{- include "geocodes.s3CredentialEnv" (dict "root" . "existingSecret" "" "accessVar" "AWS_ACCESS_KEY_ID" "secretVar" "AWS_SECRET_ACCESS_KEY") | trim | nindent 12 }}
+{{- end }}

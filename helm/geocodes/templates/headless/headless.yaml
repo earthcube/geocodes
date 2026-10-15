@@ -1,0 +1,66 @@
+{{- if .Values.headless.enabled }}
+{{- $name := include "geocodes.componentName" (dict "root" . "component" "headless") }}
+# Headless Chrome used by the gleaner harvester. Internal only, no ingress.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "headless") | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "geocodes.selectorLabels" (dict "root" . "component" "headless") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "geocodes.selectorLabels" (dict "root" . "component" "headless") | nindent 8 }}
+    spec:
+      {{- with $.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: headless
+          image: {{ include "geocodes.image" .Values.headless.image }}
+          imagePullPolicy: {{ .Values.headless.image.pullPolicy }}
+          ports:
+            - name: devtools
+              containerPort: 9222
+          readinessProbe:
+            tcpSocket:
+              port: devtools
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: shm
+              mountPath: /dev/shm
+          {{- with .Values.headless.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: tmp
+          emptyDir:
+            sizeLimit: 512Mi
+        - name: shm
+          emptyDir:
+            medium: Memory
+            sizeLimit: {{ .Values.headless.shmSize }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "headless") | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "geocodes.selectorLabels" (dict "root" . "component" "headless") | nindent 4 }}
+  ports:
+    - name: devtools
+      port: 9222
+      targetPort: devtools
+{{- end }}
