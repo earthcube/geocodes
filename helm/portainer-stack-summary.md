@@ -20,7 +20,7 @@ The Helm chart is new and has not run in production. Unless a section says other
 | Secrets | Plain values in env files, with example credentials committed | Kubernetes Secrets, generated on first install and kept across upgrades, or supplied through `existingSecret` |
 | Buckets and public read | Set up by hand in the MinIO console | A post-install job creates the buckets and applies public-read policies and CORS |
 | Harvesting (Gleaner/Nabu) | Dagster starts Swarm one-off jobs through the Portainer API | Dagster starts Kubernetes pods through `dagster-k8s` (`GLEANERIO_LAUNCHER=k8s`) |
-| Scheduler (Dagster) | Portainer stack from the scheduler repo | **Not in the chart yet** (see [Open items](#open-items)) |
+| Scheduler (Dagster) | Portainer stack from the scheduler repo | `dagster` in the chart (off by default), a first draft (see [Open items](#open-items)) |
 
 ## Components
 
@@ -41,8 +41,8 @@ The Helm chart is new and has not run in production. Unless a section says other
 | `headless` (Chrome) | `gleaner-compose.yaml`, scheduler `compose_project_ingest.yaml` | `headless` (off by default) | Not tested |
 | `graph2` (Fuseki) | `fuseki-compose.yaml` | None | Dropped |
 | `geodexclient`, `geodexapi`, `mercantile` | `geodex-compose.yml` | None | Dropped (legacy) |
-| `dagster-dagit`, `dagster-daemon`, `dagster-postgres` | scheduler `compose_project.yaml` | None yet | Open |
-| `dagster-code-*` (ingest, tasks, ecrr) | scheduler `compose_project_ingest.yaml`, overrides | None yet | Open |
+| `dagster-dagit`, `dagster-daemon`, `dagster-postgres` | scheduler `compose_project.yaml` | `dagster`, `dagster-postgres` | Drafted, not run |
+| `dagster-code-*` (ingest, tasks, ecrr) | scheduler `compose_project_ingest.yaml`, overrides | `dagster.codeServers[]` | Drafted, not run |
 | Gleaner/Nabu runs | Swarm one-off jobs created through the Portainer API | Pods created by `dagster-k8s`, with a log-copy sidecar | Tested with mocks and Docker; not on a cluster |
 
 ## Hostnames
@@ -130,7 +130,7 @@ These settings are on the scheduler's `helm` branch. `GLEANERIO_LAUNCHER` defaul
 
 ## Open items
 
-1. **Dagster deployment:** web UI, daemon, Postgres, the code servers, `workspace.yaml` and `dagster.yaml`, plus RBAC so runs can create pods and read pod logs. Without it nothing fills S3, and QLever has nothing to index.
+1. **Dagster deployment:** the `dagster` component in the chart now drafts the web UI, daemon, Postgres, the code servers, `dagster.yaml`, `workspace.yaml` and RBAC, but none of it has run on a cluster. Still open: the ECrr code server, the Slack env vars, and the Gleaner/Nabu configs that write a release graph to S3. Without that data QLever has nothing to index.
 2. **Scheduler still needs Blazegraph:** `release_summarize` (temporary namespace), the tenant upload and namespace jobs, and the `SPARQL_ENDPOINT` given to Gleaner/Nabu. These need porting to QLever.
 3. **ECRR workflow:** `workflows/ecrr/ecrr/ops` still launches containers only through Docker/Portainer.
 4. **Smoke test on an amd64 cluster:** client, API, notebook proxy, QLever UI, petrimaps, YASGUI, headless Chrome.

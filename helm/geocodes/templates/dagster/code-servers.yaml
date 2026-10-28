@@ -1,0 +1,134 @@
+{{- if .Values.dagster.enabled }}
+{{- $d := .Values.dagster }}
+{{- $sa := include "geocodes.dagster.serviceAccountName" . }}
+{{- $pgSecret := include "geocodes.componentName" (dict "root" . "component" "dagster-postgres") }}
+{{- $s3Address := default (include "geocodes.s3.serviceHost" .) $d.s3.address }}
+{{- $s3Secret := $d.s3.existingSecret }}
+{{- if and (not $s3Secret) .Values.s3.enabled }}
+{{- $s3Secret = include "geocodes.s3.secretName" . }}
+{{- end }}
+{{- $namespace := default .Release.Namespace $d.k8s.namespace }}
+{{- $headless := default (printf "http://%s:9222" (include "geocodes.componentName" (dict "root" . "component" "headless"))) $d.headlessEndpoint }}
+{{- $graphUrl := default (include "geocodes.qlever.defaultEndpoint" .) $d.graph.url }}
+{{- $summaryNamespace := default (printf "%s_summary" $d.graph.namespace) $d.graph.summaryNamespace }}
+{{- $env := list
+  (dict "name" "DEBUG_CONTAINER" "value" "false")
+  (dict "name" "PROJECT" "value" $d.project)
+  (dict "name" "PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION" "value" "python")
+  (dict "name" "GLEANERIO_LAUNCHER" "value" $d.launcher)
+  (dict "name" "GLEANERIO_DOCKER_URL" "value" $d.dockerUrl)
+  (dict "name" "GLEANERIO_DOCKER_HEADLESS_NETWORK" "value" "")
+  (dict "name" "GLEANERIO_HEADLESS_ENDPOINT" "value" $headless)
+  (dict "name" "GLEANERIO_K8S_NAMESPACE" "value" $namespace)
+  (dict "name" "GLEANERIO_K8S_SERVICE_ACCOUNT" "value" (default $sa $d.k8s.serviceAccount))
+  (dict "name" "GLEANERIO_K8S_S3_SECRET" "value" $s3Secret)
+  (dict "name" "GLEANERIO_K8S_LOG_SIDECAR_IMAGE" "value" $d.k8s.logSidecarImage)
+  (dict "name" "GLEANERIO_K8S_POD_TIMEOUT" "value" (toString $d.k8s.podTimeout))
+  (dict "name" "GLEANERIO_DOCKER_CONTAINER_WAIT_TIMEOUT" "value" "300")
+  (dict "name" "GLEANERIO_MINIO_ADDRESS" "value" $s3Address)
+  (dict "name" "GLEANERIO_MINIO_PORT" "value" (toString $d.s3.port))
+  (dict "name" "GLEANERIO_MINIO_USE_SSL" "value" (toString $d.s3.ssl))
+  (dict "name" "GLEANERIO_MINIO_BUCKET" "value" $d.s3.bucket)
+  (dict "name" "GLEANERIO_GLEANER_IMAGE" "value" $d.gleanerImage)
+  (dict "name" "GLEANERIO_NABU_IMAGE" "value" $d.nabuImage)
+  (dict "name" "GLEANERIO_LOG_PREFIX" "value" $d.logPrefix)
+  (dict "name" "GLEANERIO_CONFIG_PATH" "value" $d.configPath)
+  (dict "name" "GLEANERIO_TENANT_FILENAME" "value" $d.tenantFilename)
+  (dict "name" "GLEANERIO_SOURCES_FILENAME" "value" $d.sourcesFilename)
+  (dict "name" "GLEANERIO_NABU_FILENAME" "value" $d.nabuFilename)
+  (dict "name" "GLEANERIO_NABU_CONFIG_PATH" "value" (printf "/configs/gleaner/%s" $d.nabuFilename))
+  (dict "name" "GLEANERIO_GRAPH_URL" "value" $graphUrl)
+  (dict "name" "GLEANERIO_GRAPH_NAMESPACE" "value" $d.graph.namespace)
+  (dict "name" "GLEANERIO_GRAPH_SUMMARIZE" "value" (toString $d.graph.summarize))
+  (dict "name" "GLEANERIO_GRAPH_SUMMARY_ENDPOINT" "value" $graphUrl)
+  (dict "name" "GLEANERIO_GRAPH_SUMMARY_NAMESPACE" "value" $summaryNamespace)
+  (dict "name" "GLEANERIO_DEFAULT_SCHEDULE" "value" $d.schedule)
+  (dict "name" "GLEANERIO_DEFAULT_SCHEDULE_TIMEZONE" "value" $d.scheduleTimezone)
+  (dict "name" "GLEANERIO_WORKSPACE_CONFIG_PATH" "value" "/usr/src/app/workspace.yaml")
+  (dict "name" "DAGSTER_HOME" "value" "/usr/src/app")
+-}}
+{{- range $d.codeServers }}
+{{- $cs := . }}
+{{- $name := include "geocodes.dagster.codeServerName" (dict "root" $ "name" .name) }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" $ "component" (printf "dagster-code-%s-%s" $d.project $cs.name)) | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "geocodes.selectorLabels" (dict "root" $ "component" (printf "dagster-code-%s-%s" $d.project $cs.name)) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "geocodes.selectorLabels" (dict "root" $ "component" (printf "dagster-code-%s-%s" $d.project $cs.name)) | nindent 8 }}
+    spec:
+      serviceAccountName: {{ $sa }}
+      {{- with $.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: dagster-grpc
+          image: {{ include "geocodes.image" $d.image_code }}
+          imagePullPolicy: {{ $d.image_code.pullPolicy }}
+          command: ["dagster"]
+          args:
+            - api
+            - grpc
+            - -h
+            - 0.0.0.0
+            - -p
+            - {{ $d.port | quote }}
+            - -m
+            - {{ $cs.module }}
+            - -d
+            - /usr/src/app/
+          env:
+            {{- toYaml (concat $env (list (dict "name" "DAGSTER_PG_PASSWORD" "valueFrom" (dict "secretKeyRef" (dict "name" $pgSecret "key" "password"))))) | nindent 12 }}
+            {{- with $d.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: grpc
+              containerPort: {{ $d.port }}
+          readinessProbe:
+            tcpSocket:
+              port: grpc
+            initialDelaySeconds: 10
+          volumeMounts:
+            # Without DAGSTER_HOME and this file, Dagster falls back to its
+            # default instance and the code server cannot reach postgres.
+            - name: config
+              mountPath: /usr/src/app/dagster.yaml
+              subPath: dagster.yaml
+              readOnly: true
+          {{- with $d.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "geocodes.componentName" (dict "root" $ "component" "dagster") }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" $ "component" (printf "dagster-code-%s-%s" $d.project $cs.name)) | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "geocodes.selectorLabels" (dict "root" $ "component" (printf "dagster-code-%s-%s" $d.project $cs.name)) | nindent 4 }}
+  ports:
+    - name: grpc
+      port: {{ $d.port }}
+      targetPort: grpc
+{{- end }}
+{{- end }}

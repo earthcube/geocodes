@@ -7,6 +7,12 @@
 global:
   # Base domain, e.g. geocodes-dev.earthcube.org
   host: geocodes.example.org
+  # Scheme and optional port for the URLs written into the client's facets
+  # config. Production is https on 443 (leave port empty). A local cluster
+  # without TLS needs e.g. scheme http, port 8080, otherwise the browser tries
+  # the host's port 443 and gets ERR_CONNECTION_REFUSED.
+  scheme: https
+  port: ""
   imagePullSecrets: []
   ingress:
     # Ingress controller class. The stack was built around Traefik.
@@ -284,14 +290,19 @@ geocodes:
       repository: nsfearthcube/mknb
       tag: latest
       pullPolicy: Always
-    # "service" (GitHub OAuth app) or "apikey" (single user token)
+    # "service" (GitHub OAuth app) or "apikey" (single gist user + token).
+    # mknb.py calls the latter GIST_USERNAME/GIST_TOKEN; those two are what
+    # `user` and `token` below are exported as.
     authMode: service
     github:
+      # service mode:
       clientId: ""
       secret: ""
+      # apikey mode:
       user: ""
       token: ""
-      # Secret with keys clientId, secret, user, token
+      # Secret with keys clientId, secret, user, token. When set, all four are
+      # passed through; otherwise only the ones with a value above are.
       existingSecret: ""
     resources: {}
     ingress:
@@ -309,3 +320,126 @@ headless:
     pullPolicy: IfNotPresent
   shmSize: 512Mi
   resources: {}
+
+#######################################################################
+# Dagster scheduler (scheduler repo: dagster/implnets/deployment/)
+#
+# Replaces compose_project.yaml (dagit, daemon, postgres) and
+# compose_project_ingest.yaml (the gRPC code servers). Off by default: it
+# needs the images built from the scheduler repo and, to fill the buckets,
+# a Gleaner/Nabu setup that does not exist in this chart yet.
+#######################################################################
+dagster:
+  enabled: false
+
+  # Web UI (dagster-webserver, was dagster-dagit). Published at
+  # https://<sched host>/, replacing the SCHED_HOSTNAME router in compose.
+  subdomain: sched
+  host: ""
+  image:
+    repository: docker.io/nsfearthcube/dagster-gleanerio
+    tag: latest
+    pullPolicy: IfNotPresent
+  # "PROJECT" in the compose files. Names the code locations and, with
+  # multiple projects, keeps several schedulers apart.
+  project: eco
+  ingress:
+    enabled: true
+    annotations: {}
+  resources: {}
+
+  # One gRPC server per code location (was dagster-code-*). Each runs
+  # `dagster api grpc -m <module>`, listening on `port`.
+  codeServers:
+    - name: ingest
+      module: workflows.ingest.ingest
+    - name: tasks
+      module: workflows.tasks.tasks
+  image_code:
+    repository: docker.io/nsfearthcube/dagster-gleanerio-workflows
+    tag: latest
+    pullPolicy: IfNotPresent
+  port: 4000
+
+  # Run storage, event log and schedule storage (was dagster-postgres in
+  # dagster.yaml). The compose stack passes the password as a plain env
+  # value; leave these empty to generate one on first install.
+  postgres:
+    image:
+      repository: docker.io/library/postgres
+      tag: "13.3"
+      pullPolicy: IfNotPresent
+    user: postgres
+    password: ""
+    database: postgres
+    persistence:
+      size: 8Gi
+      storageClass: ""
+    resources: {}
+
+  # "How gleaner/nabu containers are started" in gleanerio.py. k8s is the
+  # point of running this on Kubernetes at all; docker needs the Portainer
+  # API this chart has no equivalent for.
+  launcher: k8s
+  dockerUrl: ""
+  portainerApiKey: ""
+
+  # Kubernetes launcher settings (GLEANERIO_K8S_*).
+  k8s:
+    # Empty = the release namespace and the ServiceAccount the chart creates.
+    namespace: ""
+    serviceAccount: ""
+    # Secret with keys accessKey/secretKey for the gleaner/nabu pods. Empty =
+    # the in-cluster S3 credentials.
+    s3Secret: ""
+    logSidecarImage: docker.io/rclone/rclone:1
+    podTimeout: 86400
+
+  # S3 (GLEANERIO_MINIO_*). SeaweedFS speaks the MinIO API, so the env var
+  # names are unchanged. Empty address = the in-cluster SeaweedFS.
+  s3:
+    address: ""
+    port: 8333
+    ssl: false
+    existingSecret: ""
+    bucket: ""
+
+  # Harvester images the scheduler starts and the Chrome it drives.
+  gleanerImage: nsfearthcube/gleaner:dev_ec
+  nabuImage: nsfearthcube/nabu:dev_eco
+  headlessEndpoint: ""
+
+  # Where tenant and source files live in S3, and the release graph the
+  # nabu steps write (GLEANERIO_CONFIG_PATH, LOG_PREFIX, ...).
+  configPath: scheduler/configs/test/
+  logPrefix: scheduler/logs/
+  tenantFilename: tenant.yaml
+  sourcesFilename: gleanerconfig.yaml
+  nabuFilename: nabuconfig.yaml
+
+  # Graph endpoint for release_summarize. Unlike the rest of the chart this
+  # is still Blazegraph: the summary jobs are not ported to QLever yet.
+  graph:
+    summarize: false
+    url: ""
+    namespace: earthcube
+    summaryNamespace: ""
+
+  schedule: "@weekly"
+  scheduleTimezone: America/Los_Angeles
+
+  # Extra GLEANERIO_* or SLACK_* variables, e.g. the Slack alerting in
+  # compose_project_ingest.yaml. Entries here win over the ones above.
+  extraEnv: []
+
+  # Override dagster.yaml and workspace.yaml wholesale (rendered with tpl).
+  # Empty = generated from the values above.
+  dagsterConfig: ""
+  workspaceConfig: ""
+
+  # RBAC: lets the Dagster pods create gleaner/nabu pods and read their logs.
+  # That is what dagster-k8s needs (see resources/gleanerio_k8s.py).
+  rbac:
+    create: true
+    # Empty = a ServiceAccount per release, named <release>-dagster
+    serviceAccountName: ""

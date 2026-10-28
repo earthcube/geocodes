@@ -52,6 +52,33 @@ Uses values.host if set, otherwise <values.subdomain>.<global.host>.
 {{- end }}
 {{- end }}
 
+{{/*
+URL prefix for a component, e.g. https://oss.example.org or http://oss.localhost:8080
+(dict "root" $ "values" .Values.s3.api)
+*/}}
+{{- define "geocodes.url" -}}
+{{- $scheme := .root.Values.global.scheme | default "https" }}
+{{- $port := .root.Values.global.port | toString }}
+{{- printf "%s://%s" $scheme (include "geocodes.host" (dict "root" .root "values" .values)) }}
+{{- if $port }}{{ printf ":%s" $port }}{{ end }}
+{{- end }}
+
+{{- define "geocodes.url.geocodes" -}}
+{{- include "geocodes.url" (dict "root" . "values" .Values.geocodes) }}
+{{- end }}
+
+{{- define "geocodes.url.qlever" -}}
+{{- include "geocodes.url" (dict "root" . "values" .Values.qlever) }}
+{{- end }}
+
+{{- define "geocodes.url.oss" -}}
+{{- include "geocodes.url" (dict "root" . "values" .Values.s3.api) }}
+{{- end }}
+
+{{- define "geocodes.url.sparqlgui" -}}
+{{- include "geocodes.url" (dict "root" . "values" .Values.sparqlgui) }}
+{{- end }}
+
 {{- define "geocodes.host.geocodes" -}}
 {{- include "geocodes.host" (dict "root" . "values" .Values.geocodes) }}
 {{- end }}
@@ -75,7 +102,7 @@ Uses values.host if set, otherwise <values.subdomain>.<global.host>.
 
 {{/* Public SPARQL endpoint of the first QLever graphspace */}}
 {{- define "geocodes.qlever.defaultEndpoint" -}}
-{{- printf "https://%s/graphspace/%s" (include "geocodes.host.qlever" .) (include "geocodes.qlever.defaultProject" .) }}
+{{- printf "%s/graphspace/%s" (include "geocodes.url.qlever" .) (include "geocodes.qlever.defaultProject" .) }}
 {{- end }}
 
 {{/*
@@ -113,6 +140,21 @@ Secret value that is generated once and then preserved across upgrades.
 {{- define "geocodes.s3.endpoint" -}}
 {{- printf "http://%s:8333" (include "geocodes.s3.serviceHost" .) }}
 {{- end }}
+
+{{/* ServiceAccount Dagster pods run as, and that gleaner/nabu pods use */}}
+{{- define "geocodes.dagster.serviceAccountName" -}}
+{{- if .Values.dagster.rbac.serviceAccountName }}
+{{- .Values.dagster.rbac.serviceAccountName }}
+{{- else }}
+{{- include "geocodes.componentName" (dict "root" . "component" "dagster") }}
+{{- end }}
+{{- end }}
+
+{{/* Name of a Dagster code server: (dict "root" $ "name" "ingest") */}}
+{{- define "geocodes.dagster.codeServerName" -}}
+{{- include "geocodes.componentName" (dict "root" .root "component" (printf "dagster-code-%s-%s" .root.Values.dagster.project .name)) }}
+{{- end }}
+
 
 {{/*
 S3 credential env vars: (dict "root" $ "existingSecret" "" "accessVar" "S3KEY" "secretVar" "S3SECRET")

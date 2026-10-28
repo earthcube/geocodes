@@ -3,19 +3,19 @@
 # chart values. Override it completely with geocodes.client.facetsConfig.
 ---
 COMMUNITY: geocodesall
-TENANT_URL: https://{{ include "geocodes.host.oss" . }}/geocodes/scheduler/configs/production/tenant.yaml
-API_URL: https://{{ include "geocodes.host.geocodes" . }}/ec/api
+TENANT_URL: {{ include "geocodes.url.oss" . }}/geocodes/scheduler/configs/production/tenant.yaml
+API_URL: {{ include "geocodes.url.geocodes" . }}/ec/api
 MAPBOX_API_KEY: {{ .Values.geocodes.client.mapboxApiKey | quote }}
-S3_REPORTS_URL: https://{{ include "geocodes.host.oss" . }}/geocodes/reports/
+S3_REPORTS_URL: {{ include "geocodes.url.oss" . }}/geocodes/reports/
 TRIPLESTORE_URL: {{ include "geocodes.qlever.defaultEndpoint" . }}
 SUMMARYSTORE_URL: {{ include "geocodes.qlever.defaultEndpoint" . }}
 BLAZEGRAPH_TIMEOUT: 20s
 # JSONLD_PROXY needs quotes, since it has a $
-JSONLD_PROXY: "https://{{ include "geocodes.host.geocodes" . }}/ec/api/${o}"
-SPARQL_NB: https://{{ include "geocodes.host.geocodes" . }}/notebook/mkQ?q=${q}
-SPARQL_YASGUI: https://{{ include "geocodes.host.sparqlgui" . }}/?
+JSONLD_PROXY: "{{ include "geocodes.url.geocodes" . }}/ec/api/${o}"
+SPARQL_NB: {{ include "geocodes.url.geocodes" . }}/notebook/mkQ?q=${q}
+SPARQL_YASGUI: {{ include "geocodes.url.sparqlgui" . }}/?
 
-ECRR_TRIPLESTORE_URL: https://{{ include "geocodes.host.qlever" . }}/graphspace/ecrr
+ECRR_TRIPLESTORE_URL: {{ include "geocodes.url.qlever" . }}/graphspace/ecrr
 ECRR_GRAPH: http://earthcube.org/gleaner-summoned
 ######
 # Less common modifications needed
@@ -164,7 +164,7 @@ NOTEBOOKS:
       - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
   - name: Collab-Service
     badge: https://camo.githubusercontent.com/84f0493939e0c4de4e6dbe113251b4bfb5353e57134ffd9fcab6b8714514d4d1/68747470733a2f2f636f6c61622e72657365617263682e676f6f676c652e636f6d2f6173736574732f636f6c61622d62616467652e737667
-    baseurl: https://{{ include "geocodes.host.geocodes" . }}/notebook/mknb
+    baseurl: {{ include "geocodes.url.geocodes" . }}/notebook/mknb
     binderEncodeParameters: false
     contentQuery: url=${contentUrl}&ext=${format}&urn=${urn}&encoding=${format}
     pageTemplate: ''

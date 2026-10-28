@@ -1,0 +1,96 @@
+{{- if .Values.dagster.enabled }}
+{{- $d := .Values.dagster }}
+{{- $name := include "geocodes.componentName" (dict "root" . "component" "dagster-postgres") }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "dagster-postgres") | nindent 4 }}
+type: Opaque
+stringData:
+  # compose hardcoded POSTGRES_PASSWORD=secret; here it is generated once and
+  # kept across upgrades, like the S3 credentials.
+  password: {{ include "geocodes.secretValue" (dict "root" . "secret" $name "key" "password" "value" $d.postgres.password "length" 32) | quote }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "dagster-postgres") | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "geocodes.selectorLabels" (dict "root" . "component" "dagster-postgres") | nindent 4 }}
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: postgres
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "dagster-postgres") | nindent 4 }}
+spec:
+  serviceName: {{ $name }}
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "geocodes.selectorLabels" (dict "root" . "component" "dagster-postgres") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "geocodes.selectorLabels" (dict "root" . "component" "dagster-postgres") | nindent 8 }}
+    spec:
+      {{- with $.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: postgres
+          image: {{ include "geocodes.image" $d.postgres.image }}
+          imagePullPolicy: {{ $d.postgres.image.pullPolicy }}
+          env:
+            - name: POSTGRES_USER
+              value: {{ $d.postgres.user | quote }}
+            - name: POSTGRES_DB
+              value: {{ $d.postgres.database | quote }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $name }}
+                  key: password
+            # Dagster's tables live in the default database and schema, so the
+            # default PGDATA is fine.
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          ports:
+            - name: postgres
+              containerPort: 5432
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", {{ $d.postgres.user | quote }}]
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          {{- with $d.postgres.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ReadWriteOnce]
+        {{- with $d.postgres.persistence.storageClass }}
+        storageClassName: {{ . }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ $d.postgres.persistence.size }}
+{{- end }}

@@ -42,7 +42,7 @@ spec:
             - name: NODE_ENV
               value: {{ $c.nodeEnv | quote }}
             - name: DOMAIN
-              value: {{ printf "https://%s/" (include "geocodes.host.geocodes" .) | quote }}
+              value: {{ printf "%s/" (include "geocodes.url.geocodes" .) | quote }}
             - name: URIVERSION
               value: {{ .Values.geocodes.uriVersion | quote }}
             - name: VITE_APP_FACETS_CONFIG_FILE

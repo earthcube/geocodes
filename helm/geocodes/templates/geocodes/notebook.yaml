@@ -45,14 +45,29 @@ spec:
             - name: AUTH_MODE
               value: {{ $n.authMode | quote }}
             - name: DOMAIN
-              value: {{ printf "https://%s/" (include "geocodes.host.geocodes" .) | quote }}
-            {{- range $env, $key := dict "GITHUB_CLIENTID" "clientId" "GITHUB_SECRET" "secret" "GITHUB_USER" "user" "GITHUB_TOKEN" "token" }}
+              value: {{ printf "%s/" (include "geocodes.url.geocodes" .) | quote }}
+            {{- /*
+              mknb.py env names, from /app/mknb.py in the image:
+                service mode  -> GITHUB_CLIENTID, GITHUB_SECRET
+                apikey mode   -> GIST_USERNAME, GIST_TOKEN
+              It only tests for None, so an empty string counts as set and the
+              container then fails at runtime. Render each variable only when it
+              actually has a value, so the image's own error message is what a
+              misconfiguration produces.
+            */}}
+            {{- $github := dict "GITHUB_CLIENTID" (dict "key" "clientId" "value" $n.github.clientId)
+                                "GITHUB_SECRET" (dict "key" "secret" "value" $n.github.secret)
+                                "GIST_USERNAME" (dict "key" "user" "value" $n.github.user)
+                                "GIST_TOKEN" (dict "key" "token" "value" $n.github.token) }}
+            {{- range $env, $cfg := $github }}
+            {{- if or $cfg.value $n.github.existingSecret }}
             - name: {{ $env }}
               valueFrom:
                 secretKeyRef:
                   name: {{ $secretName }}
-                  key: {{ $key }}
+                  key: {{ $cfg.key }}
                   optional: true
+            {{- end }}
             {{- end }}
           ports:
             - name: http

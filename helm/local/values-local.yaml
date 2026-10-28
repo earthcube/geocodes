@@ -1,0 +1,70 @@
+# Local (kind) overrides for the geocodes chart.
+#
+#   helm install geocodes helm/geocodes -n geocodes --create-namespace \
+#     -f helm/local/values-local.yaml
+#
+# This is a draft overlaid on helm/geocodes/values.yaml, not a replacement.
+# It only changes what has to change to run on a throwaway cluster: no TLS,
+# smaller volumes, and no GitHub OAuth app for the notebook.
+
+global:
+  # *.localhost resolves to 127.0.0.1 on macOS without /etc/hosts entries.
+  host: localhost
+  # kind maps the ingress to host port 8080 with no TLS, so the URLs written
+  # into the facets config have to say so. Without this the browser is sent to
+  # https://oss.localhost:443 and gets ERR_CONNECTION_REFUSED.
+  scheme: http
+  port: "8080"
+  ingress:
+    className: traefik
+    # Off, otherwise every Ingress asks for a TLS secret that cert-manager
+    # isn't there to create.
+    tls:
+      enabled: false
+    # Keep true so the /ec/api, /notebook and /graphspace/<name> rewrites work.
+    # Requires the Traefik CRDs (see README): the chart ships Middleware CRs.
+    traefikMiddlewares: true
+
+s3:
+  # 100Gi default is silly on a laptop.
+  persistence:
+    size: 10Gi
+
+qlever:
+  # The default graphspace wants s3://geocodes/graphs/latest/geocodes_*.nq.
+  # Nothing creates those files locally, so the pod crash-loops until you seed
+  # them. See the README. To bring the rest of the stack up first, install with:
+  #   --set qlever.enabled=false --set sparqlgui.enabled=false
+  #   --set qlever.ui.enabled=false --set qlever.petrimaps.enabled=false
+  projects:
+    - name: facetsearch
+      s3Bucket: geocodes
+      s3Path: graphs/latest
+      sources:
+        - geocodes_examples
+        # The chart default second source is geocodes_demo_datasets, but
+        # docs/data_loading/configuration/demo/demo.yaml points at demo_datasets
+        # instead. Keep whichever the files you upload are actually named: the
+        # Qleverfile cat's ../release/<source>_*.nq, so a mismatch indexes
+        # nothing.
+        # - geocodes_demo_datasets
+      # Index is rebuilt on every pod start, so keep the footprint small.
+      memoryForQueries: 2G
+      cacheMaxSize: 512M
+      releaseStorage:
+        size: 5Gi
+      indexStorage:
+        sizeLimit: 10Gi
+
+  ui:
+    persistence:
+      size: 1Gi
+
+geocodes:
+  client:
+    # Empty is fine: the map renders without a base style.
+    mapboxApiKey: ""
+  notebook:
+    # authMode "service" needs a real GitHub OAuth app. "apikey" boots without
+    # one; the chart still renders the (empty, optional) github secret keys.
+    authMode: apikey

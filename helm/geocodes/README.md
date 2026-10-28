@@ -10,8 +10,41 @@ This chart deploys the GeoCodes stack to Kubernetes. It replaces the Portainer/D
 | `sparqlgui` (YASGUI) | `sparqlgui` | enabled, points at QLever |
 | `geocodes.client` / `api` / `notebook` | `vue-client` / `vue-services` / `notebook-proxy` | enabled |
 | `headless` | gleaner headless Chrome | disabled |
+| `dagster` (webserver, daemon, Postgres, code servers, RBAC) | scheduler `compose_project.yaml`, `compose_project_ingest.yaml` | disabled |
 
 Blazegraph, Fuseki, Geodex, Traefik and Portainer are not included. The chart expects the cluster to already provide an ingress controller and, optionally, cert-manager.
+
+## Dagster
+
+`dagster` is off by default and has not run on a cluster yet. It ports the
+scheduler repo's compose stacks:
+
+| compose service | chart |
+|---|---|
+| `dagster-dagit` | `dagster` Deployment + Service + Ingress (`dagster-webserver`) |
+| `dagster-daemon` | `<release>-dagster-daemon` Deployment |
+| `dagster-postgres` | `dagster-postgres` StatefulSet + Secret |
+| `dagster-code-<project>-ingest` / `-tasks` | one Deployment + Service per `dagster.codeServers` entry |
+| Swarm configs `dagster` / `workspace-<project>` | the `<release>-dagster` ConfigMap |
+| (new) | ServiceAccount, Role and RoleBinding for `dagster-k8s` |
+
+`dagster.yaml` and `workspace.yaml` are generated from the values; set
+`dagster.dagsterConfig` / `dagster.workspaceConfig` to replace them. The
+Postgres password is generated on first install (compose hardcoded `secret`).
+
+`dagster.launcher` defaults to `k8s`, so Gleaner and Nabu run as pods through
+`dagster-k8s` rather than the Portainer API. That needs the RBAC the chart
+creates; it is what `GLEANERIO_K8S_SERVICE_ACCOUNT` points at. The S3 secret is
+passed as `GLEANERIO_K8S_S3_SECRET` so credentials reach those pods without
+being inlined into env values.
+
+Two caveats, both inherited from the scheduler repo:
+
+- The summary steps still speak to Blazegraph. `dagster.graph.url` defaults to
+  the first QLever graphspace, but `release_summarize` will not work against it.
+  See open item 2 in [../portainer-stack-summary.md](../portainer-stack-summary.md).
+- Nothing in this chart writes a release graph to S3. A run started from the
+  Dagster UI will not fill the bucket unless the Gleaner/Nabu configs exist.
 
 ## Install
 
