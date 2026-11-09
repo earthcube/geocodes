@@ -31,14 +31,19 @@ s3:
     size: 10Gi
 
 qlever:
-  # The default graphspace wants s3://geocodes/graphs/latest/geocodes_*.nq.
-  # Nothing creates those files locally, so the pod crash-loops until you seed
-  # them. See the README. To bring the rest of the stack up first, install with:
+  # The QLever pod syncs the released .nq files at $s3Bucket/graphs/latest/
+  # (Nabu writes them there), rebuilds its index on start, and serves them.
+  # Nothing creates those files locally until a Nabu release runs, so the pod
+  # may index nothing on first boot. See the README. To bring the rest of the
+  # stack up first, install with:
   #   --set qlever.enabled=false --set sparqlgui.enabled=false
   #   --set qlever.ui.enabled=false --set qlever.petrimaps.enabled=false
   projects:
     - name: facetsearch
-      s3Bucket: geocodes
+      # Nabu (via the scheduler) writes release .nq files to the Gleaner bucket
+      # at graphs/latest/, so that is the bucket the rclone initContainer must
+      # sync for qlever index to see them on restart (index-on-restart).
+      s3Bucket: gleaner
       s3Path: graphs/latest
       sources:
         - geocodes_examples
@@ -59,6 +64,29 @@ qlever:
   ui:
     persistence:
       size: 1Gi
+
+# Dagster reads its configs from S3. These paths must match where
+# helm/local/configs/ is uploaded.
+dagster:
+  s3:
+    bucket: gleaner
+  configPath: scheduler/configs/test/
+  # QLever indexes its own S3 sync at startup; the scheduler's post_to_graph is
+  # therefore a no-op. graph.url stays empty/Blazegraph-shaped for the summary
+  # jobs, but the engine flag tells GraphResource not to push releases over SPARQL.
+  graph:
+    engine: qlever
+  # The scheduler code runs inside these images, so a local change to
+  # ~/Git/scheduler needs a rebuild + `kind load docker-image`, then this tag
+  # and pullPolicy. See the README.
+  image:
+    repository: nsfearthcube/dagster-gleanerio
+    tag: local
+    pullPolicy: IfNotPresent
+  image_code:
+    repository: nsfearthcube/dagster-gleanerio-workflows
+    tag: local
+    pullPolicy: IfNotPresent
 
 geocodes:
   client:

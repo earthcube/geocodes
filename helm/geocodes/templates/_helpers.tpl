@@ -106,6 +106,17 @@ URL prefix for a component, e.g. https://oss.example.org or http://oss.localhost
 {{- end }}
 
 {{/*
+Access token of the first QLever graphspace. Petrimaps needs the same token to
+query the backend, so default its -x to this. Uses the same generate-once /
+keep-across-upgrades helper as the Qleverfile Secret.
+*/}}
+{{- define "geocodes.qlever.defaultAccessToken" -}}
+{{- $project := (first .Values.qlever.projects) }}
+{{- $name := include "geocodes.componentName" (dict "root" . "component" (printf "qlever-%s" $project.name)) }}
+{{- include "geocodes.secretValue" (dict "root" . "secret" $name "key" "accessToken" "value" $project.accessToken "length" 32) }}
+{{- end }}
+
+{{/*
 Secret value that is generated once and then preserved across upgrades.
 (dict "root" $ "secret" "<secret name>" "key" "<key>" "value" <explicit value> "length" 32)
 */}}

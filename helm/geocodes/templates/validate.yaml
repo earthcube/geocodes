@@ -7,6 +7,12 @@
 {{- if and .Values.dagster.enabled .Values.dagster.graph.summarize (not .Values.dagster.graph.url) (not .Values.qlever.enabled) }}
 {{- fail "dagster.graph.summarize is on but qlever is off: set dagster.graph.url to the Blazegraph endpoint" }}
 {{- end }}
+{{- if and .Values.dagster.enabled (not .Values.dagster.s3.bucket) }}
+{{- fail "dagster.s3.bucket is empty: the Gleaner/Nabu config URL is built as <proto>://<address>:<port>/<bucket>/<path><file>, which would resolve to a path with a double slash and no bucket. Set dagster.s3.bucket (normally the same as geocodes.api.bucket)." }}
+{{- end }}
+{{- if and .Values.dagster.enabled (not (has .Values.dagster.ioManager.type (list "s3" "filesystem"))) }}
+{{- fail (printf "dagster.ioManager.type must be s3 or filesystem, got %q. s3 is required unless every Dagster pod shares a ReadWriteMany volume, because asset values that cross pods otherwise land on a container filesystem." .Values.dagster.ioManager.type) }}
+{{- end }}
 {{- if not .Values.s3.enabled }}
 {{- if and .Values.geocodes.api.enabled (or (not .Values.geocodes.api.s3.address) (not .Values.geocodes.api.s3.existingSecret)) }}
 {{- fail "s3.enabled is false: set geocodes.api.s3.address and geocodes.api.s3.existingSecret" }}

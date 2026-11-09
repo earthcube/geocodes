@@ -15,6 +15,9 @@
 {{- $headless := default (printf "http://%s:9222" (include "geocodes.componentName" (dict "root" . "component" "headless"))) $d.headlessEndpoint }}
 {{- $graphUrl := default (include "geocodes.qlever.defaultEndpoint" .) $d.graph.url }}
 {{- $summaryNamespace := default (printf "%s_summary" $d.graph.namespace) $d.graph.summaryNamespace }}
+{{/* GLEANERIO_IO_MANAGER selects S3PickleIOManager for asset values that cross
+     pods. Without it Dagster falls back to fs_io_manager, which is per-pod and
+     breaks load_asset_value between code servers. */}}
 {{- $env := list
   (dict "name" "DEBUG_CONTAINER" "value" "false")
   (dict "name" "PROJECT" "value" $d.project)
@@ -27,6 +30,10 @@
   (dict "name" "GLEANERIO_K8S_SERVICE_ACCOUNT" "value" (default $sa $d.k8s.serviceAccount))
   (dict "name" "GLEANERIO_K8S_S3_SECRET" "value" $s3Secret)
   (dict "name" "GLEANERIO_K8S_LOG_SIDECAR_IMAGE" "value" $d.k8s.logSidecarImage)
+  (dict "name" "GLEANERIO_K8S_CHROME_IMAGE" "value" $d.chromeImage)
+  (dict "name" "GLEANERIO_K8S_CHROME_SHM_SIZE" "value" $d.chromeShmSize)
+  (dict "name" "GLEANERIO_IO_MANAGER" "value" $d.ioManager.type)
+  (dict "name" "GLEANERIO_IO_MANAGER_PREFIX" "value" $d.ioManager.prefix)
   (dict "name" "GLEANERIO_K8S_POD_TIMEOUT" "value" (toString $d.k8s.podTimeout))
   (dict "name" "GLEANERIO_DOCKER_CONTAINER_WAIT_TIMEOUT" "value" "300")
   (dict "name" "GLEANERIO_MINIO_ADDRESS" "value" $s3Address)
@@ -46,6 +53,7 @@
   (dict "name" "GLEANERIO_GRAPH_SUMMARIZE" "value" (toString $d.graph.summarize))
   (dict "name" "GLEANERIO_GRAPH_SUMMARY_ENDPOINT" "value" $graphUrl)
   (dict "name" "GLEANERIO_GRAPH_SUMMARY_NAMESPACE" "value" $summaryNamespace)
+  (dict "name" "GLEANERIO_GRAPH_ENGINE" "value" (default "blazegraph" $d.graph.engine))
   (dict "name" "GLEANERIO_DEFAULT_SCHEDULE" "value" $d.schedule)
   (dict "name" "GLEANERIO_DEFAULT_SCHEDULE_TIMEZONE" "value" $d.scheduleTimezone)
   (dict "name" "GLEANERIO_WORKSPACE_CONFIG_PATH" "value" "/usr/src/app/workspace.yaml")
@@ -104,7 +112,18 @@ spec:
             - -p
             - "3000"
           env:
-            {{- toYaml (concat $env (list (dict "name" "DAGSTER_PG_PASSWORD" "valueFrom" (dict "secretKeyRef" (dict "name" $pgSecret "key" "password"))))) | nindent 12 }}
+            {{- /*
+                The sensors build GleanerioResource, whose gs3 resource declares
+                GLEANERIO_MINIO_ACCESS_KEY / SECRET_KEY as required EnvVars, so the
+                Dagster containers need the S3 credentials too, not just the
+                gleaner/nabu pods. Same Secret the launcher passes as
+                GLEANERIO_K8S_S3_SECRET.
+              */}}
+            {{- toYaml (concat $env (list
+                (dict "name" "DAGSTER_PG_PASSWORD" "valueFrom" (dict "secretKeyRef" (dict "name" $pgSecret "key" "password")))
+                (dict "name" "GLEANERIO_MINIO_ACCESS_KEY" "valueFrom" (dict "secretKeyRef" (dict "name" $s3Secret "key" "accessKey")))
+                (dict "name" "GLEANERIO_MINIO_SECRET_KEY" "valueFrom" (dict "secretKeyRef" (dict "name" $s3Secret "key" "secretKey")))
+              )) | nindent 12 }}
             {{- with $d.extraEnv }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -177,7 +196,18 @@ spec:
             - -w
             - /usr/src/app/workspace.yaml
           env:
-            {{- toYaml (concat $env (list (dict "name" "DAGSTER_PG_PASSWORD" "valueFrom" (dict "secretKeyRef" (dict "name" $pgSecret "key" "password"))))) | nindent 12 }}
+            {{- /*
+                The sensors build GleanerioResource, whose gs3 resource declares
+                GLEANERIO_MINIO_ACCESS_KEY / SECRET_KEY as required EnvVars, so the
+                Dagster containers need the S3 credentials too, not just the
+                gleaner/nabu pods. Same Secret the launcher passes as
+                GLEANERIO_K8S_S3_SECRET.
+              */}}
+            {{- toYaml (concat $env (list
+                (dict "name" "DAGSTER_PG_PASSWORD" "valueFrom" (dict "secretKeyRef" (dict "name" $pgSecret "key" "password")))
+                (dict "name" "GLEANERIO_MINIO_ACCESS_KEY" "valueFrom" (dict "secretKeyRef" (dict "name" $s3Secret "key" "accessKey")))
+                (dict "name" "GLEANERIO_MINIO_SECRET_KEY" "valueFrom" (dict "secretKeyRef" (dict "name" $s3Secret "key" "secretKey")))
+              )) | nindent 12 }}
             {{- with $d.extraEnv }}
             {{- toYaml . | nindent 12 }}
             {{- end }}

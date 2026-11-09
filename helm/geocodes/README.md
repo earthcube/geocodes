@@ -38,6 +38,15 @@ creates; it is what `GLEANERIO_K8S_SERVICE_ACCOUNT` points at. The S3 secret is
 passed as `GLEANERIO_K8S_S3_SECRET` so credentials reach those pods without
 being inlined into env values.
 
+Chrome is not driven through a Service. Its DevTools endpoint rejects any `Host`
+header that is not an IP or localhost, so the scheduler's k8s launcher runs
+headless Chrome as a container in each gleaner/nabu pod and points Gleaner at
+`http://localhost:9222`. The chart passes the image and `/dev/shm` size through
+`dagster.chromeImage` and `dagster.chromeShmSize`, both pinned to Chrome 105,
+since later versions break Gleaner with `Using unsafe HTTP verb GET to invoke
+/json/new`. The separate `headless` Deployment is kept for the docker launcher,
+which still reaches Chrome by Service name.
+
 Two caveats, both inherited from the scheduler repo:
 
 - The summary steps still speak to Blazegraph. `dagster.graph.url` defaults to

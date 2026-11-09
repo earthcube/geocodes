@@ -74,13 +74,29 @@ s3:
       - sites
       - forms
       - geocodes
-    # Objects the browser and QLever read anonymously over https://<oss host>/,
-    # e.g. the tenant config and reports in the facets config.
+    # Objects readable without credentials.
+    #
+    # Two different readers need this, and they read from different places:
+    #   - the browser and QLever, over https://<oss host>/, e.g. the tenant
+    #     config and reports referenced by the facets config  -> geocodes bucket
+    #   - Gleaner/Nabu fetch gleanerconfig.yaml and nabuconfig.yaml with
+    #     --cfgURL. Those fetches are plain unsigned HTTP GETs even when the
+    #     MINIO_* credentials are set, so the prefix has to be public or Gleaner
+    #     dies with "error when reading config: HTTP request failed with
+    #     status code 403". They live in the bucket from dagster.s3.bucket.
     publicRead:
       - bucket: geocodes
         prefixes:
           - scheduler/configs/
           - reports/
+          - graphs/
+      - bucket: gleaner
+        prefixes:
+          - scheduler/configs/
+          - summoned/
+          # Released .nq/.ttl. Kept public because QLever fetches them without
+          # credentials when it loads a release, and the compose stack served
+          # this path over the public oss. hostname for the same reason.
           - graphs/
     corsAllowedOrigins: ["*"]
   api:
@@ -204,6 +220,16 @@ qlever:
       pullPolicy: IfNotPresent
     subdomain: qlever-petrimaps
     host: ""
+    # Petrimaps is a middleware for the QLever UI's "Map view" button, not a
+    # browsable page: / alone has no ?query/?backend and shows
+    # "No backend (?backend=) specified". Use the Map view button in the
+    # QLever UI, or visit /example for the upstream integration example.
+    #
+    # Access token must match the graphspace Qleverfile's ACCESS_TOKEN. Empty =
+    # the token of the first graphspace, so the UI's Map view just works.
+    accessToken: ""
+    # Memory limit in GB. Empty = the image default (90% of system memory).
+    memory: ""
     resources: {}
     ingress:
       enabled: true
@@ -316,7 +342,11 @@ headless:
   enabled: false
   image:
     repository: chromedp/headless-shell
-    tag: latest
+    # Pinned to 105.0.5195.127, the version the compose stack uses
+    # (compose_project_ingest.yaml). It carries a warning that versions after
+    # 105 break Gleaner: "devtool: CreateURL: Using unsafe HTTP verb GET to
+    # invoke /json/new. This action supports only PUT verb."
+    tag: 105.0.5195.127
     pullPolicy: IfNotPresent
   shmSize: 512Mi
   resources: {}
@@ -402,12 +432,32 @@ dagster:
     port: 8333
     ssl: false
     existingSecret: ""
-    bucket: ""
+    # Bucket holding the Gleaner/Nabu configs (gleanerconfig.yaml,
+    # nabuconfig.yaml, tenant.yaml) and the harvested objects. Must not be
+    # empty: the config URL is built as
+    #   <proto>://<address>:<port>/<bucket>/<GLEANERIO_CONFIG_PATH><filename>
+    # so an empty value yields http://...:8333//scheduler/configs/... .
+    # Defaults to the API's bucket, which is `gleaner`.
+    bucket: gleaner
 
-  # Harvester images the scheduler starts and the Chrome it drives.
+  # Harvester images the scheduler starts. Chrome is NOT driven through a
+  # Service: its DevTools endpoint rejects any Host header that is not an IP or
+  # localhost, so the scheduler's k8s launcher runs headless Chrome as a
+  # container inside each gleaner/nabu pod and points Gleaner at
+  # http://localhost:9222. See GLEANERIO_K8S_CHROME_IMAGE in the scheduler repo.
+  #
+  # headlessEndpoint is therefore only used by the docker launcher, and is left
+  # empty here. The chart's separate `headless` Deployment below is kept for the
+  # docker launcher and for anything else that wants a shared Chrome; the k8s
+  # launcher no longer needs it.
   gleanerImage: nsfearthcube/gleaner:dev_ec
   nabuImage: nsfearthcube/nabu:dev_eco
   headlessEndpoint: ""
+  # Image and /dev/shm size for the Chrome container the scheduler adds to each
+  # gleaner/nabu pod. Pinned to 105: later versions break Gleaner with
+  # "Using unsafe HTTP verb GET to invoke /json/new".
+  chromeImage: docker.io/chromedp/headless-shell:105.0.5195.127
+  chromeShmSize: 512Mi
 
   # Where tenant and source files live in S3, and the release graph the
   # nabu steps write (GLEANERIO_CONFIG_PATH, LOG_PREFIX, ...).
@@ -417,6 +467,21 @@ dagster:
   sourcesFilename: gleanerconfig.yaml
   nabuFilename: nabuconfig.yaml
 
+  # Where asset values that cross pods are stored.
+  #
+  # Dagster defaults to fs_io_manager, which writes to $DAGSTER_HOME/storage/.
+  # That only worked when dagit, the daemon and the code servers shared a volume,
+  # as they did on Docker Swarm. In Kubernetes each pod has its own filesystem,
+  # so an asset materialised in one pod is invisible to another and
+  # load_asset_value raises FileNotFoundError (e.g. validate_sitemap_url reading
+  # sources_all). Set s3 so those values go to the object store instead.
+  #
+  # "s3" uses S3PickleIOManager against dagster.s3.bucket. "filesystem" keeps
+  # the old behaviour, which needs a shared ReadWriteMany volume to work.
+  ioManager:
+    type: s3
+    prefix: dagster/io
+
   # Graph endpoint for release_summarize. Unlike the rest of the chart this
   # is still Blazegraph: the summary jobs are not ported to QLever yet.
   graph:
@@ -424,6 +489,10 @@ dagster:
     url: ""
     namespace: earthcube
     summaryNamespace: ""
+    # Triplestore behind graph.url: qlever or blazegraph. Tells the scheduler's
+    # post_to_graph whether to push releases over SPARQL (blazegraph) or skip
+    # them (qlever, which indexes its own S3 sync at startup).
+    engine: blazegraph
 
   schedule: "@weekly"
   scheduleTimezone: America/Los_Angeles

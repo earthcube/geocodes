@@ -67,9 +67,28 @@ spec:
           # sudo and doesn't fit runAsUser.
           command: ["/bin/bash", "--login", "-c"]
           args:
+            # Build the index only if it is not already there, then start.
+            #
+            # An emptyDir survives a *container* restart: it is only discarded
+            # when the pod goes away. So an unconditional `qlever index` fails on
+            # the second start with
+            #   Index files for basename "<name>" found, if you want to overwrite
+            #   them, use --overwrite-existing
+            # and exits 1. The pod stays alive, the container restarts, finds the
+            # files again, and exits 1 forever: a crash loop with a perfectly good
+            # index on disk.
+            #
+            # Passing --overwrite-existing unconditionally would rebuild on every
+            # restart, which is expensive for a large graph. Gating on the index
+            # file instead reuses the existing one and keeps the first build's
+            # behaviour.
             - >-
               ls -l /release &&
-              qlever index --text-index from_text_records_and_literals &&
+              if [ ! -f /data/{{ .name }}.index.pso ]; then
+                qlever index --text-index from_text_records_and_literals;
+              else
+                echo "index already present, skipping the build (delete the pod to force a rebuild)";
+              fi &&
               qlever start --use-text-index yes --run-in-foreground
           env:
             - name: LANG

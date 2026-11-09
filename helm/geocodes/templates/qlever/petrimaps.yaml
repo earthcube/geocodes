@@ -29,6 +29,33 @@ spec:
         - name: petrimaps
           image: {{ include "geocodes.image" $pm.image }}
           imagePullPolicy: {{ $pm.image.pullPolicy }}
+          {{- /*
+            Petrimaps is a middleware, not a browsable UI: / needs a ?query= and
+            ?backend= and otherwise answers "No backend (?backend=) specified"
+            (see the upstream README). The QLever UI adds both for its "Map view"
+            button.
+
+            The image is Entrypoint ["/usr/bin/dumb-init","--"], Cmd
+            ["/qlever-petrimaps"]. Kubernetes `args` replaces Cmd, which would
+            drop the binary and hand the flags to dumb-init, so set `command`
+            with the full invocation instead.
+
+            -x is the access token from the first graphspace's Qleverfile. With
+            a token set, the backend must be registered once via POST /touch
+            with a matching Authorization header, which the QLever UI does.
+          */}}
+          {{- $token := default (include "geocodes.qlever.defaultAccessToken" .) $pm.accessToken }}
+          {{- $flags := list "-p" "9090" }}
+          {{- with $pm.memory }}
+          {{- $flags = concat $flags (list "-m" (toString .)) }}
+          {{- end }}
+          {{- if $token }}
+          {{- $flags = concat $flags (list "-x" $token) }}
+          {{- end }}
+          command:
+            - /qlever-petrimaps
+          args:
+            {{- toYaml $flags | nindent 12 }}
           ports:
             - name: http
               containerPort: 9090
