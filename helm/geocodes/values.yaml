@@ -241,12 +241,12 @@ qlever:
 sparqlgui:
   enabled: true
   image:
-    repository: erikap/yasgui
-    tag: latest
+    repository: ghcr.io/qlever-dev/qlue-ui
+    tag: edge
     pullPolicy: IfNotPresent
   subdomain: sparqlui
   host: ""
-  # Empty = https://<qlever host>/graphspace/<first project>
+  # Empty = http://<release>-qlever-<project>:7019/graphspace/<project>
   defaultEndpoint: ""
   resources: {}
   ingress:

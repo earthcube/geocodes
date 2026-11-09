@@ -1,6 +1,24 @@
 {{- if .Values.sparqlgui.enabled }}
 {{- $sg := .Values.sparqlgui }}
 {{- $name := include "geocodes.componentName" (dict "root" . "component" "sparqlgui") }}
+{{- $project := include "geocodes.qlever.defaultProject" . }}
+{{- $qleverSvc := include "geocodes.componentName" (dict "root" . "component" (printf "qlever-%s" $project)) }}
+{{- $defaultEndpoint := default (printf "http://%s:7019/" $qleverSvc) $sg.defaultEndpoint }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-config" $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "sparqlgui") | nindent 4 }}
+data:
+  config.yaml: |-
+    {{ $project }}:
+      name: {{ $project }}
+      url: {{ $defaultEndpoint }}
+      engine: QLever
+      default: true
+      preset: [common_prefixes, qlever_default]
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -22,22 +40,33 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-        - name: yasgui
+        - name: qlue-ui
           image: {{ include "geocodes.image" $sg.image }}
           imagePullPolicy: {{ $sg.image.pullPolicy }}
           env:
-            - name: DEFAULT_SPARQL_ENDPOINT
-              value: {{ default (include "geocodes.qlever.defaultEndpoint" .) $sg.defaultEndpoint | quote }}
+            # qlue-ui is preconfigured in config.yaml (mounted below); keep an
+            # explicit CONFIG_PATH so the backend does not try to re-seed over it.
+            - name: CONFIG_PATH
+              value: /app/config.yaml
+          volumeMounts:
+            - name: config
+              mountPath: /app/config.yaml
+              subPath: config.yaml
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 7000
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: /ui-api/health
               port: http
           {{- with $sg.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ printf "%s-config" $name }}
 ---
 apiVersion: v1
 kind: Service
