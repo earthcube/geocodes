@@ -85,11 +85,11 @@ spec:
             - >-
               ls -l /release &&
               if [ ! -f /data/{{ .name }}.index.pso ]; then
-                qlever index --text-index from_text_records_and_literals;
+                qlever index;
               else
                 echo "index already present, skipping the build (delete the pod to force a rebuild)";
               fi &&
-              qlever start --use-text-index yes --run-in-foreground
+              qlever start --use-text-index no --run-in-foreground
           env:
             - name: LANG
               value: C.UTF-8

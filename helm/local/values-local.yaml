@@ -88,6 +88,15 @@ dagster:
     tag: local
     pullPolicy: IfNotPresent
 
+# The qlue-ui runs its SPARQL client in the browser (WASM). Its backend URL must
+# therefore be reachable from the browser, not a cluster-internal Service name.
+# Point it at the QLever ingress route (below it strip-prefixes to the QLever
+# service and serves both HTTP SPARQL and the WebSocket /watch/ endpoint with
+# Access-Control-Allow-Origin: *). Override helm/geocodes values.yaml default
+# (which uses the internal geocodes-qlever-facetsearch:7019 -> fails in browser).
+sparqlgui:
+  defaultEndpoint: http://qlever.localhost:8080/graphspace/facetsearch
+
 geocodes:
   client:
     # Empty is fine: the map renders without a base style.
