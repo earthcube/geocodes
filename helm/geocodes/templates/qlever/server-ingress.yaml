@@ -1,0 +1,18 @@
+{{- if and .Values.qlever.enabled .Values.qlever.ingress.enabled }}
+{{- $fullname := include "geocodes.fullname" . }}
+{{- range .Values.qlever.projects }}
+{{- $component := printf "qlever-%s" .name }}
+{{- $name := include "geocodes.componentName" (dict "root" $ "component" $component) }}
+---
+# https://<qlever host>/graphspace/<project>, with the prefix stripped
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" $ "component" $component) | nindent 4 }}
+  {{- include "geocodes.ingress.annotations" (dict "root" $ "annotations" $.Values.qlever.ingress.annotations "middlewares" (list (printf "%s-%s-stripprefix" $fullname $component))) | nindent 2 }}
+spec:
+  {{- include "geocodes.ingress.spec" (dict "root" $ "host" (include "geocodes.host.qlever" $) "path" (printf "/graphspace/%s" .name) "service" $name "port" $.Values.qlever.port "tlsSecret" (printf "%s-qlever-tls" $fullname)) | nindent 2 }}
+{{- end }}
+{{- end }}

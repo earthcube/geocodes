@@ -1,0 +1,107 @@
+# Local (kind) overrides for the geocodes chart.
+#
+#   helm install geocodes helm/geocodes -n geocodes --create-namespace \
+#     -f helm/local/values-local.yaml
+#
+# This is a draft overlaid on helm/geocodes/values.yaml, not a replacement.
+# It only changes what has to change to run on a throwaway cluster: no TLS,
+# smaller volumes, and no GitHub OAuth app for the notebook.
+
+global:
+  # *.localhost resolves to 127.0.0.1 on macOS without /etc/hosts entries.
+  host: localhost
+  # kind maps the ingress to host port 8080 with no TLS, so the URLs written
+  # into the facets config have to say so. Without this the browser is sent to
+  # https://oss.localhost:443 and gets ERR_CONNECTION_REFUSED.
+  scheme: http
+  port: "8080"
+  ingress:
+    className: traefik
+    # Off, otherwise every Ingress asks for a TLS secret that cert-manager
+    # isn't there to create.
+    tls:
+      enabled: false
+    # Keep true so the /ec/api, /notebook and /graphspace/<name> rewrites work.
+    # Requires the Traefik CRDs (see README): the chart ships Middleware CRs.
+    traefikMiddlewares: true
+
+s3:
+  # 100Gi default is silly on a laptop.
+  persistence:
+    size: 10Gi
+
+qlever:
+  # The QLever pod syncs the released .nq files at $s3Bucket/graphs/latest/
+  # (Nabu writes them there), rebuilds its index on start, and serves them.
+  # Nothing creates those files locally until a Nabu release runs, so the pod
+  # may index nothing on first boot. See the README. To bring the rest of the
+  # stack up first, install with:
+  #   --set qlever.enabled=false --set sparqlgui.enabled=false
+  #   --set qlever.ui.enabled=false --set qlever.petrimaps.enabled=false
+  projects:
+    - name: facetsearch
+      # Nabu (via the scheduler) writes release .nq files to the Gleaner bucket
+      # at graphs/latest/, so that is the bucket the rclone initContainer must
+      # sync for qlever index to see them on restart (index-on-restart).
+      s3Bucket: gleaner
+      s3Path: graphs/latest
+      sources:
+        - geocodes_examples
+        # The chart default second source is geocodes_demo_datasets, but
+        # docs/data_loading/configuration/demo/demo.yaml points at demo_datasets
+        # instead. Keep whichever the files you upload are actually named: the
+        # Qleverfile cat's ../release/<source>_*.nq, so a mismatch indexes
+        # nothing.
+        # - geocodes_demo_datasets
+      # Index is rebuilt on every pod start, so keep the footprint small.
+      memoryForQueries: 2G
+      cacheMaxSize: 512M
+      releaseStorage:
+        size: 5Gi
+      indexStorage:
+        sizeLimit: 10Gi
+
+  ui:
+    persistence:
+      size: 1Gi
+
+# Dagster reads its configs from S3. These paths must match where
+# helm/local/configs/ is uploaded.
+dagster:
+  s3:
+    bucket: gleaner
+  configPath: scheduler/configs/test/
+  # QLever indexes its own S3 sync at startup; the scheduler's post_to_graph is
+  # therefore a no-op. graph.url stays empty/Blazegraph-shaped for the summary
+  # jobs, but the engine flag tells GraphResource not to push releases over SPARQL.
+  graph:
+    engine: qlever
+  # The scheduler code runs inside these images, so a local change to
+  # ~/Git/scheduler needs a rebuild + `kind load docker-image`, then this tag
+  # and pullPolicy. See the README.
+  image:
+    repository: nsfearthcube/dagster-gleanerio
+    tag: local
+    pullPolicy: IfNotPresent
+  image_code:
+    repository: nsfearthcube/dagster-gleanerio-workflows
+    tag: local
+    pullPolicy: IfNotPresent
+
+# The qlue-ui runs its SPARQL client in the browser (WASM). Its backend URL must
+# therefore be reachable from the browser, not a cluster-internal Service name.
+# Point it at the QLever ingress route (below it strip-prefixes to the QLever
+# service and serves both HTTP SPARQL and the WebSocket /watch/ endpoint with
+# Access-Control-Allow-Origin: *). Override helm/geocodes values.yaml default
+# (which uses the internal geocodes-qlever-facetsearch:7019 -> fails in browser).
+sparqlgui:
+  defaultEndpoint: http://qlever.localhost:8080/graphspace/facetsearch
+
+geocodes:
+  client:
+    # Empty is fine: the map renders without a base style.
+    mapboxApiKey: ""
+  notebook:
+    # authMode "service" needs a real GitHub OAuth app. "apikey" boots without
+    # one; the chart still renders the (empty, optional) github secret keys.
+    authMode: apikey

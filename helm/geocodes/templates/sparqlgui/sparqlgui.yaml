@@ -1,0 +1,97 @@
+{{- if .Values.sparqlgui.enabled }}
+{{- $sg := .Values.sparqlgui }}
+{{- $name := include "geocodes.componentName" (dict "root" . "component" "sparqlgui") }}
+{{- $project := include "geocodes.qlever.defaultProject" . }}
+{{- $qleverSvc := include "geocodes.componentName" (dict "root" . "component" (printf "qlever-%s" $project)) }}
+{{- $defaultEndpoint := default (printf "http://%s:7019/" $qleverSvc) $sg.defaultEndpoint }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-config" $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "sparqlgui") | nindent 4 }}
+data:
+  config.yaml: |-
+    {{ $project }}:
+      name: {{ $project }}
+      url: {{ $defaultEndpoint }}
+      engine: QLever
+      default: true
+      preset: [common_prefixes, qlever_default]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "sparqlgui") | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "geocodes.selectorLabels" (dict "root" . "component" "sparqlgui") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "geocodes.selectorLabels" (dict "root" . "component" "sparqlgui") | nindent 8 }}
+    spec:
+      {{- with $.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: qlue-ui
+          image: {{ include "geocodes.image" $sg.image }}
+          imagePullPolicy: {{ $sg.image.pullPolicy }}
+          env:
+            # qlue-ui is preconfigured in config.yaml (mounted below); keep an
+            # explicit CONFIG_PATH so the backend does not try to re-seed over it.
+            - name: CONFIG_PATH
+              value: /app/config.yaml
+          volumeMounts:
+            - name: config
+              mountPath: /app/config.yaml
+              subPath: config.yaml
+          ports:
+            - name: http
+              containerPort: 7000
+          readinessProbe:
+            httpGet:
+              path: /ui-api/health
+              port: http
+          {{- with $sg.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ printf "%s-config" $name }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "sparqlgui") | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "geocodes.selectorLabels" (dict "root" . "component" "sparqlgui") | nindent 4 }}
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+{{- if $sg.ingress.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "sparqlgui") | nindent 4 }}
+  {{- include "geocodes.ingress.annotations" (dict "root" . "annotations" $sg.ingress.annotations) | nindent 2 }}
+spec:
+  {{- include "geocodes.ingress.spec" (dict "root" . "host" (include "geocodes.host.sparqlgui" .) "path" "/" "service" $name "port" 80 "tlsSecret" (printf "%s-tls" $name)) | nindent 2 }}
+{{- end }}
+{{- end }}

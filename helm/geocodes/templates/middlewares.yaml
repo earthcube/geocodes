@@ -1,0 +1,28 @@
+{{- if .Values.global.ingress.traefikMiddlewares }}
+{{- $fullname := include "geocodes.fullname" . }}
+{{- $prefixes := dict }}
+{{- if and .Values.geocodes.api.enabled .Values.geocodes.api.ingress.enabled }}
+{{- $_ := set $prefixes "api" "/ec/api" }}
+{{- end }}
+{{- if and .Values.geocodes.notebook.enabled .Values.geocodes.notebook.ingress.enabled }}
+{{- $_ := set $prefixes "notebook" "/notebook" }}
+{{- end }}
+{{- if and .Values.qlever.enabled .Values.qlever.ingress.enabled }}
+{{- range .Values.qlever.projects }}
+{{- $_ := set $prefixes (printf "qlever-%s" .name) (printf "/graphspace/%s" .name) }}
+{{- end }}
+{{- end }}
+{{- range $key, $prefix := $prefixes }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ printf "%s-%s-stripprefix" $fullname $key }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" $ "component" $key) | nindent 4 }}
+spec:
+  stripPrefix:
+    prefixes:
+      - {{ $prefix }}
+{{- end }}
+{{- end }}

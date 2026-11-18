@@ -1,0 +1,45 @@
+{{- if and .Values.dagster.enabled .Values.dagster.rbac.create }}
+{{- $sa := include "geocodes.dagster.serviceAccountName" . }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ $sa }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "dagster") | nindent 4 }}
+---
+# dagster-k8s creates one pod per gleaner/nabu run and reads its logs and exit
+# code back (see resources/gleanerio_k8s.py). Pods, pods/log and pods/status
+# are the calls it makes; the rest is what a pod needs to schedule at all.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "geocodes.componentName" (dict "root" . "component" "dagster") }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "dagster") | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: [""]
+    resources: ["pods/log", "pods/status", "events"]
+    verbs: ["get", "list", "watch"]
+  # The launcher resolves the namespace and its service accounts at startup.
+  - apiGroups: [""]
+    resources: ["namespaces", "serviceaccounts", "secrets"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "geocodes.componentName" (dict "root" . "component" "dagster") }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "dagster") | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "geocodes.componentName" (dict "root" . "component" "dagster") }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ $sa }}
+    namespace: {{ .Release.Namespace }}
+{{- end }}

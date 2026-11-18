@@ -1,0 +1,110 @@
+{{- if .Values.geocodes.notebook.enabled }}
+{{- $n := .Values.geocodes.notebook }}
+{{- $name := include "geocodes.componentName" (dict "root" . "component" "notebook") }}
+{{- $secretName := default $name $n.github.existingSecret }}
+{{- if not $n.github.existingSecret }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "notebook") | nindent 4 }}
+type: Opaque
+stringData:
+  clientId: {{ $n.github.clientId | quote }}
+  secret: {{ $n.github.secret | quote }}
+  user: {{ $n.github.user | quote }}
+  token: {{ $n.github.token | quote }}
+---
+{{- end }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "notebook") | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "geocodes.selectorLabels" (dict "root" . "component" "notebook") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "geocodes.selectorLabels" (dict "root" . "component" "notebook") | nindent 8 }}
+    spec:
+      {{- with $.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: notebook-proxy
+          image: {{ include "geocodes.image" $n.image }}
+          imagePullPolicy: {{ $n.image.pullPolicy }}
+          env:
+            - name: AUTH_MODE
+              value: {{ $n.authMode | quote }}
+            - name: DOMAIN
+              value: {{ printf "%s/" (include "geocodes.url.geocodes" .) | quote }}
+            {{- /*
+              mknb.py env names, from /app/mknb.py in the image:
+                service mode  -> GITHUB_CLIENTID, GITHUB_SECRET
+                apikey mode   -> GIST_USERNAME, GIST_TOKEN
+              It only tests for None, so an empty string counts as set and the
+              container then fails at runtime. Render each variable only when it
+              actually has a value, so the image's own error message is what a
+              misconfiguration produces.
+            */}}
+            {{- $github := dict "GITHUB_CLIENTID" (dict "key" "clientId" "value" $n.github.clientId)
+                                "GITHUB_SECRET" (dict "key" "secret" "value" $n.github.secret)
+                                "GIST_USERNAME" (dict "key" "user" "value" $n.github.user)
+                                "GIST_TOKEN" (dict "key" "token" "value" $n.github.token) }}
+            {{- range $env, $cfg := $github }}
+            {{- if or $cfg.value $n.github.existingSecret }}
+            - name: {{ $env }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName }}
+                  key: {{ $cfg.key }}
+                  optional: true
+            {{- end }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 3031
+          readinessProbe:
+            tcpSocket:
+              port: http
+          {{- with $n.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "notebook") | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "geocodes.selectorLabels" (dict "root" . "component" "notebook") | nindent 4 }}
+  ports:
+    - name: http
+      port: 3031
+      targetPort: http
+{{- if $n.ingress.enabled }}
+---
+# https://<geocodes host>/notebook, with the prefix stripped
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "notebook") | nindent 4 }}
+  {{- include "geocodes.ingress.annotations" (dict "root" . "annotations" $n.ingress.annotations "middlewares" (list (printf "%s-notebook-stripprefix" (include "geocodes.fullname" .)))) | nindent 2 }}
+spec:
+  {{- include "geocodes.ingress.spec" (dict "root" . "host" (include "geocodes.host.geocodes" .) "path" "/notebook" "service" $name "port" 3031 "tlsSecret" (printf "%s-geocodes-tls" (include "geocodes.fullname" .))) | nindent 2 }}
+{{- end }}
+{{- end }}

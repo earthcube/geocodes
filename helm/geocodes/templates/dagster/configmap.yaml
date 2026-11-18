@@ -1,0 +1,104 @@
+{{- if .Values.dagster.enabled }}
+{{- $d := .Values.dagster }}
+{{- $name := include "geocodes.componentName" (dict "root" . "component" "dagster") }}
+{{- $pgHost := include "geocodes.componentName" (dict "root" . "component" "dagster-postgres") }}
+{{- $secretName := include "geocodes.componentName" (dict "root" . "component" "dagster-postgres") }}
+
+{{/*
+dagster.yaml. Mirrors the compose config: postgres for run/event/schedule
+storage, a queued run coordinator, telemetry off. The hostname is the
+in-cluster service instead of the compose service name.
+*/}}
+{{- $dagsterConfig := .Values.dagster.dagsterConfig }}
+{{- if not $dagsterConfig }}
+{{/* dagster.yaml is parsed by Dagster directly, so an env var placeholder like
+     $DAGSTER_PG_PASSWORD would be sent as the literal password. Pull the value
+     out of the Secret at render time instead, so the rendered file is correct.
+
+     lookup returns an object, not a map, so index it and fall back to the
+     generated password when the Secret does not exist yet (first install). */}}
+{{- $pgSecret := lookup "v1" "Secret" .Release.Namespace $secretName }}
+{{- $pgPassword := "" }}
+{{- if and $pgSecret $pgSecret.data (hasKey $pgSecret.data "password") }}
+{{- $pgPassword = index $pgSecret.data "password" | b64dec }}
+{{- else }}
+{{- /* Same helper the Secret uses, so an initial install and this file agree. */}}
+{{- $pgPassword = include "geocodes.secretValue" (dict "root" . "secret" $secretName "key" "password" "value" $d.postgres.password "length" 32) }}
+{{- end }}
+{{- $dagsterConfig = printf `retention:
+  schedule:
+    purge_after_days: 90
+  sensor:
+    purge_after_days:
+      skipped: 7
+      failure: 30
+      success: 180
+run_storage:
+  module: dagster_postgres.run_storage
+  class: PostgresRunStorage
+  config:
+    postgres_db:
+      username: %s
+      password: %s
+      hostname: %s
+      db_name: %s
+      port: 5432
+event_log_storage:
+  module: dagster_postgres.event_log
+  class: PostgresEventLogStorage
+  config:
+    postgres_db:
+      username: %s
+      password: %s
+      hostname: %s
+      db_name: %s
+      port: 5432
+schedule_storage:
+  module: dagster_postgres.schedule_storage
+  class: PostgresScheduleStorage
+  config:
+    postgres_db:
+      username: %s
+      password: %s
+      hostname: %s
+      db_name: %s
+      port: 5432
+run_coordinator:
+  module: dagster.core.run_coordinator
+  class: QueuedRunCoordinator
+  config:
+    max_concurrent_runs: 2
+telemetry:
+  enabled: false
+` $d.postgres.user $pgPassword $pgHost $d.postgres.database
+  $d.postgres.user $pgPassword $pgHost $d.postgres.database
+  $d.postgres.user $pgPassword $pgHost $d.postgres.database }}
+{{- end }}
+
+{{/*
+workspace.yaml. compose loaded this from a Swarm config built per PROJECT;
+here the code locations are the chart's code server Deployments. Built with
+`grpc_server` against the Service names, as configs/<project>/workspace.yaml
+does, so dagit and the daemon only need the Service, not the pod.
+*/}}
+{{- $workspaceConfig := .Values.dagster.workspaceConfig }}
+{{- if not $workspaceConfig }}
+{{- $lines := list "load_from:" }}
+{{- range $d.codeServers }}
+{{- $lines = append $lines (printf "  - grpc_server:\n      host: %s\n      port: %v\n      location_name: %s" (include "geocodes.dagster.codeServerName" (dict "root" $ "name" .name)) $d.port .name) }}
+{{- end }}
+{{- $workspaceConfig = join "\n" $lines }}
+{{- end }}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "dagster") | nindent 4 }}
+data:
+  dagster.yaml: |
+    {{- tpl $dagsterConfig . | nindent 4 }}
+  workspace.yaml: |
+    {{- tpl $workspaceConfig . | nindent 4 }}
+{{- end }}

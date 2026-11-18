@@ -1,0 +1,132 @@
+{{- if .Values.s3.enabled }}
+{{- $name := include "geocodes.componentName" (dict "root" . "component" "s3") }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "geocodes.labels" (dict "root" . "component" "s3") | nindent 4 }}
+spec:
+  serviceName: {{ $name }}
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "geocodes.selectorLabels" (dict "root" . "component" "s3") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "geocodes.selectorLabels" (dict "root" . "component" "s3") | nindent 8 }}
+      annotations:
+        checksum/secret: {{ include (print $.Template.BasePath "/s3/secret.yaml") . | sha256sum }}
+    spec:
+      {{- with $.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        # master, volume server, filer and S3 gateway in one process
+        - name: seaweedfs
+          image: {{ include "geocodes.image" .Values.s3.image }}
+          imagePullPolicy: {{ .Values.s3.image.pullPolicy }}
+          args:
+            - server
+            - -dir=/data
+            - -ip.bind=0.0.0.0
+            - -volume.max=0
+            - -master.volumeSizeLimitMB={{ .Values.s3.volumeSizeLimitMB }}
+            - -s3
+            - -s3.port=8333
+            {{- range .Values.s3.extraArgs }}
+            - {{ . | quote }}
+            {{- end }}
+          env:
+            # SeaweedFS uses these as the S3 admin identity
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "geocodes.s3.secretName" . }}
+                  key: accessKey
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "geocodes.s3.secretName" . }}
+                  key: secretKey
+          ports:
+            - name: s3
+              containerPort: 8333
+            - name: filer
+              containerPort: 8888
+            - name: master
+              containerPort: 9333
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: s3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: s3
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          {{- with .Values.s3.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        {{- if .Values.s3.admin.enabled }}
+        # web admin UI, talks to the master in the same pod
+        - name: admin
+          image: {{ include "geocodes.image" .Values.s3.image }}
+          imagePullPolicy: {{ .Values.s3.image.pullPolicy }}
+          args:
+            - admin
+            - -port=23646
+            - -master=localhost:9333
+            - -dataDir=/data/admin
+            - -adminUser={{ .Values.s3.admin.user }}
+            - -adminPassword=$(ADMIN_PASSWORD)
+          env:
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "geocodes.s3.secretName" . }}
+                  key: adminPassword
+          ports:
+            - name: admin
+              containerPort: 23646
+          readinessProbe:
+            tcpSocket:
+              port: admin
+          volumeMounts:
+            - name: data
+              mountPath: /data/admin
+              subPath: admin
+        {{- end }}
+      {{- with .Values.s3.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.s3.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.s3.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          {{- toYaml .Values.s3.persistence.accessModes | nindent 10 }}
+        {{- with .Values.s3.persistence.storageClass }}
+        storageClassName: {{ . }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.s3.persistence.size }}
+{{- end }}

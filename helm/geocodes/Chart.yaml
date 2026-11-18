@@ -1,0 +1,13 @@
+apiVersion: v2
+name: geocodes
+description: GeoCodes facet search, QLever triplestore and SeaweedFS object store
+type: application
+version: 0.1.0
+appVersion: "master"
+home: https://github.com/earthcube/geocodes
+keywords:
+  - geocodes
+  - qlever
+  - sparql
+  - seaweedfs
+  - s3

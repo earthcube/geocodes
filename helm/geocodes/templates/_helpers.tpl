@@ -1,0 +1,246 @@
+{{/* Chart name */}}
+{{- define "geocodes.name" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/* Fully qualified app name */}}
+{{- define "geocodes.fullname" -}}
+{{- if .Values.fullnameOverride }}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
+{{- if contains $name .Release.Name }}
+{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{/* Resource name for a component: (dict "root" $ "component" "s3") */}}
+{{- define "geocodes.componentName" -}}
+{{- printf "%s-%s" (include "geocodes.fullname" .root) .component | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{- define "geocodes.labels" -}}
+helm.sh/chart: {{ printf "%s-%s" .root.Chart.Name .root.Chart.Version | replace "+" "_" }}
+app.kubernetes.io/managed-by: {{ .root.Release.Service }}
+app.kubernetes.io/version: {{ .root.Chart.AppVersion | quote }}
+{{ include "geocodes.selectorLabels" . }}
+{{- end }}
+
+{{- define "geocodes.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "geocodes.name" .root }}
+app.kubernetes.io/instance: {{ .root.Release.Name }}
+app.kubernetes.io/component: {{ .component }}
+{{- end }}
+
+{{/* image string from an image block */}}
+{{- define "geocodes.image" -}}
+{{- printf "%s:%s" .repository (toString .tag) }}
+{{- end }}
+
+{{/*
+Hostname for a component: (dict "root" $ "values" .Values.s3.api)
+Uses values.host if set, otherwise <values.subdomain>.<global.host>.
+*/}}
+{{- define "geocodes.host" -}}
+{{- if .values.host }}
+{{- .values.host }}
+{{- else }}
+{{- printf "%s.%s" .values.subdomain .root.Values.global.host }}
+{{- end }}
+{{- end }}
+
+{{/*
+URL prefix for a component, e.g. https://oss.example.org or http://oss.localhost:8080
+(dict "root" $ "values" .Values.s3.api)
+*/}}
+{{- define "geocodes.url" -}}
+{{- $scheme := .root.Values.global.scheme | default "https" }}
+{{- $port := .root.Values.global.port | toString }}
+{{- printf "%s://%s" $scheme (include "geocodes.host" (dict "root" .root "values" .values)) }}
+{{- if $port }}{{ printf ":%s" $port }}{{ end }}
+{{- end }}
+
+{{- define "geocodes.url.geocodes" -}}
+{{- include "geocodes.url" (dict "root" . "values" .Values.geocodes) }}
+{{- end }}
+
+{{- define "geocodes.url.qlever" -}}
+{{- include "geocodes.url" (dict "root" . "values" .Values.qlever) }}
+{{- end }}
+
+{{- define "geocodes.url.oss" -}}
+{{- include "geocodes.url" (dict "root" . "values" .Values.s3.api) }}
+{{- end }}
+
+{{- define "geocodes.url.sparqlgui" -}}
+{{- include "geocodes.url" (dict "root" . "values" .Values.sparqlgui) }}
+{{- end }}
+
+{{- define "geocodes.host.geocodes" -}}
+{{- include "geocodes.host" (dict "root" . "values" .Values.geocodes) }}
+{{- end }}
+
+{{- define "geocodes.host.qlever" -}}
+{{- include "geocodes.host" (dict "root" . "values" .Values.qlever) }}
+{{- end }}
+
+{{- define "geocodes.host.oss" -}}
+{{- include "geocodes.host" (dict "root" . "values" .Values.s3.api) }}
+{{- end }}
+
+{{- define "geocodes.host.sparqlgui" -}}
+{{- include "geocodes.host" (dict "root" . "values" .Values.sparqlgui) }}
+{{- end }}
+
+{{/* Name of the first QLever graphspace */}}
+{{- define "geocodes.qlever.defaultProject" -}}
+{{- (first .Values.qlever.projects).name }}
+{{- end }}
+
+{{/* Public SPARQL endpoint of the first QLever graphspace */}}
+{{- define "geocodes.qlever.defaultEndpoint" -}}
+{{- printf "%s/graphspace/%s" (include "geocodes.url.qlever" .) (include "geocodes.qlever.defaultProject" .) }}
+{{- end }}
+
+{{/*
+Access token of the first QLever graphspace. Petrimaps needs the same token to
+query the backend, so default its -x to this. Uses the same generate-once /
+keep-across-upgrades helper as the Qleverfile Secret.
+*/}}
+{{- define "geocodes.qlever.defaultAccessToken" -}}
+{{- $project := (first .Values.qlever.projects) }}
+{{- $name := include "geocodes.componentName" (dict "root" . "component" (printf "qlever-%s" $project.name)) }}
+{{- include "geocodes.secretValue" (dict "root" . "secret" $name "key" "accessToken" "value" $project.accessToken "length" 32) }}
+{{- end }}
+
+{{/*
+Secret value that is generated once and then preserved across upgrades.
+(dict "root" $ "secret" "<secret name>" "key" "<key>" "value" <explicit value> "length" 32)
+*/}}
+{{- define "geocodes.secretValue" -}}
+{{- if .value }}
+{{- .value }}
+{{- else }}
+{{- $existing := lookup "v1" "Secret" .root.Release.Namespace .secret }}
+{{- if and $existing (hasKey $existing.data .key) }}
+{{- index $existing.data .key | b64dec }}
+{{- else }}
+{{- randAlphaNum (default 32 .length) }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{/* In-cluster S3 (SeaweedFS) credential secret name */}}
+{{- define "geocodes.s3.secretName" -}}
+{{- if .Values.s3.auth.existingSecret }}
+{{- .Values.s3.auth.existingSecret }}
+{{- else }}
+{{- include "geocodes.componentName" (dict "root" . "component" "s3") }}
+{{- end }}
+{{- end }}
+
+{{/* In-cluster S3 service host */}}
+{{- define "geocodes.s3.serviceHost" -}}
+{{- include "geocodes.componentName" (dict "root" . "component" "s3") }}
+{{- end }}
+
+{{/* In-cluster S3 endpoint URL */}}
+{{- define "geocodes.s3.endpoint" -}}
+{{- printf "http://%s:8333" (include "geocodes.s3.serviceHost" .) }}
+{{- end }}
+
+{{/* ServiceAccount Dagster pods run as, and that gleaner/nabu pods use */}}
+{{- define "geocodes.dagster.serviceAccountName" -}}
+{{- if .Values.dagster.rbac.serviceAccountName }}
+{{- .Values.dagster.rbac.serviceAccountName }}
+{{- else }}
+{{- include "geocodes.componentName" (dict "root" . "component" "dagster") }}
+{{- end }}
+{{- end }}
+
+{{/* Name of a Dagster code server: (dict "root" $ "name" "ingest") */}}
+{{- define "geocodes.dagster.codeServerName" -}}
+{{- include "geocodes.componentName" (dict "root" .root "component" (printf "dagster-code-%s-%s" .root.Values.dagster.project .name)) }}
+{{- end }}
+
+
+{{/*
+S3 credential env vars: (dict "root" $ "existingSecret" "" "accessVar" "S3KEY" "secretVar" "S3SECRET")
+Reads accessKey/secretKey from existingSecret, or falls back to the in-cluster S3 credentials.
+*/}}
+{{- define "geocodes.s3CredentialEnv" -}}
+{{- if .existingSecret }}
+- name: {{ .accessVar }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ .existingSecret }}
+      key: accessKey
+- name: {{ .secretVar }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ .existingSecret }}
+      key: secretKey
+{{- else }}
+- name: {{ .accessVar }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "geocodes.s3.secretName" .root }}
+      key: accessKey
+- name: {{ .secretVar }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "geocodes.s3.secretName" .root }}
+      key: secretKey
+{{- end }}
+{{- end }}
+
+{{/*
+Traefik middleware annotation for an ingress.
+(dict "root" $ "middlewares" (list "name1" "name2") "annotations" <component annotations>)
+Merges global annotations, component annotations and, when enabled, the
+traefik router.middlewares annotation.
+*/}}
+{{- define "geocodes.ingress.annotations" -}}
+{{- $ann := merge (dict) (default (dict) .annotations) (default (dict) .root.Values.global.ingress.annotations) }}
+{{- if and .root.Values.global.ingress.traefikMiddlewares .middlewares }}
+{{- $refs := list }}
+{{- range .middlewares }}
+{{- $refs = append $refs (printf "%s-%s@kubernetescrd" $.root.Release.Namespace .) }}
+{{- end }}
+{{- $_ := set $ann "traefik.ingress.kubernetes.io/router.middlewares" (join "," $refs) }}
+{{- end }}
+{{- with $ann }}
+annotations:
+  {{- toYaml . | nindent 2 }}
+{{- end }}
+{{- end }}
+
+{{/*
+Common ingress spec.
+(dict "root" $ "host" "<host>" "path" "/" "service" "<svc>" "port" 80 "tlsSecret" "<name>")
+*/}}
+{{- define "geocodes.ingress.spec" -}}
+{{- with .root.Values.global.ingress.className }}
+ingressClassName: {{ . }}
+{{- end }}
+{{- if .root.Values.global.ingress.tls.enabled }}
+tls:
+  - hosts:
+      - {{ .host | quote }}
+    secretName: {{ .tlsSecret }}
+{{- end }}
+rules:
+  - host: {{ .host | quote }}
+    http:
+      paths:
+        - path: {{ .path }}
+          pathType: Prefix
+          backend:
+            service:
+              name: {{ .service }}
+              port:
+                number: {{ .port }}
+{{- end }}
